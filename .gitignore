@@ -1,0 +1,9 @@
+/build
+/.vscode
+/*.egg-info
+/docs/build
+/docs/doxygen_h
+
+/pyfmm/__pycache__
+/pyfmm/C_extension/build
+/aaa

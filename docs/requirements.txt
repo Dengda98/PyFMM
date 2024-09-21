@@ -1,0 +1,13 @@
+breathe==4.35
+commonmark==0.9
+recommonmark==0.7
+sphinx==7.4.7
+sphinx-rtd-theme==2.0.0
+sphinx-copybutton==0.5
+sphinx_markdown_tables
+sphinxcontrib-mermaid
+sphinxcontrib-htmlhelp
+sphinxcontrib-jsmath
+nbsphinx==0.9
+graphviz==0.20
+git+https://github.com/Dengda98/PyFMM.git  # 包本身
