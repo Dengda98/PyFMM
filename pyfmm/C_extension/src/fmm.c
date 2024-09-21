@@ -12,6 +12,8 @@
 #include <assert.h>
 #include <stddef.h>
 #include <unistd.h>
+#include <sys/time.h>
+
 
 #include "interp.h"
 #include "query.h"
@@ -20,6 +22,7 @@
 #include "diff.h"
 #include "heapsort.h"
 #include "index.h"
+#include "progressbar.h"
 #include "fmm.h"
 
 
@@ -31,8 +34,12 @@ void FastMarching(
     double rr,  double tt, double pp,
     int maxodr,  const float *Slw, 
     float *TT, bool sphcoord, 
-    int rfgfac, int rfgn)
+    int rfgfac, int rfgn, bool printbar)
 {
+    // 程序运行开始时间
+    struct timeval begin_t;
+    gettimeofday(&begin_t, NULL);
+
     int ntp=nt*np;
     int nrtp=nr*ntp;
     int Ndots=nrtp;
@@ -71,7 +78,7 @@ void FastMarching(
                 rr, tt, pp,
                 maxodr, Slw, TT, 
                 FMM_stat, sphcoord,
-                rfgfac, rfgn,
+                rfgfac, rfgn, printbar,
                 FMM_data, psize, pcap, NroIdx, &Ndots);
         } else {
             FMM_data = init_source_TT(
@@ -90,13 +97,20 @@ void FastMarching(
         ts, nt, 
         ps, np,
         maxodr, Slw, TT,
-        FMM_stat, sphcoord, NULL,
+        FMM_stat, sphcoord, NULL, printbar,
         FMM_data, psize, pcap, NroIdx, &Ndots);
 
     // printf("done, Ndots=%d, size=%d\n", Ndots, *psize);
     free(FMM_data);
     free(FMM_stat);
     free(NroIdx);
+
+
+    // 程序运行结束时间
+    struct timeval end_t;
+    gettimeofday(&end_t, NULL);
+    if(printbar) printf("Runtime: %.3f s\n", (end_t.tv_sec - begin_t.tv_sec) + (end_t.tv_usec - begin_t.tv_usec) / 1e6);
+    fflush(stdout);
 }
 
 
@@ -107,7 +121,7 @@ HEAP_DATA * FastMarching_with_initial(
     const double *ts, int nt, 
     const double *ps, int np,
     int maxodr,  const float *Slw, float *TT, 
-    char *FMM_stat, bool sphcoord, bool *edgeStop, 
+    char *FMM_stat, bool sphcoord, bool *edgeStop, bool printbar,
     HEAP_DATA *FMM_data, int *psize, int *pcap, int *NroIdx, int *pNdots)
 {
     double dr = (nr>1)? rs[1] - rs[0] : 0.0;
@@ -140,6 +154,10 @@ HEAP_DATA * FastMarching_with_initial(
 
     float *pt;
     char *pstat;
+
+    // 打印进度条时每隔print_interv打印一次
+    int size_bak = nr*ntp;
+    int last_barpercent = 0, barpercent;
 
     // printf("loop start, size=%d\n", *psize );
     char travt_stat;
@@ -247,13 +265,21 @@ HEAP_DATA * FastMarching_with_initial(
                     newdata= idx;
                     FMM_data = HeapPush(FMM_data, psize, pcap, newdata, NroIdx, TT);
                     *pstat = FMM_CLS;
-                    (pNdots)--;
+                    (*pNdots)--;
                 }
                 
             }
             // print_FMM_HEAP(FMM_data, *psize, nr, nt, np, NroIdx, TT, gTr, gTt, gTp);
 
         } 
+
+
+        // 打印进度条 
+        barpercent = 100 - (*pNdots*100) / size_bak;
+        if(printbar && barpercent != last_barpercent){
+            printprogressBar("Fast Marching...  ", barpercent);
+            last_barpercent = barpercent;
+        }
 
     }
 
@@ -436,6 +462,7 @@ HEAP_DATA * init_source_TT_refinegrid(
     int maxodr,  const float *Slw, float *TT, 
     char *FMM_stat, bool sphcoord,
     int rfgfac, int rfgn, // refine grid factor and number of grids
+    bool printbar,
     HEAP_DATA *FMM_data, int *psize, int *pcap, int *NroIdx, int *pNdots)
 {   
     double dr = (nr>1)? rs[1] - rs[0] : 0.0;
@@ -546,7 +573,7 @@ HEAP_DATA * init_source_TT_refinegrid(
         rfg_ts, rfg_nt, 
         rfg_ps, rfg_np,
         maxodr, rfg_Slw, rfg_TT,
-        rfg_FMM_stat, sphcoord, edgeStop, // break loop in advance
+        rfg_FMM_stat, sphcoord, edgeStop, printbar, // break loop in advance
         rfg_FMM_data, prfg_size, prfg_cap, rfg_NroIdx, &rfg_Ndots);
 
     // record result to main TT 

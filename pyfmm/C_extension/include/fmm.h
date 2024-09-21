@@ -33,6 +33,7 @@
  * @param     sphcoord  (in)是否使用球坐标
  * @param     rfgfac    (in)对于源点附近的格点间加密倍数，>1
  * @param     rfgn      (in)对于源点附近的格点间加密处理的辐射半径，>=1
+ * @param     printbar  (in)是否打印进度条
  * 
  * 
  */
@@ -43,7 +44,7 @@ void FastMarching(
     double rr,  double tt, double pp,
     int maxodr,  const float *Slw, 
     float *TT, bool sphcoord, 
-    int rfgfac, int rfgn);
+    int rfgfac, int rfgn, bool printbar);
 
 
 /**
@@ -61,6 +62,7 @@ void FastMarching(
  * @param     FMM_stat  (out)记录每个节点的状态(alive, close, far)
  * @param     sphcoord  (in)是否使用球坐标
  * @param     edgeStop  (in)是否在波前传播到6个边界面时提前结束计算
+ * @param     printbar  (in)是否打印进度条
  * @param     FMM_data  (inout)堆首指针
  * @param     psize     (inout)堆大小，会被调整大小
  * @param     pcap      (inout)堆最大容量，视情况会被调整大小
@@ -73,7 +75,7 @@ HEAP_DATA * FastMarching_with_initial(
     const double *ts, int nt, 
     const double *ps, int np,
     int maxodr,  const float *Slw, float *TT, 
-    char *FMM_stat, bool sphcoord, bool *edgeStop,
+    char *FMM_stat, bool sphcoord, bool *edgeStop, bool printbar,
     HEAP_DATA *FMM_data, int *psize, int *pcap, int *NroIdx, int *pNdots);
 
 
@@ -133,6 +135,7 @@ HEAP_DATA * init_source_TT(
  * @param     sphcoord  (in)是否使用球坐标
  * @param     rfgfac    (in)对于源点附近的格点间加密倍数，>1
  * @param     rfgn      (in)对于源点附近的格点间加密处理的辐射半径，>=1
+ * @param     printbar  (in)是否打印进度条
  * @param     FMM_data  (inout)堆首指针
  * @param     psize     (inout)堆大小，会被调整大小
  * @param     pcap      (inout)堆最大容量，视情况会被调整大小
@@ -149,6 +152,7 @@ HEAP_DATA * init_source_TT_refinegrid(
     int maxodr,  const float *Slw, float *TT, 
     char *FMM_stat, bool sphcoord,
     int rfgfac, int rfgn, // refine grid factor and number of grids
+    bool printbar,
     HEAP_DATA *FMM_data, int *psize, int *pcap, int *NroIdx, int *pNdots);
 
 

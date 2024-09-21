@@ -18,7 +18,7 @@ from .c_interfaces import C_FastMarching, C_FMM_raytracing
 def travel_time_source(
     srcloc:list, 
     xarr:np.ndarray, yarr:np.ndarray, zarr:np.ndarray, slw:np.ndarray,
-    maxodr:int=2, sphcoord:bool=False, rfgfac:int=0, rfgn:int=0):
+    maxodr:int=2, sphcoord:bool=False, rfgfac:int=0, rfgn:int=0, printbar:bool=False):
     r'''
         给定源点坐标，计算全局走时场
 
@@ -33,6 +33,7 @@ def travel_time_source(
         :param   sphcoord:    是否为球坐标系
         :param     rfgfac:    对于源点附近的格点间加密倍数，>1
         :param       rfgn:    对于源点附近的格点间加密处理的辐射半径，>=1
+        :param   printbar:    是否打印进度条
 
         :return:   三维走时场
     '''
@@ -67,7 +68,7 @@ def travel_time_source(
         xx, yy, zz,
         maxodr, c_slw, 
         c_TT, sphcoord,
-        rfgfac, rfgn
+        rfgfac, rfgn, printbar
     )
 
     return TT
@@ -77,7 +78,7 @@ def travel_time_source(
 def travel_time_iniTT(
     iniTT:np.ndarray,
     xarr:np.ndarray, yarr:np.ndarray, zarr:np.ndarray, slw:np.ndarray,
-    maxodr:int=2, sphcoord:bool=False):
+    maxodr:int=2, sphcoord:bool=False, printbar:bool=False):
     r'''
         给定走时场初始状态，计算全局走时场
 
@@ -90,6 +91,7 @@ def travel_time_iniTT(
         :param        slw:    形状为(nx, ny, nz)的三维慢度场
         :param     maxodr:    使用的最大差分阶数, 1 or 2 or 3
         :param   sphcoord:    是否为球坐标系
+        :param   printbar:    是否打印进度条 
 
         :return:   三维走时场
     '''
@@ -112,7 +114,7 @@ def travel_time_iniTT(
         0.0, 0.0, 0.0,
         maxodr, c_slw, 
         c_TT, sphcoord,
-        0, 0
+        0, 0, printbar
     )
 
     return TT_ravel.reshape(iniTT.shape)

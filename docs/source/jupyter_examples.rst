@@ -18,3 +18,4 @@ Jupyter 使用示例
    examples/02_random_model
    examples/03_spherical
    examples/04_distance
+   examples/05_uniform_source_refined

@@ -36,7 +36,7 @@ C_FastMarching.argtypes = [
     c_double, c_double, c_double, 
     c_int, PFLOAT,
     PFLOAT, c_bool,
-    c_int, c_int
+    c_int, c_int, c_bool
 ]
 
 
