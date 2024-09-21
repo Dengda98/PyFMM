@@ -35,7 +35,7 @@ Makefile位于 *C_extension/Makefile* ，你可以自定义你的编译器和编
 程序下载
 ----------
 
-`项目主页 <https://github.com/Dengda98/PyFMM>`_
+在 `Release <https://github.com/Dengda98/PyFMM/releases>`_ 页面下载压缩包，解压。
 
 
 程序安装
@@ -68,7 +68,7 @@ Makefile位于 *C_extension/Makefile* ，你可以自定义你的编译器和编
 
 2. 安装 **PyFMM**   
 
-直接运行pip安装命令  
+将压缩包解压后，进入目录，直接运行pip安装命令  
 ::
 
     pip install -v . 
