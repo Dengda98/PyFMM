@@ -7,10 +7,14 @@
 :Email:  zhudengda@mail.iggcas.ac.cn
 
 
-.. image:: ../../figs/output.png
-   :alt: 示例图片
-   :width: 500px
-   :align: center
+|pic1|   |pic2|
+
+.. |pic1| image:: ../../figs/output2.png
+   :width: 45%
+
+.. |pic2| image:: ../../figs/output3.png
+   :width: 45%
+
 
 -----------------------------------------------------------
 
