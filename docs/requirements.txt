@@ -10,4 +10,5 @@ sphinxcontrib-htmlhelp
 sphinxcontrib-jsmath
 nbsphinx==0.9
 graphviz==0.20
+setuptools-scm  # 自动从git tag中构建版本
 git+https://github.com/Dengda98/PyFMM.git  # 包本身

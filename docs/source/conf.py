@@ -8,6 +8,7 @@
 
 import sys, os, pathlib
 import subprocess 
+import setuptools_scm
 
 read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 
@@ -17,12 +18,6 @@ if read_the_docs_build:
 
 html_last_updated_fmt = '%b %d, %Y'
 
-# 引入版本信息
-version = os.getenv('READTHEDOCS_VERSION', 'local')
-release = version
-# version = "0.1"
-
-
 def setup(app):
     app.add_css_file('my_theme.css')  
 
@@ -30,8 +25,9 @@ def setup(app):
 project = 'PyFMM'
 copyright = '2023, Zhu Dengda'
 author = 'Zhu Dengda'
-release = 'v0.1'
-
+# 引入版本信息
+version = setuptools_scm.get_version(root='../..', relative_to=__file__)
+release = version
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
