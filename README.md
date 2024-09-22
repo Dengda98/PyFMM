@@ -32,20 +32,27 @@
 + C代码采取模块化编写，各功能分在不同代码文件中，方便移植到其它程序；
 
 
-+ 支持二维和三维情况；
++ 支持二维和三维情况；2D and 3D
 
 
-+ 支持直角坐标系和球坐标系；
++ 支持直角坐标系和球坐标系；Cartesian and Spherical Coordinate
 
 
 + 中文注释及示例；
 
+<br>
+
 # 下载 Downloads
 **建议在[Release](https://github.com/Dengda98/PyFMM/releases)中下载最新稳定版本**，不推荐clone，不推荐直接下载主分支。
+
+<br>
 
 # 文档 Documents
 为方便使用，我建立了[在线文档](https://pyfmm.readthedocs.io/zh-cn/latest/)，包括简易安装、API的介绍以及使用示例。  
 
+<br>
+
+
 # 其它
-代码是我在初学时写的，如果遇到bug，欢迎联系我，我会完善！
+代码是我在研二写的，如果遇到bug，欢迎联系我，我会完善！
 也欢迎提出建议和更多示例！
