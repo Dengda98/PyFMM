@@ -1,7 +1,24 @@
-# ***PyFMM***
-[![Documentation Status](https://readthedocs.org/projects/pyfmm/badge/?version=latest)](https://pyfmm.readthedocs.io/zh-cn/latest/?badge=latest)    [![DOI](https://zenodo.org/badge/860537381.svg)](https://zenodo.org/doi/10.5281/zenodo.13823187)
 
-![图片](./figs/output.png)
+<h1 align="center"><b><i>PyFMM</i></b></h1>
+
+<p align="center">
+  <a href="https://pyfmm.readthedocs.io/zh-cn/latest/?badge=latest">
+    <img src="https://readthedocs.org/projects/pyfmm/badge/?version=latest" alt="Documentation Status" />
+  </a>
+  <a href="https://zenodo.org/doi/10.5281/zenodo.13823187">
+    <img src="https://zenodo.org/badge/860537381.svg" alt="DOI" />
+  </a>
+
+</p>
+
+
+<p align="center">
+  <img src="./figs/output2.png" alt="Image 2" width="55%" />
+  <img src="./figs/output3.png" alt="Image 3" width="42%" />
+</p>
+
+<!-- ![图片](./figs/output.png)
+![图片](./figs/output2.png) -->
 
 **PyFMM**是一个基于Fast Marching Method求解程函方程 $|\nabla T|^2 = s^2$ 的C/Python程序包，包括示例和注释。  
 **PyFMM** is a C/Python package for solving eikonal equation using Fast Marching Method, with examples and annotations.  

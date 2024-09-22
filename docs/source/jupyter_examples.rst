@@ -16,6 +16,7 @@ Jupyter 使用示例
 
    examples/01_uniform
    examples/02_random_model
+   examples/02_cplxmodel_raytracing
    examples/03_spherical
    examples/04_distance
    examples/05_uniform_source_refined
