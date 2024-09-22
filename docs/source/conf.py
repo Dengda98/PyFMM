@@ -16,7 +16,11 @@ if read_the_docs_build:
 
 
 html_last_updated_fmt = '%b %d, %Y'
-version = "0.1"
+
+# 引入版本信息
+version = os.getenv('READTHEDOCS_VERSION', 'local')
+release = version
+# version = "0.1"
 
 
 def setup(app):
