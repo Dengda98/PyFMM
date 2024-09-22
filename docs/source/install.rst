@@ -35,7 +35,8 @@ Makefile位于 *C_extension/Makefile* ，你可以自定义你的编译器和编
 程序下载
 ----------
 
-在 `Release <https://github.com/Dengda98/PyFMM/releases>`_ 页面下载压缩包，解压。
+**建议在** `Release <https://github.com/Dengda98/PyFMM/releases>`_ **中下载最新稳定版本**，
+不推荐clone，不推荐直接下载主分支。
 
 
 程序安装
