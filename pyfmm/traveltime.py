@@ -24,6 +24,8 @@ def travel_time_source(
 
         .. note::  最大差分阶数maxodr不建议取3，会有数值不稳定导致结果偏差的情况。默认取2。
 
+        .. warning::  源点附近加密网格的方法不稳定，效果时好时坏，不建议使用。
+
         :param     srcloc:    源点坐标，直角坐标系 :math:`(x,y,z)` 或球坐标系 :math:`(r,\theta,\phi)` 
         :param       xarr:    :math:`x` 或 :math:`r` 节点坐标数组，要求等距升序排列 
         :param       yarr:    :math:`y` 或 :math:`\theta` 节点坐标数组，要求等距升序排列 
