@@ -1,5 +1,5 @@
 
-<h1 align="center"><b><i>PyFMM</i></b></h1>
+<h1 align="center", style="font-size: 45px;">><b><i>PyFMM</i></b></h1>
 
 <p align="center">
   <a href="https://pyfmm.readthedocs.io/zh-cn/latest/?badge=latest">
