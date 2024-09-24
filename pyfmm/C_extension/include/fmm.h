@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "const.h"
+
 #define _PRINT_ODR_BUG_ 0
 
 #define FMM_FAR -1   ///< 波前还未触及的区域
@@ -42,8 +44,8 @@ void FastMarching(
     const double *ts, int nt, 
     const double *ps, int np,
     double rr,  double tt, double pp,
-    int maxodr,  const float *Slw, 
-    float *TT, bool sphcoord, 
+    int maxodr,  const MYREAL *Slw, 
+    MYREAL *TT, bool sphcoord, 
     int rfgfac, int rfgn, bool printbar);
 
 
@@ -74,7 +76,7 @@ HEAP_DATA * FastMarching_with_initial(
     const double *rs, int nr, 
     const double *ts, int nt, 
     const double *ps, int np,
-    int maxodr,  const float *Slw, float *TT, 
+    int maxodr,  const MYREAL *Slw, MYREAL *TT, 
     char *FMM_stat, bool sphcoord, bool *edgeStop, bool printbar,
     HEAP_DATA *FMM_data, int *psize, int *pcap, int *NroIdx, int *pNdots);
 
@@ -110,7 +112,7 @@ HEAP_DATA * init_source_TT(
     const double *ts, int nt, 
     const double *ps, int np,
     double rr, double tt, double pp,
-    const float *Slw, float *TT, 
+    const MYREAL *Slw, MYREAL *TT, 
     char *FMM_stat, bool sphcoord,
     HEAP_DATA *FMM_data, int *psize, int *pcap, int *NroIdx, int *pNdots);
 
@@ -149,7 +151,7 @@ HEAP_DATA * init_source_TT_refinegrid(
     const double *ts, int nt, 
     const double *ps, int np,
     double rr, double tt, double pp, 
-    int maxodr,  const float *Slw, float *TT, 
+    int maxodr,  const MYREAL *Slw, MYREAL *TT, 
     char *FMM_stat, bool sphcoord,
     int rfgfac, int rfgn, // refine grid factor and number of grids
     bool printbar,
@@ -180,10 +182,10 @@ HEAP_DATA * init_source_TT_refinegrid(
  * @return     走时结果
  * 
  */
-float get_neighbour_travt(
+MYREAL get_neighbour_travt(
     int nr, int nt, int np, int ntp,
     int ir, int it, int ip, int idx,
-    int maxodr, float *TT,
+    int maxodr, MYREAL *TT,
     char *FMM_stat,  double s,
     double dr, double dt, double dp, 
     char *stat);
@@ -215,11 +217,11 @@ float get_neighbour_travt(
  * @return    射线走时
  * 
  */
-float FMM_raytracing(
+MYREAL FMM_raytracing(
     const double *rs, int nr, 
     const double *ts, int nt, 
     const double *ps, int np,
     double r0, double t0, double p0,
     double rr, double tt, double pp, double seglen, double segfac,
-    const float *TT, bool sphcoord,
+    const MYREAL *TT, bool sphcoord,
     double *rays, int *N);

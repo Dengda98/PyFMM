@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include "const.h"
 
 typedef int HEAP_DATA;
 
@@ -23,7 +24,7 @@ typedef int HEAP_DATA;
  * 
  * 
  */
-void MinHeap_AdjustUp(HEAP_DATA * HEAP_data, int child, int *NroIdx, const float *TT);
+void MinHeap_AdjustUp(HEAP_DATA * HEAP_data, int child, int *NroIdx, const MYREAL *TT);
 
 
 
@@ -38,7 +39,7 @@ void MinHeap_AdjustUp(HEAP_DATA * HEAP_data, int child, int *NroIdx, const float
  * 
  * 
  */
-void MinHeap_AdjustDown(HEAP_DATA * HEAP_data, int size, int root, int *NroIdx, const float *TT);
+void MinHeap_AdjustDown(HEAP_DATA * HEAP_data, int size, int root, int *NroIdx, const MYREAL *TT);
 
 
 /**
@@ -52,7 +53,7 @@ void MinHeap_AdjustDown(HEAP_DATA * HEAP_data, int size, int root, int *NroIdx, 
  * @return     堆首元素
  * 
  */
-HEAP_DATA HeapPop(HEAP_DATA *HEAP_data, int *psize, int *NroIdx, const float *TT);
+HEAP_DATA HeapPop(HEAP_DATA *HEAP_data, int *psize, int *NroIdx, const MYREAL *TT);
 
 
 /**
@@ -68,7 +69,7 @@ HEAP_DATA HeapPop(HEAP_DATA *HEAP_data, int *psize, int *NroIdx, const float *TT
  * @return     堆首指针
  * 
  */
-HEAP_DATA * HeapPush(HEAP_DATA *HEAP_data, int *psize, int *pcap, HEAP_DATA newdata, int *NroIdx, const float *TT);
+HEAP_DATA * HeapPush(HEAP_DATA *HEAP_data, int *psize, int *pcap, HEAP_DATA newdata, int *NroIdx, const MYREAL *TT);
 
 
 /**
@@ -82,7 +83,7 @@ HEAP_DATA * HeapPush(HEAP_DATA *HEAP_data, int *psize, int *pcap, HEAP_DATA newd
  * 
  * 
  */
-void HeapBuild(HEAP_DATA * HEAP_data, int size, int idx, int *NroIdx, const float *TT);
+void HeapBuild(HEAP_DATA * HEAP_data, int size, int idx, int *NroIdx, const MYREAL *TT);
 
 
 /**
@@ -103,6 +104,6 @@ inline void Swap(HEAP_DATA * data1, HEAP_DATA * data2){
  */
 void print_HEAP(
     HEAP_DATA * data, int size, int nr, int nt, int np, int *NroIdx, 
-    float *TT, float *gTr, float *gTt, float *gTp);
+    MYREAL *TT, MYREAL *gTr, MYREAL *gTt, MYREAL *gTp);
 
 

@@ -14,3 +14,6 @@
 #define RAD1 57.29577951308232     ///< \f$ \frac{180}{\pi} \f$
 #define DEG1 0.017453292519943295  ///< \f$ \frac{\pi}{180} \f$
 #define KM1DEG 111.194926644       ///< \f$ R_{e} \times \frac{\pi}{180} \f$
+
+
+typedef double MYREAL;   ///< 单精度 or 双精度

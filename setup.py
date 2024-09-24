@@ -33,7 +33,7 @@ setup(
     name='pyfmm',
     use_scm_version=True,  # 自动使用 Git 标签作为版本号
     setup_requires=['setuptools-scm'],
-    description='Your package description',
+    description='A C/Python package for solving eikonal equation using Fast Marching Method',
     author='Zhu Dengda',
     author_email='zhudengda@mail.iggcas.ac.cn',
     packages=find_packages(),

@@ -9,38 +9,39 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "const.h"
 #include "diff.h"
 
 
 
-void get_diff_odr1(const float *pt, double h, double *acoef, double *bcoef, double *diff){
-    float a = 1/h;
-    float b = pt[1]/h;
+void get_diff_odr1(const MYREAL *pt, double h, double *acoef, double *bcoef, double *diff){
+    MYREAL a = 1.0/h;
+    MYREAL b = pt[1]/h;
     if(acoef!=NULL) *acoef = a;
     if(bcoef!=NULL) *bcoef = b;
     if(diff!=NULL)  *diff = a*pt[0] - b;
 }
 
 
-void get_diff_odr2(const float *pt, double h, double *acoef, double *bcoef, double *diff){
-    float a =  3/(2*h);
-    float b =  (4*pt[1] - pt[2])/(2*h);
+void get_diff_odr2(const MYREAL *pt, double h, double *acoef, double *bcoef, double *diff){
+    MYREAL a =  3.0/(2.0*h);
+    MYREAL b =  (4.0*pt[1] - pt[2])/(2.0*h);
     if(acoef!=NULL) *acoef = a;
     if(bcoef!=NULL) *bcoef = b;
     if(diff!=NULL)  *diff = a*pt[0] - b;
 }
 
 
-void get_diff_odr3(const float *pt, double h, double *acoef, double *bcoef, double *diff){
-    float a =  11/(6*h);
-    float b =  (18*pt[1] - 9*pt[2] + 2*pt[3])/(6*h);
+void get_diff_odr3(const MYREAL *pt, double h, double *acoef, double *bcoef, double *diff){
+    MYREAL a =  11.0/(6.0*h);
+    MYREAL b =  (18.0*pt[1] - 9.0*pt[2] + 2.0*pt[3])/(6.0*h);
     if(acoef!=NULL) *acoef = a;
     if(bcoef!=NULL) *bcoef = b;
     if(diff!=NULL)  *diff = a*pt[0] - b;
 }
 
 
-void get_diff_odr123(int odr, const float *pt, double h, double *acoef, double *bcoef, double *diff){
+void get_diff_odr123(int odr, const MYREAL *pt, double h, double *acoef, double *bcoef, double *diff){
     if(odr==0){
         if(acoef!=NULL) *acoef = 0.0;
         if(bcoef!=NULL) *bcoef = 0.0;

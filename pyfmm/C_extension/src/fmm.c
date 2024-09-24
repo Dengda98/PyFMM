@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-
+#include "const.h"
 #include "interp.h"
 #include "query.h"
 #include "coord.h"
@@ -32,8 +32,8 @@ void FastMarching(
     const double *ts, int nt, 
     const double *ps, int np,
     double rr,  double tt, double pp,
-    int maxodr,  const float *Slw, 
-    float *TT, bool sphcoord, 
+    int maxodr,  const MYREAL *Slw, 
+    MYREAL *TT, bool sphcoord, 
     int rfgfac, int rfgn, bool printbar)
 {
     // 程序运行开始时间
@@ -120,7 +120,7 @@ HEAP_DATA * FastMarching_with_initial(
     const double *rs, int nr, 
     const double *ts, int nt, 
     const double *ps, int np,
-    int maxodr,  const float *Slw, float *TT, 
+    int maxodr,  const MYREAL *Slw, MYREAL *TT, 
     char *FMM_stat, bool sphcoord, bool *edgeStop, bool printbar,
     HEAP_DATA *FMM_data, int *psize, int *pcap, int *NroIdx, int *pNdots)
 {
@@ -148,11 +148,11 @@ HEAP_DATA * FastMarching_with_initial(
     int ir0, it0, ip0, ir, it, ip;
     int ir1, it1, ip1;
     int idx, idx0;
-    double s;
-    float travt_bak, travt, travt0, travt1;
+    MYREAL s;
+    MYREAL travt_bak, travt, travt0, travt1;
     double h;
 
-    float *pt;
+    MYREAL *pt;
     char *pstat;
 
     // 打印进度条时每隔print_interv打印一次
@@ -161,7 +161,7 @@ HEAP_DATA * FastMarching_with_initial(
 
     // printf("loop start, size=%d\n", *psize );
     char travt_stat;
-    float maxtravt=-999;
+    MYREAL maxtravt=-999;
     while(*psize > 0){
 
         // get the minimum one 
@@ -296,7 +296,7 @@ HEAP_DATA * init_source_TT(
     const double *ts, int nt, 
     const double *ps, int np,
     double rr, double tt, double pp,
-    const float *Slw, float *TT, 
+    const MYREAL *Slw, MYREAL *TT, 
     char *FMM_stat, bool sphcoord,
     HEAP_DATA *FMM_data, int *psize, int *pcap, int *NroIdx, int *pNdots)
 {   
@@ -316,7 +316,7 @@ HEAP_DATA * init_source_TT(
     
 
     HEAP_DATA newdata;
-    float travt, s;
+    MYREAL travt, s;
     int jr, jt, jp;
     int jdx;
     double dist;
@@ -324,7 +324,7 @@ HEAP_DATA * init_source_TT(
     double x2, y2, z2;
     double dx, dy, dz;
     
-    float mtravt=9.9e30;
+    MYREAL mtravt=9.9e30;
     int mir, mit, mip, midx;  // 最小走时节点的索引
 
     // Tiny 2x2x2 cube
@@ -459,7 +459,7 @@ HEAP_DATA * init_source_TT_refinegrid(
     const double *ts, int nt, 
     const double *ps, int np,
     double rr, double tt, double pp, 
-    int maxodr,  const float *Slw, float *TT, 
+    int maxodr,  const MYREAL *Slw, MYREAL *TT, 
     char *FMM_stat, bool sphcoord,
     int rfgfac, int rfgn, // refine grid factor and number of grids
     bool printbar,
@@ -527,8 +527,8 @@ HEAP_DATA * init_source_TT_refinegrid(
         rfg_ps[i] = ps[rfg_ip1] + rfg_dp*i;
     }
 
-    float *rfg_TT = (float *)malloc1d(rfg_nrtp, sizeof(float));
-    float *rfg_Slw = (float *)malloc1d(rfg_nrtp, sizeof(float));
+    MYREAL *rfg_TT = (MYREAL *)malloc1d(rfg_nrtp, sizeof(MYREAL));
+    MYREAL *rfg_Slw = (MYREAL *)malloc1d(rfg_nrtp, sizeof(MYREAL));
     char *rfg_FMM_stat = (char *)malloc1d(rfg_nrtp, sizeof(char)); // 1 alive, 0 close, -1 far
     
     // 插值加密的慢度场
@@ -625,10 +625,10 @@ HEAP_DATA * init_source_TT_refinegrid(
 
 
 
-float get_neighbour_travt(
+MYREAL get_neighbour_travt(
     int nr, int nt, int np, int ntp,
     int ir, int it, int ip, int idx,
-    int maxodr, float *TT,
+    int maxodr, MYREAL *TT,
     char *FMM_stat,  double s,
     double dr, double dt, double dp, 
     char *stat)
@@ -639,7 +639,7 @@ float get_neighbour_travt(
     Acoef = Bcoef = 0.0;
     Ccoef = - s*s;
 
-    float tarr[5], tarrR[5], tarrT[5], tarrP[5]; // max(maxodr) = 3
+    MYREAL tarr[5], tarrR[5], tarrT[5], tarrP[5]; // max(maxodr) = 3
     tarr[0] = tarrR[0] = tarrT[0] = tarrP[0] = TT[idx];
     int odr, odrR, odrT, odrP;
     odr = odrR = odrT = odrP = 0;
@@ -799,7 +799,7 @@ float get_neighbour_travt(
     // getchar();
     }
 #endif
-    return (Bcoef + jdg)/(2*Acoef);
+    return (Bcoef + jdg)/(2.0*Acoef);
 
 }
 
@@ -807,14 +807,14 @@ float get_neighbour_travt(
 
 
 
-float FMM_raytracing(
+MYREAL FMM_raytracing(
     const double *rs, int nr, 
     const double *ts, int nt, 
     const double *ps, int np,
     double r0, double t0, double p0,
     double rr, double tt, double pp, double seglen, double segfac,
-    const float *TT, bool sphcoord,
-    // float *gTr, float *gTt, float *gTp, 
+    const MYREAL *TT, bool sphcoord,
+    // MYREAL *gTr, MYREAL *gTt, MYREAL *gTp, 
     double *rays, int *N)
 {
     double dr = (nr>1)? rs[1] - rs[0] : 1e-6;
@@ -879,13 +879,13 @@ float FMM_raytracing(
     }
     norm = sqrt(gtr*gtr + gtt*gtt + gtp*gtp);
     if(norm <= 1e-2) norm = 1e-2;
-    float limt = limitdist * norm;
+    MYREAL limt = limitdist * norm;
     // printf("FMM, limitdist=%f, v=%f\n", limitdist ,norm);
 
-    float travt = trilinear_one_ravel(
+    MYREAL travt = trilinear_one_ravel(
         rs, nr, ts, nt, ps, np, ntp, TT, r1, t1, p1, 
         &gtr, &gtt, &gtp, NULL, NULL);
-    float trem = travt, trem1;
+    MYREAL trem = travt, trem1;
 
     // normalize gradient
     gtr /= dr; 

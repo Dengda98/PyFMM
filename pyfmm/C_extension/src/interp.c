@@ -10,14 +10,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "const.h"
 #include "interp.h"
 #include "index.h"
 #include "query.h"
 
 
 
-float trilinear_one_ravel(
-    const double *x, int nx, const double *y, int ny, const double *z, int nz, int nyz, const float *values, 
+MYREAL trilinear_one_ravel(
+    const double *x, int nx, const double *y, int ny, const double *z, int nz, int nyz, const MYREAL *values, 
     double xi, double yi, double zi, double *pdiffx, double *pdiffy, double *pdiffz, 
     int IXYZ[6], double WGHT[2][2][2])
 {
@@ -123,8 +124,8 @@ void trilinear_one_fac(
 }
 
 
-float trilinear_one_Idx_ravel(
-    const int IXYZ[6], const double WGHT[2][2][2],  const float *values, int nx, int ny, int nz, int nyz, 
+MYREAL trilinear_one_Idx_ravel(
+    const int IXYZ[6], const double WGHT[2][2][2],  const MYREAL *values, int nx, int ny, int nz, int nyz, 
     double *pdiffx, double *pdiffy, double *pdiffz)
 {
     int ix, ix1, iy, iy1, iz, iz1;

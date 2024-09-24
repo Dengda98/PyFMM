@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "const.h"
+
 
 /**
  * 将三维数据展平进行三次线性插值
@@ -31,8 +33,8 @@
  * @return    插值结果
  * 
  */
-float trilinear_one_ravel(
-    const double *x, int nx, const double *y, int ny, const double *z, int nz, int nyz, const float *values, 
+MYREAL trilinear_one_ravel(
+    const double *x, int nx, const double *y, int ny, const double *z, int nz, int nyz, const MYREAL *values, 
     double xi, double yi, double zi, double *pdiffx, double *pdiffy, double *pdiffz, 
     int IXYZ[6], double WGHT[2][2][2]);
 
@@ -75,6 +77,6 @@ void trilinear_one_fac(
  * @return    插值结果
  * 
  */
-float trilinear_one_Idx_ravel(
-    const int IXYZ[6], const double WGHT[2][2][2],  const float *values, int nx, int ny, int nz, int nyz, 
+MYREAL trilinear_one_Idx_ravel(
+    const int IXYZ[6], const double WGHT[2][2][2],  const MYREAL *values, int nx, int ny, int nz, int nyz, 
     double *pdiffx, double *pdiffy, double *pdiffz);

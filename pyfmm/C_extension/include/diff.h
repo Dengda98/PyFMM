@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "const.h"
+
 
 /**
  * 一阶差分,  \f$ \frac{T-T_{i-1}}{h} \f$ , 形成 \f$ aT-b \f$ 的形式 
@@ -17,7 +19,7 @@
  * @param    bcoef   (out)系数结果b
  * @param    diff    (out) \f$ aT-b \f$ 值
  */
-void get_diff_odr1(const float *pt, double h, double *acoef, double *bcoef, double *diff);
+void get_diff_odr1(const MYREAL *pt, double h, double *acoef, double *bcoef, double *diff);
 
 
 /**
@@ -29,7 +31,7 @@ void get_diff_odr1(const float *pt, double h, double *acoef, double *bcoef, doub
  * @param    bcoef   (out)系数结果b
  * @param    diff    (out) \f$ aT-b \f$ 值
  */
-void get_diff_odr2(const float *pt, double h, double *acoef, double *bcoef, double *diff);
+void get_diff_odr2(const MYREAL *pt, double h, double *acoef, double *bcoef, double *diff);
 
 
 /**
@@ -41,7 +43,7 @@ void get_diff_odr2(const float *pt, double h, double *acoef, double *bcoef, doub
  * @param    bcoef   (out)系数结果b
  * @param    diff    (out) \f$ aT-b \f$ 值
  */
-void get_diff_odr3(const float *pt, double h, double *acoef, double *bcoef, double *diff);
+void get_diff_odr3(const MYREAL *pt, double h, double *acoef, double *bcoef, double *diff);
 
 
 /**
@@ -54,4 +56,4 @@ void get_diff_odr3(const float *pt, double h, double *acoef, double *bcoef, doub
  * @param    bcoef   (out)系数结果b
  * @param    diff    (out) \f$ aT-b \f$ 值
  */
-void get_diff_odr123(int odr, const float *pt, double h, double *acoef, double *bcoef, double *diff);
+void get_diff_odr123(int odr, const MYREAL *pt, double h, double *acoef, double *bcoef, double *diff);

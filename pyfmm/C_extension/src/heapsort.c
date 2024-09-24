@@ -10,11 +10,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "const.h"
 #include "heapsort.h"
 #include "index.h"
 
 
-void MinHeap_AdjustUp(HEAP_DATA * HEAP_data, int child, int *NroIdx, const float *TT){
+void MinHeap_AdjustUp(HEAP_DATA * HEAP_data, int child, int *NroIdx, const MYREAL *TT){
     int parent = (child-1)/2; 
     int idx;
     HEAP_DATA *pdata1, *pdata2;
@@ -33,7 +34,7 @@ void MinHeap_AdjustUp(HEAP_DATA * HEAP_data, int child, int *NroIdx, const float
     }
 }
 
-void MinHeap_AdjustDown(HEAP_DATA * HEAP_data, int size, int root, int *NroIdx, const float *TT){
+void MinHeap_AdjustDown(HEAP_DATA * HEAP_data, int size, int root, int *NroIdx, const MYREAL *TT){
     int parent = root;
     int child = parent*2 + 1;
     int idx;
@@ -58,7 +59,7 @@ void MinHeap_AdjustDown(HEAP_DATA * HEAP_data, int size, int root, int *NroIdx, 
     }
 }
 
-HEAP_DATA HeapPop(HEAP_DATA *HEAP_data, int *psize, int *NroIdx, const float *TT){
+HEAP_DATA HeapPop(HEAP_DATA *HEAP_data, int *psize, int *NroIdx, const MYREAL *TT){
     HEAP_DATA popdata = HEAP_data[0];
     int idx;
     if(NroIdx!=NULL){
@@ -72,7 +73,7 @@ HEAP_DATA HeapPop(HEAP_DATA *HEAP_data, int *psize, int *NroIdx, const float *TT
     return popdata;
 }
 
-HEAP_DATA * HeapPush(HEAP_DATA *HEAP_data, int *psize, int *pcap, HEAP_DATA newdata, int *NroIdx, const float *TT){
+HEAP_DATA * HeapPush(HEAP_DATA *HEAP_data, int *psize, int *pcap, HEAP_DATA newdata, int *NroIdx, const MYREAL *TT){
     if(*psize == *pcap){
         int newcap = (*pcap==0)? 8 : (*pcap)*2;
         HEAP_DATA *HEAP_data0 = realloc(HEAP_data, sizeof(HEAP_DATA)*newcap);
@@ -93,7 +94,7 @@ HEAP_DATA * HeapPush(HEAP_DATA *HEAP_data, int *psize, int *pcap, HEAP_DATA newd
     return HEAP_data;
 }
 
-void HeapBuild(HEAP_DATA * HEAP_data, int size, int idx, int *NroIdx, const float *TT){
+void HeapBuild(HEAP_DATA * HEAP_data, int size, int idx, int *NroIdx, const MYREAL *TT){
     for(int i=(idx-1)/2; i>=0; --i){
         MinHeap_AdjustDown(HEAP_data, size, i, NroIdx, TT);
     }
@@ -105,7 +106,7 @@ void HeapBuild(HEAP_DATA * HEAP_data, int size, int idx, int *NroIdx, const floa
  */
 void print_HEAP(
     HEAP_DATA * data, int size, int nr, int nt, int np, int *NroIdx, 
-    float *TT, float *gTr, float *gTt, float *gTp)
+    MYREAL *TT, MYREAL *gTr, MYREAL *gTt, MYREAL *gTp)
 {
     int ir, it, ip;
     

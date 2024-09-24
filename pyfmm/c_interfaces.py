@@ -10,9 +10,23 @@
 import os
 from ctypes import *
 
-PDOUBLE = POINTER(c_double)
-PFLOAT = POINTER(c_float)
-PINT = POINTER(c_int)
+__all__ = [
+    'USE_FLOAT',
+    'NPCT_REAL_TYPE',
+    'C_FastMarching',
+    'C_FMM_raytracing'
+]
+
+USE_FLOAT = False
+"""libfmm库中走时和慢度数组是否使用单精度浮点数"""
+
+NPCT_REAL_TYPE = 'f4' if USE_FLOAT else 'f8'
+
+REAL = c_float if USE_FLOAT else c_double
+PREAL = POINTER(REAL)
+PDOUBLE= POINTER(c_double)
+PINT= POINTER(c_int)
+
 
 libfmm = cdll.LoadLibrary(
     os.path.join(
@@ -34,8 +48,8 @@ C_FastMarching.argtypes = [
     PDOUBLE, c_int,
     PDOUBLE, c_int,
     c_double, c_double, c_double, 
-    c_int, PFLOAT,
-    PFLOAT, c_bool,
+    c_int, PREAL,
+    PREAL, c_bool,
     c_int, c_int, c_bool
 ]
 
@@ -47,6 +61,6 @@ C_FMM_raytracing.argtypes = [
     PDOUBLE, c_int,
     c_double, c_double, c_double, 
     c_double, c_double, c_double, c_double, c_double, 
-    PFLOAT, c_bool,
+    PREAL, c_bool,
     PDOUBLE, PINT
 ]
