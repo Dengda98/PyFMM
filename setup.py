@@ -3,7 +3,8 @@ from setuptools.command.build_ext import build_ext as build_ext_orig
 from setuptools.command.develop import develop as develop_orig
 from setuptools.command.install import install as install_orig
 import subprocess
-import sys
+import os, sys
+
 
 class BuildExt(build_ext_orig):
     def run(self):
@@ -29,10 +30,16 @@ class Develop(develop_orig):
         super().run()
 
 
+# 读取版本号
+def read_version():
+    version_file = os.path.join('pyfmm', '_version.py')
+    with open(version_file) as f:
+        exec(f.read())
+    return locals()['__version__']
+
 setup(
     name='pyfmm',
-    use_scm_version=True,  # 自动使用 Git 标签作为版本号
-    setup_requires=['setuptools-scm'],
+    version=read_version(),
     description='A C/Python package for solving eikonal equation using Fast Marching Method',
     author='Zhu Dengda',
     author_email='zhudengda@mail.iggcas.ac.cn',

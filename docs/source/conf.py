@@ -22,11 +22,18 @@ def setup(app):
     app.add_css_file('my_theme.css')  
 
 
+# 读取版本号
+def read_version():
+    version_file = os.path.join('../../pyfmm', '_version.py')
+    with open(version_file) as f:
+        exec(f.read())
+    return locals()['__version__']
+
 project = 'PyFMM'
 copyright = '2023, Zhu Dengda'
 author = 'Zhu Dengda'
 # 引入版本信息
-version = setuptools_scm.get_version(root='../..', relative_to=__file__)
+version = read_version()
 release = version
 
 # -- General configuration ---------------------------------------------------
