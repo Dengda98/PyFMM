@@ -11,4 +11,4 @@ sphinxcontrib-jsmath==1.0
 nbsphinx==0.9
 graphviz==0.20
 setuptools-scm==8.1  # 自动从git tag中构建版本
-.  # 库本身
+git+https://github.com/Dengda98/PyFMM.git  # 库本身，重新拉取一遍
