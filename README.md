@@ -17,11 +17,15 @@
   <img src="./figs/output3.png" alt="Image 3" width="42%" />
 </p>
 
-<!-- ![图片](./figs/output.png)
-![图片](./figs/output2.png) -->
+**欢迎Star！**
 
 **PyFMM**是一个基于Fast Marching Method求解程函方程 $|\nabla T|^2 = s^2$ 的C/Python程序包，包括示例和注释。  
 **PyFMM** is a C/Python package for solving eikonal equation using Fast Marching Method, with examples and annotations.  
+
+我主要使用该代码计算地震波从震源出发在复杂介质中传播形成的初至波走时场，
+并使用梯度下降获得满足费马原理的射线路径，故代码中的一些术语偏专业性。
+类似的原理也可用于其它方面，如计算点到曲线/面的距离，或光学、电磁学等。
+
 
 + **Python语言的便携、可扩展性与C语言的计算高效特点结合**。
   C程序被编译链接成动态库 *libfmm.so* ，**PyFMM** 再基于Python的 [ctypes](https://docs.python.org/3/library/ctypes.html)
