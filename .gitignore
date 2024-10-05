@@ -3,7 +3,6 @@
 /*.egg-info
 /docs/build
 /docs/doxygen_h
-/pyfmm/_version.py
 
 /pyfmm/__pycache__
 /pyfmm/C_extension/build
