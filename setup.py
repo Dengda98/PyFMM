@@ -44,7 +44,7 @@ setup(
     author='Zhu Dengda',
     author_email='zhudengda@mail.iggcas.ac.cn',
     packages=find_packages(),
-    package_data={'pyfmm': ['./C_extension/lib/libfmm.so']},
+    package_data={'pyfmm': ['./C_extension/lib/libfmm_float.so', './C_extension/lib/libfmm_double.so']},
     include_package_data=True,
     cmdclass={
         'build_ext': BuildExt,
