@@ -23,6 +23,11 @@ C_FastMarching:Any = None
 C_FMM_raytracing:Any = None
 
 def load_c_lib(use_float:bool=False):
+    r'''
+        加载单精度或双精度的C库，修改c_interfaces下的NPCT_REAL_TYPE变量和C函数接口
+
+        :param       use_float:    是否使用单精度
+    '''
     global USE_FLOAT, NPCT_REAL_TYPE, C_FastMarching, C_FMM_raytracing
 
     USE_FLOAT = use_float
