@@ -15,5 +15,8 @@
 #define DEG1 0.017453292519943295  ///< \f$ \frac{\pi}{180} \f$
 #define KM1DEG 111.194926644       ///< \f$ R_{e} \times \frac{\pi}{180} \f$
 
-
-typedef double MYREAL;   ///< 单精度 or 双精度
+#ifdef USE_FLOAT
+typedef float MYREAL;   ///< 单精度 or 双精度
+#else
+typedef double MYREAL;
+#endif

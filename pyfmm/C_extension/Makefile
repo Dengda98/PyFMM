@@ -1,39 +1,52 @@
-
 SRC_DIR = ./src
 INC_DIR = ./include
 BUILD_DIR = ./build
+BUILD_DIR_FLOAT = $(BUILD_DIR)/float
+BUILD_DIR_DOUBLE = $(BUILD_DIR)/double
 LIB_DIR = ./lib
 LIB_NAME = $(LIB_DIR)/libfmm
 LIB_EXT = .so
 
-# 
 CC = gcc
 CFLAGS =  -O3 -g -ffast-math -march=native -mtune=native -fPIC -Wimplicit-function-declaration -I$(INC_DIR)  -lm  # -fsanitize=address -lasan
 LDFLAGS = -shared -lm # -lasan
+
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 INCS = $(wildcard $(INC_DIR)/*.h)
-OBJS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))
+
+# 不同版本的目标文件目录
+OBJS_FLOAT = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR_FLOAT)/%.o, $(SRCS))
+OBJS_DOUBLE = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR_DOUBLE)/%.o, $(SRCS))
+
+# 生成的库名称
+TARGET_FLOAT = $(LIB_NAME)_float$(LIB_EXT)
+TARGET_DOUBLE = $(LIB_NAME)_double$(LIB_EXT)
 
 .PHONY: all clean
 
-TARGET = $(LIB_NAME)$(LIB_EXT)
+all: $(TARGET_FLOAT) $(TARGET_DOUBLE)
 
-all: $(TARGET)
-
-# 链接动态库
-# 编译语句中顺序很关键，否则链接不上库
-$(TARGET): $(OBJS)
-	@mkdir -p $(BUILD_DIR)
+# 链接动态库，生成 float 版本
+$(TARGET_FLOAT): $(OBJS_FLOAT)
 	@mkdir -p $(LIB_DIR)
 	$(CC) -o $@ $^ $(LDFLAGS)
-	
 
-# 编译目标文件
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(INCS)
-	@mkdir -p $(BUILD_DIR)
-	$(CC)  -o $@ -c $< $(CFLAGS)
+# 链接动态库，生成 double 版本
+$(TARGET_DOUBLE): $(OBJS_DOUBLE)
+	@mkdir -p $(LIB_DIR)
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+# 编译 float 版本的目标文件
+$(BUILD_DIR_FLOAT)/%.o: $(SRC_DIR)/%.c $(INCS)
+	@mkdir -p $(BUILD_DIR_FLOAT)
+	$(CC) -o $@ -c $< $(CFLAGS) -DUSE_FLOAT
+
+# 编译 double 版本的目标文件
+$(BUILD_DIR_DOUBLE)/%.o: $(SRC_DIR)/%.c $(INCS)
+	@mkdir -p $(BUILD_DIR_DOUBLE)
+	$(CC) -o $@ -c $< $(CFLAGS)
 
 # 清理
 clean:
-	rm -rf $(BUILD_DIR)
-	rm -f $(TARGET)
+	rm -rf $(BUILD_DIR_FLOAT) $(BUILD_DIR_DOUBLE)
+	rm -f $(TARGET_FLOAT) $(TARGET_DOUBLE)

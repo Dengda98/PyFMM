@@ -1,3 +1,7 @@
+from .c_interfaces import load_c_lib
+
+# 默认使用双精度
+load_c_lib(use_float=False)
 
 from . import traveltime
 from .traveltime import *

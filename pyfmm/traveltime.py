@@ -12,7 +12,7 @@ import numpy.ctypeslib as npct
 from ctypes import byref, c_int
 from scipy import interpolate
 
-from .c_interfaces import *
+from . import c_interfaces
 
 
 def travel_time_source(
@@ -56,14 +56,14 @@ def travel_time_source(
     c_xarr = npct.as_ctypes(xarr.astype('f8'))
     c_yarr = npct.as_ctypes(yarr.astype('f8'))
     c_zarr = npct.as_ctypes(zarr.astype('f8'))
-    slw_ravel = slw.ravel().astype(NPCT_REAL_TYPE)
+    slw_ravel = slw.ravel().astype(c_interfaces.NPCT_REAL_TYPE)
     c_slw = npct.as_ctypes(slw_ravel)
 
-    TT = np.zeros_like(slw).astype(NPCT_REAL_TYPE)
+    TT = np.zeros_like(slw).astype(c_interfaces.NPCT_REAL_TYPE)
     TT_ravel = TT.ravel()
     c_TT = npct.as_ctypes(TT_ravel)
 
-    C_FastMarching(
+    c_interfaces.C_FastMarching(
         c_xarr, len(xarr),
         c_yarr, len(yarr),
         c_zarr, len(zarr),
@@ -103,13 +103,13 @@ def travel_time_iniTT(
     c_xarr = npct.as_ctypes(xarr.astype('f8'))
     c_yarr = npct.as_ctypes(yarr.astype('f8'))
     c_zarr = npct.as_ctypes(zarr.astype('f8'))
-    slw_ravel = slw.ravel().astype(NPCT_REAL_TYPE)
+    slw_ravel = slw.ravel().astype(c_interfaces.NPCT_REAL_TYPE)
     c_slw = npct.as_ctypes(slw_ravel)
 
-    TT_ravel = iniTT.ravel().astype(NPCT_REAL_TYPE)
+    TT_ravel = iniTT.ravel().astype(c_interfaces.NPCT_REAL_TYPE)
     c_TT = npct.as_ctypes(TT_ravel)
 
-    C_FastMarching(
+    c_interfaces.C_FastMarching(
         c_xarr, len(xarr),
         c_yarr, len(yarr),
         c_zarr, len(zarr),
@@ -144,7 +144,7 @@ def raytracing(
         :return:  (接收点走时，形状为(ndots, 3)的射线坐标)
     '''
 
-    TT_ravel = TT.ravel().astype(NPCT_REAL_TYPE)
+    TT_ravel = TT.ravel().astype(c_interfaces.NPCT_REAL_TYPE)
     c_TT = npct.as_ctypes(TT_ravel)
 
     c_xarr = npct.as_ctypes(xarr.astype('f8'))
@@ -158,7 +158,7 @@ def raytracing(
     c_rays = npct.as_ctypes(rays)
     c_ndots = c_int(maxdots)
 
-    travt = C_FMM_raytracing(
+    travt = c_interfaces.C_FMM_raytracing(
         c_xarr, len(xarr),
         c_yarr, len(yarr),
         c_zarr, len(zarr),
