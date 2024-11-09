@@ -63,7 +63,7 @@ def load_c_lib(use_float:bool=False):
     ]
 
 
-    C_FMM_raytracing.restype = c_float 
+    C_FMM_raytracing.restype = REAL 
     C_FMM_raytracing.argtypes = [
         PDOUBLE, c_int,
         PDOUBLE, c_int,
