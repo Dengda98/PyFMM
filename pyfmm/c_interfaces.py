@@ -37,9 +37,7 @@ def load_c_lib(use_float:bool=False):
     REAL = c_float if USE_FLOAT else c_double
     PREAL = POINTER(REAL)
 
-    # libfmm = cdll.LoadLibrary(
-    # 改为CDLL，以兼顾Mac系统
-    libfmm = CDLL(
+    libfmm = cdll.LoadLibrary(
         os.path.join(
             os.path.abspath(os.path.dirname(__file__)), 
             f"C_extension/lib/libfmm_{_suffix}.so"))
