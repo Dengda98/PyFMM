@@ -6,4 +6,5 @@
 
 /pyfmm/__pycache__
 /pyfmm/C_extension/build
+/pyfmm/C_extension/lib
 /test_w
