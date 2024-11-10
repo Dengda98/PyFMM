@@ -22,6 +22,12 @@
 **PyFMM**是一个基于Fast Marching Method求解程函方程 $|\nabla T|^2 = s^2$ 的C/Python程序包，包括示例和注释。  
 **PyFMM** is a C/Python package for solving eikonal equation using Fast Marching Method, with examples and annotations.  
 
+**PyFMM** 目前可在Linux、Mac系统上运行。  
+
+我还制作了一个简易图形界面 [**PyFMM-GUI**](https://github.com/Dengda98/PyFMM-GUI) 计算二维走时场，初学者可更好的理解射线追踪，也可更方便、直观地看到不同速度场下射线的扭曲形态。
+
+![](https://github.com/Dengda98/PyFMM-GUI/blob/main/figs/example.gif)
+
 我主要使用该代码计算地震波从震源出发在复杂介质中传播形成的初至波走时场，
 并使用梯度下降获得满足费马原理的射线路径，故代码中的一些术语偏专业性。
 类似的原理也可用于其它方面，如计算点到曲线/面的距离，或光学、电磁学等。
@@ -46,13 +52,31 @@
 
 <br>
 
-# 下载 Downloads
-代码主页更新频繁，**建议在[Release](https://github.com/Dengda98/PyFMM/releases)中下载最新稳定版本**，不推荐clone，不推荐直接下载主分支。
+# 安装 Installation 
+有两个选择：
++ **不提前下载程序包**  
+
+  要求你当前环境中有git工具。这样可直接运行
+  ```bash
+  # vx.x.x指代Release中的版本号，建议下载最新稳定版本
+  pip install -v git+https://github.com/Dengda98/PyFMM@vx.x.x
+  ```
+
+
++ **提前下载好程序包** 
+
+  注意代码主页更新频繁，**建议在[Release](https://github.com/Dengda98/PyFMM/releases)中下载最新稳定版本**，不推荐clone，不推荐直接下载主分支。在下载解压后，在程序根目录下运行
+  ```bash
+  pip install -v .
+  ``` 
+
+这样可安装到你的虚拟环境中。 
+
 
 <br>
 
 # 文档 Documents
-为方便使用，我建立了[在线文档](https://pyfmm.readthedocs.io/zh-cn/latest/)，包括简易安装、API的介绍以及使用示例。  
+为方便使用，我建立了[**在线文档**](https://pyfmm.readthedocs.io/zh-cn/latest/)，包括简易安装、API的介绍以及使用示例。  
 
 <br>
 
@@ -60,3 +84,5 @@
 # 其它
 代码是我在研二写的，如果遇到bug，欢迎联系我，我会完善！
 也欢迎提出建议和更多示例！
+
+基于PyFMM的体波走时反演以及面波反演后续会开源。
