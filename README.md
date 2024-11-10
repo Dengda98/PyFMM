@@ -19,16 +19,20 @@
 
 **欢迎Star！**
 
-**PyFMM**是一个基于Fast Marching Method求解程函方程 $|\nabla T|^2 = s^2$ 的C/Python程序包，包括示例和注释。  
+**PyFMM** 是一个基于Fast Marching Method求解程函方程 $|\nabla T|^2 = s^2$ 的C/Python程序包，包括示例和注释。  
 **PyFMM** is a C/Python package for solving eikonal equation using Fast Marching Method, with examples and annotations.  
 
 **PyFMM** 目前可在Linux、Mac系统上运行。  
+
+----
 
 我还制作了一个简易图形界面 [**PyFMM-GUI**](https://github.com/Dengda98/PyFMM-GUI) 计算二维走时场，初学者可更好的理解射线追踪，也可更方便、直观地看到不同速度场下射线的扭曲形态。
 
 ![](https://github.com/Dengda98/PyFMM-GUI/blob/main/figs/example.gif)
 
-我主要使用该代码计算地震波从震源出发在复杂介质中传播形成的初至波走时场，
+-------
+</br>
+我主要使用 **PyFMM** 计算地震波从震源出发在复杂介质中传播形成的初至波走时场，
 并使用梯度下降获得满足费马原理的射线路径，故代码中的一些术语偏专业性。
 类似的原理也可用于其它方面，如计算点到曲线/面的距离，或光学、电磁学等。
 
@@ -85,4 +89,4 @@
 代码是我在研二写的，如果遇到bug，欢迎联系我，我会完善！
 也欢迎提出建议和更多示例！
 
-基于PyFMM的体波走时反演以及面波反演后续会开源。
+基于PyFMM的体波走时反演以及面波反演后续也会开源。
