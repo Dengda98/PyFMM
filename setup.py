@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
-from setuptools.command.build_ext import build_ext as build_ext_orig
+from setuptools.command.build import build as build_orig
 from setuptools.command.develop import develop as develop_orig
 from setuptools.command.install import install as install_orig
 import subprocess
 import os, sys
 
 
-class BuildExt(build_ext_orig):
+class BuildMake(build_orig):
     def run(self):
         # 执行 make 命令
         make_cmd = 'cd pyfmm/C_extension && make clean && make'
@@ -17,16 +17,17 @@ class BuildExt(build_ext_orig):
         
         super().run()
 
-# 强制install执行build_ext
+# 强制install执行build
 class Install(install_orig):
     def run(self):
-        self.run_command('build_ext')
+        self.run_command('build')
         super().run()
 
-# 强制develop执行build_ext
+# 强制develop执行build
 class Develop(develop_orig):
     def run(self):
-        self.run_command('build_ext')
+        self.run_command('build')
+        print("------------------------ start")
         super().run()
 
 
@@ -47,7 +48,7 @@ setup(
     package_data={'pyfmm': ['./C_extension/lib/libfmm_float.so', './C_extension/lib/libfmm_double.so']},
     include_package_data=True,
     cmdclass={
-        'build_ext': BuildExt,
+        'build': BuildMake,
         'install': Install,
         'develop': Develop,  # 添加 Develop 类到 cmdclass 中
     },
