@@ -67,7 +67,9 @@
   要求你当前环境中有git工具。这样可直接运行
   ```bash
   # vx.x.x指代Release中的版本号，建议下载最新稳定版本
-  pip install -v git+https://github.com/Dengda98/PyFMM@vx.x.x
+  pip install -v git+https://github.com/Dengda98/PyFMM@vx.x.x 
+  # 若网速不好可改为gitee镜像
+  # pip install -v git+https://gitee.com/Dengda98/PyFMM@vx.x.x
   ```
 
 
