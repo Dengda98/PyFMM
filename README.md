@@ -22,7 +22,7 @@
 **PyFMM** 是一个基于Fast Marching Method求解程函方程 $|\nabla T|^2 = s^2$ 的C/Python程序包，包括示例和注释。  
 **PyFMM** is a C/Python package for solving eikonal equation using Fast Marching Method, with examples and annotations.  
 
-**PyFMM** 目前可在Linux、Mac系统上运行。
+**PyFMM** 目前可在Linux、Mac系统上运行，在Windows系统上可借助[WSL](https://learn.microsoft.com/en-us/windows/wsl/)、[WinLibs](https://winlibs.com/)等工具运行。
 
 ----
 
@@ -79,6 +79,18 @@
   ``` 
 
 这样可安装到你的虚拟环境中。 
+
+## For Windows 
+尽管我仍然建议在Linux或Mac上运行，不过经过测试和调整，借助于WSL、WinLibs等工具，**PyFMM**可以在Windows系统上运行。这里介绍两种方法：
+
++ [WSL](https://learn.microsoft.com/en-us/windows/wsl/)（**推荐**）  
+  WSL可以简单理解为Windows上的更轻便简洁的Linux虚拟机。安装见[WSL](https://learn.microsoft.com/en-us/windows/wsl/)链接，建议使用WSL2版本。在WSL中，安装**PyFMM**的方法就和在[Linux](#for-linux-or-mac)中一样了。事实上，由于条件受限，我就是在WSL上开发的**PyFMM**。
+
++ [WinLibs](https://winlibs.com/)  
+  WinLibs可认为是GCC+[MinGW-w64](http://mingw-w64.org/)的集成体，可以在Windows平台使用Linux中的工具。无需安装，二进制文件均已打包好。  
+  1、下载[WinLibs](https://winlibs.com/) (with POSIX threads)(UCRT)，解压后将文件夹放在合适目录，将路径下的`bin`目录路径添加到`PATH`环境变量。     
+  2、将`bin`目录中的`mingw32-make.exe`原地复制一份，并改名为`make.exe`。    
+  3、此时在Windows的终端上就可以运行`gcc`和`make`命令，之后安装**PyFMM**的方法就和在[Linux](#for-linux-or-mac)中一样了。
 
 
 <br>
