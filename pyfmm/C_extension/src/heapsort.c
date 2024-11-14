@@ -17,7 +17,6 @@
 
 void MinHeap_AdjustUp(HEAP_DATA * HEAP_data, int child, int *NroIdx, const MYREAL *TT){
     int parent = (child-1)/2; 
-    int idx;
     HEAP_DATA *pdata1, *pdata2;
     while(child > 0){
         pdata1 = HEAP_data+child;
@@ -37,7 +36,6 @@ void MinHeap_AdjustUp(HEAP_DATA * HEAP_data, int child, int *NroIdx, const MYREA
 void MinHeap_AdjustDown(HEAP_DATA * HEAP_data, int size, int root, int *NroIdx, const MYREAL *TT){
     int parent = root;
     int child = parent*2 + 1;
-    int idx;
     HEAP_DATA *pdata1, *pdata2;
     while(child < size){
         pdata1 = HEAP_data+child;
@@ -61,7 +59,6 @@ void MinHeap_AdjustDown(HEAP_DATA * HEAP_data, int size, int root, int *NroIdx, 
 
 HEAP_DATA HeapPop(HEAP_DATA *HEAP_data, int *psize, int *NroIdx, const MYREAL *TT){
     HEAP_DATA popdata = HEAP_data[0];
-    int idx;
     if(NroIdx!=NULL){
         NroIdx[*(HEAP_data+(*psize-1))] = 0;
     }

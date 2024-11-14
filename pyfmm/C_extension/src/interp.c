@@ -160,7 +160,6 @@ MYREAL trilinear_one_Idx_ravel(
     f112 = WGHT[0][0][1]; f122 = WGHT[0][1][1];
     f212 = WGHT[1][0][1]; f222 = WGHT[1][1][1];
 
-    int ixn1, ixp1, iyn1, iyp1, izn1, izp1;
     double dv111,dv121,dv211,dv221, dv112,dv122,dv212,dv222;
     dv111=dv121=dv211=dv221=dv112=dv122=dv212=dv222=0.0;
     if(pdiffx!=NULL){

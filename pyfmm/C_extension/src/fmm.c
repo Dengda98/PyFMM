@@ -146,7 +146,6 @@ HEAP_DATA * FastMarching_with_initial(
 
     HEAP_DATA popdata, newdata;
     int ir0, it0, ip0, ir, it, ip;
-    int ir1, it1, ip1;
     int idx, idx0;
     MYREAL s;
     MYREAL travt_bak, travt, travt0, travt1;
@@ -309,9 +308,7 @@ HEAP_DATA * init_source_TT(
     if(ip==np-1 && ip>0)    ip--;
     
 
-    double M[3][3];
     double xx, yy, zz;
-    double gtr0, gtt0, gtp0;
     if(sphcoord) rtp2xyz(rr, tt, pp, &xx, &yy, &zz);
     
 
@@ -325,7 +322,7 @@ HEAP_DATA * init_source_TT(
     double dx, dy, dz;
     
     MYREAL mtravt=9.9e30;
-    int mir, mit, mip, midx;  // 最小走时节点的索引
+    int mir, mit, mip, midx=0;  // 最小走时节点的索引
 
     // Tiny 2x2x2 cube
     for(char kr=0; kr<2; ++kr){
@@ -844,8 +841,6 @@ MYREAL FMM_raytracing(
     
     int idot = 0;
 
-    int IXYZ[6];
-    double WGHT[2][2][2];
     double gtr, gtt, gtp, norm;
     double limitdist;  
     if(sphcoord){
@@ -855,7 +850,7 @@ MYREAL FMM_raytracing(
     }
     if(limitdist < segfac*seglen) limitdist = segfac*seglen;
 
-    double r1, t1, p1, M[3][3];
+    double r1, t1, p1;
     double x1, y1, z1;
     double r11, t11, p11;
     r1 = rr;
