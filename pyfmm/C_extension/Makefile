@@ -1,14 +1,41 @@
-SRC_DIR = ./src
-INC_DIR = ./include
-BUILD_DIR = ./build
-BUILD_DIR_FLOAT = $(BUILD_DIR)/float
-BUILD_DIR_DOUBLE = $(BUILD_DIR)/double
-LIB_DIR = ./lib
-LIB_NAME = $(LIB_DIR)/libfmm
+ifeq ($(OS),Windows_NT)
+define RMDIR_FUNC
+    if exist $(1) rmdir /S /Q $(1)
+endef
+else
+define RMDIR_FUNC
+    rm -rf $(1)
+endef
+endif
+
+ifeq ($(OS),Windows_NT)
+define MKDIR_FUNC
+    if not exist $(1) mkdir $(1)
+endef
+else
+define MKDIR_FUNC
+    mkdir -p $(1)
+endef
+endif
+
+ifeq ($(OS),Windows_NT)
+	FILESEP = \\
+
+else 
+	FILESEP = /
+endif
+
+SRC_DIR = src
+INC_DIR = include
+BUILD_DIR = build
+BUILD_DIR_FLOAT = $(BUILD_DIR)$(FILESEP)float
+BUILD_DIR_DOUBLE = $(BUILD_DIR)$(FILESEP)double
+LIB_DIR = lib
+LIB_NAME = $(LIB_DIR)$(FILESEP)libfmm
 LIB_EXT = .so
 
 CC = gcc
-CFLAGS =  -O3 -g -ffast-math -march=native -mtune=native -fPIC -Wimplicit-function-declaration -I$(INC_DIR)  -lm  # -fsanitize=address -lasan
+CFLAGS =  -O3 -g -ffast-math -march=native -mtune=native -fPIC -Wimplicit-function-declaration -I$(INC_DIR) -lm   # -fsanitize=address -lasan
 LDFLAGS = -shared -lm # -lasan
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
@@ -28,25 +55,24 @@ all: $(TARGET_FLOAT) $(TARGET_DOUBLE)
 
 # 链接动态库，生成 float 版本
 $(TARGET_FLOAT): $(OBJS_FLOAT)
-	@mkdir -p $(LIB_DIR)
+	@$(call MKDIR_FUNC, $(LIB_DIR))
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 # 链接动态库，生成 double 版本
 $(TARGET_DOUBLE): $(OBJS_DOUBLE)
-	@mkdir -p $(LIB_DIR)
+	@$(call MKDIR_FUNC, $(LIB_DIR))
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 # 编译 float 版本的目标文件
 $(BUILD_DIR_FLOAT)/%.o: $(SRC_DIR)/%.c $(INCS)
-	@mkdir -p $(BUILD_DIR_FLOAT)
+	@$(call MKDIR_FUNC, $(BUILD_DIR_FLOAT))
 	$(CC) -o $@ -c $< $(CFLAGS) -DUSE_FLOAT
 
 # 编译 double 版本的目标文件
 $(BUILD_DIR_DOUBLE)/%.o: $(SRC_DIR)/%.c $(INCS)
-	@mkdir -p $(BUILD_DIR_DOUBLE)
+	@$(call MKDIR_FUNC, $(BUILD_DIR_DOUBLE))
 	$(CC) -o $@ -c $< $(CFLAGS)
 
-# 清理
 clean:
-	rm -rf $(BUILD_DIR_FLOAT) $(BUILD_DIR_DOUBLE)
-	rm -f $(TARGET_FLOAT) $(TARGET_DOUBLE)
+	$(call RMDIR_FUNC, $(BUILD_DIR))
+	$(call RMDIR_FUNC, $(LIB_DIR))
