@@ -162,6 +162,7 @@ MYREAL trilinear_one_Idx_ravel(
 
     int ixn1, ixp1, iyn1, iyp1, izn1, izp1;
     double dv111,dv121,dv211,dv221, dv112,dv122,dv212,dv222;
+    dv111=dv121=dv211=dv221=dv112=dv122=dv212=dv222=0.0;
     if(pdiffx!=NULL){
         if(ix==0){
             dv111 = v211 - v111;
@@ -188,7 +189,7 @@ MYREAL trilinear_one_Idx_ravel(
             dv221 = (values[idx + 2*DX + dy] - v121)/2.0;
             dv212 = (values[idx + 2*DX + dz] - v112)/2.0;
             dv222 = (values[idx + 2*DX + dy + dz] - v122)/2.0;
-        } else {
+        } else if(nx > 1){ // 设置nx > 1的判断，以防越界
             dv211 = (v111 - values[idx - 2*DX])/2.0;
             dv221 = (v121 - values[idx - 2*DX + dy])/2.0;
             dv212 = (v112 - values[idx - 2*DX + dz])/2.0;
@@ -225,7 +226,7 @@ MYREAL trilinear_one_Idx_ravel(
             dv221 = (values[idx + dx + 2*DY] - v211)/2.0;
             dv122 = (values[idx + 2*DY + dz] - v112)/2.0;
             dv222 = (values[idx + dx + 2*DY + dz] - v212)/2.0;
-        } else {
+        } else if(ny > 1){
             dv121 = (v111 - values[idx - 2*DY])/2.0;
             dv221 = (v211 - values[idx + dx - 2*DY])/2.0;
             dv122 = (v112 - values[idx - 2*DY + dz])/2.0;
@@ -263,7 +264,7 @@ MYREAL trilinear_one_Idx_ravel(
             dv212 = (values[idx + dx + 2*DZ] - v211)/2.0;
             dv122 = (values[idx + dy + 2*DZ] - v121)/2.0;
             dv222 = (values[idx + dx + dy + 2*DZ] - v221)/2.0;
-        } else {
+        } else if(nz > 1) {
             dv112 = (v111 - values[idx - 2*DZ])/2.0;
             dv212 = (v211 - values[idx + dx - 2*DZ])/2.0;
             dv122 = (v121 - values[idx + dy - 2*DZ])/2.0;
