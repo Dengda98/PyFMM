@@ -95,6 +95,20 @@
   3、此时在Windows的终端上就可以运行`gcc`和`make`命令，之后安装**PyFMM**的方法就和在[Linux](#for-linux-or-mac)中一样了。
 
 
+## 关于一些安装问题  
+
++ Q：安装过程没发现问题，但在Python中运行`import pyfmm`报错：
+    ```
+    OSError: dlopen(...) ... (no such file) ... (mach-o file, but is anincompatible architecture (have 'arm64', need 'x86_64'))
+    ```
+    
+  A：这是安装编译的PyFMM和系统架构不匹配，属于比较少见的情况。正常情况下，不论Mac的芯片是Intel(x86_64)还是Apple Silicon(arm64)，编译C库时编译器会自动匹配架构。如果出现上述特殊情况，可以手动修改Makefile，在编译时指定架构，具体为  
+    + 下载 **PyFMM** 程序包
+    + 在 `pyfmm/C_extension/Makefile` 中修改编译器为`CC = clang` （似乎`gcc`不太好做交叉编译），将编译选项增加为`CFLAGS = --target=x86_64-apple-darwin ...(其它不变)`  
+    + 在程序根目录下，运行`pip install -v .`重新安装
+  这样更改后重新安装，就可解决架构不匹配的问题。**如果你是类似问题，可以在`CFLAGS`中指定其它架构，详见[clang编译器说明](https://clang.llvm.org/docs/CrossCompilation.html)。**
+
+
 <br>
 
 # 文档 Documents

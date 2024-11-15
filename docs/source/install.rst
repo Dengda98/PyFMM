@@ -19,16 +19,16 @@
     jupyter 
 
 
-C程序的编译链接基于 `gcc` 编译器，编译命令使用 `make`，确保系统已安装相应工具。 
+C程序的编译链接基于 :code:`gcc` 编译器，编译命令使用 :code:`make`，确保系统已安装相应工具。 
 
-以ubuntu为例，安装 `gcc` 和 `make` :
+以ubuntu为例，安装 :code:`gcc` 和 :code:`make` :
 
 ::
 
     sudo apt install build-essential 
 
 
-Makefile位于 *C_extension/Makefile* ，你可以自定义你的编译器和编译命令。 
+Makefile位于 :code:`pyfmm/C_extension/Makefile` ，你可以自定义你的编译器和编译命令。 
 
 
 程序下载和安装
@@ -66,11 +66,11 @@ Makefile位于 *C_extension/Makefile* ，你可以自定义你的编译器和编
 For Linux or Mac
 ^^^^^^^^^^^^^^^^^^
 
-要求系统上有`gcc`，`make`开发工具。安装有两个选择：
+要求系统上有 :code:`gcc`，:code:`make` 开发工具。安装有两个选择：
 
 + **不提前下载程序包**  
 
-  要求你当前环境中有git工具。这样可直接运行
+  要求你当前环境中有 :code:`git` 工具。这样可直接运行
   ::
 
       # vx.x.x指代Release中的版本号，建议下载最新稳定版本
@@ -104,5 +104,22 @@ For Windows
   WinLibs可认为是GCC+ `MinGW-w64 <http://mingw-w64.org/>`_ 的集成体，可以在Windows平台使用Linux中的工具。无需安装，二进制文件均已打包好。
 
   1. 下载 `WinLibs <https://winlibs.com/>`_ (with POSIX threads)(UCRT)，解压后将文件夹放在合适目录，将路径下的 `bin` 目录路径添加到`PATH`环境变量。
-  2. 将 `bin` 目录中的 `mingw32-make.exe` 原地复制一份，并改名为 `make.exe` 。
-  3. 此时在Windows的终端上就可以运行 `gcc` 和 `make` 命令，之后安装 **PyFMM** 的方法就和在 :ref:`Linux <for_linux_or_mac>` 中一样了。
+  2. 将 :code:`bin` 目录中的 :code:`mingw32-make.exe` 原地复制一份，并改名为 :code:`make.exe` 。
+  3. 此时在Windows的终端上就可以运行 :code:`gcc` 和 :code:`make` 命令，之后安装 **PyFMM** 的方法就和在 :ref:`Linux <for_linux_or_mac>` 中一样了。
+
+
+关于一些安装问题
+^^^^^^^^^^^^^^^^^^
+
++ Q：安装过程没发现问题，但在Python中运行 :code:`import pyfmm` 报错：
+  ::
+  
+    OSError: dlopen(...) ... (no such file) ... (mach-o file, but is anincompatible architecture (have 'arm64', need 'x86_64'))
+
+
+  A：这是安装编译的 **PyFMM** 和系统架构不匹配，属于比较少见的情况。正常情况下，不论Mac的芯片是Intel(x86_64)还是Apple Silicon(arm64)，编译C库时编译器会自动匹配架构。如果出现上述特殊情况，可以手动修改Makefile，在编译时指定架构，具体为  
+    
+  + 下载 **PyFMM** 程序包
+  + 在 :code:`pyfmm/C_extension/Makefile` 中修改编译器为 :code:`CC = clang` （似乎 :code:`gcc` 不太好做交叉编译），将编译选项增加为 :code:`CFLAGS = --target=x86_64-apple-darwin ...(其它不变)`  
+  + 在程序根目录下，运行 :code:`pip install -v .` 重新安装
+  这样更改后重新安装，就可解决架构不匹配的问题。 **如果你是类似问题，可以在** :code:`CFLAGS` **中指定其它架构，详见** `clang编译器说明 <https://clang.llvm.org/docs/CrossCompilation.html>`_ 。

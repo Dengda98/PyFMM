@@ -8,7 +8,6 @@
 
 import sys, os, pathlib
 import subprocess 
-import setuptools_scm
 
 read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 
