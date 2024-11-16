@@ -8,7 +8,7 @@
   <a href="https://zenodo.org/doi/10.5281/zenodo.13823187">
     <img src="https://zenodo.org/badge/860537381.svg" alt="DOI" />
   </a>
-  <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/Dengda98/PyFMM">
+  <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/Dengda98/PyFMM">
   <img alt="GitHub License" src="https://img.shields.io/github/license/Dengda98/PyFMM">
 </p>
 
