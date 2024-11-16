@@ -8,7 +8,8 @@
   <a href="https://zenodo.org/doi/10.5281/zenodo.13823187">
     <img src="https://zenodo.org/badge/860537381.svg" alt="DOI" />
   </a>
-
+  <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/Dengda98/PyFMM">
+  <img alt="GitHub License" src="https://img.shields.io/github/license/Dengda98/PyFMM">
 </p>
 
 
@@ -19,8 +20,8 @@
 
 **欢迎Star！**
 
-**PyFMM** 是一个基于Fast Marching Method求解程函方程 $|\nabla T|^2 = s^2$ 的C/Python程序包，包括示例和注释。  
-**PyFMM** is a C/Python package for solving eikonal equation using Fast Marching Method, with examples and annotations.  
+[**PyFMM**](https://github.com/Dengda98/PyFMM) 是一个基于Fast Marching Method求解程函方程 $|\nabla T|^2 = s^2$ 的C/Python程序包，包括示例和注释。  
+[**PyFMM**](https://github.com/Dengda98/PyFMM) is a C/Python package for solving eikonal equation using Fast Marching Method, with examples and annotations.  
 
 **PyFMM** 目前可在Linux、Mac系统上运行，在Windows系统上可借助[WSL](https://learn.microsoft.com/en-us/windows/wsl/)、[WinLibs](https://winlibs.com/)等工具运行。
 
