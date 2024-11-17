@@ -38,14 +38,26 @@ def read_version():
         exec(f.read())
     return locals()['__version__']
 
+def read_readme():
+    with open("README.md", encoding="utf-8") as f:
+        return f.read()
+
 setup(
-    name='pyfmm',
+    name='pyfmm-kit',
     version=read_version(),
     description='A C/Python package for solving eikonal equation using Fast Marching Method',
     author='Zhu Dengda',
     author_email='zhudengda@mail.iggcas.ac.cn',
+    long_description=read_readme(),  
+    long_description_content_type="text/markdown", 
+    url="https://github.com/Dengda98/PyFMM",
+    project_urls={
+        "Documentation": "https://pyfmm.readthedocs.io/zh-cn/latest/",
+        "Source Code": "https://github.com/Dengda98/PyFMM",
+    },
+
     packages=find_packages(),
-    package_data={'pyfmm': ['./C_extension/lib/libfmm_float.so', './C_extension/lib/libfmm_double.so']},
+    package_data={'pyfmm': ['./C_extension/*']},
     include_package_data=True,
     cmdclass={
         'build': BuildMake,
