@@ -66,8 +66,8 @@
 
 ## For Linux or Mac 
 要求系统上有`gcc`，`make`开发工具。有多种下载方式：
-+ **从[PYPI](https://pypi.org/)下载（推荐）**  
-  **最新更新，已将PyFMM程序源码同步到[PYPI](https://pypi.org/)，可直接运行：**  
++ **从[PYPI](https://pypi.org/project/pyfmm-kit/)下载（推荐）**  
+  **最新更新，已将PyFMM程序源码同步到[PYPI](https://pypi.org/project/pyfmm-kit/)，可直接运行：**  
   ```bash
   pip install -v pyfmm-kit
   ```  
