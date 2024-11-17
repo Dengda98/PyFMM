@@ -66,25 +66,38 @@ Makefile位于 :code:`pyfmm/C_extension/Makefile` ，你可以自定义你的编
 For Linux or Mac
 ^^^^^^^^^^^^^^^^^^
 
-要求系统上有 :code:`gcc`，:code:`make` 开发工具。安装有两个选择：
 
-+ **不提前下载程序包**  
 
-  要求你当前环境中有 :code:`git` 工具。这样可直接运行
+要求系统上有 :code:`gcc`，:code:`make` 开发工具。有多种下载方式：  
+
++ **从** `PYPI <https://pypi.org/>`_ **下载（推荐）**    
+  
+  **最新更新，已将PyFMM程序源码同步到** `PYPI <https://pypi.org/>`_ **，可直接运行：**    
   ::
+    
+    pip install -v pyfmm-kit
 
-      # vx.x.x指代Release中的版本号，建议下载最新稳定版本
-      pip install -v git+https://github.com/Dengda98/PyFMM@vx.x.x
-      # 若网速不好可改为gitee镜像
-      # pip install -v git+https://gitee.com/Dengda98/PyFMM@vx.x.x
+  进行安装，-v选项以查看源码的编译进度。各操作平台的wheels后续会逐步支持。
 
-+ **提前下载好程序包** 
++ 从Github下载安装，安装有两个选择：
 
-  注意代码主页更新频繁，**建议在** `Release <https://github.com/Dengda98/PyFMM/releases>`_ **中下载最新稳定版本**，
-  不推荐直接clone，不推荐直接下载主分支。将压缩包解压后，进入目录，直接运行pip安装命令  
-  ::
+  + **不提前下载程序包**  
 
-      pip install -v . 
+    要求你当前环境中有 :code:`git` 工具。这样可直接运行
+    ::
+
+        # vx.x.x指代Release中的版本号，建议下载最新稳定版本
+        pip install -v git+https://github.com/Dengda98/PyFMM@vx.x.x
+        # 若网速不好可改为gitee镜像
+        # pip install -v git+https://gitee.com/Dengda98/PyFMM@vx.x.x
+
+  + **提前下载好程序包** 
+
+    注意代码主页更新频繁，**建议在** `Release <https://github.com/Dengda98/PyFMM/releases>`_ **中下载最新稳定版本**，
+    不推荐直接clone，不推荐直接下载主分支。将压缩包解压后，进入目录，直接运行pip安装命令  
+    ::
+
+        pip install -v . 
 
 
 这将完成以上Python库的安装，以及C程序的编译链接。

@@ -10,6 +10,9 @@
   </a>
   <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/Dengda98/PyFMM">
   <img alt="GitHub License" src="https://img.shields.io/github/license/Dengda98/PyFMM">
+  <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/Dengda98/PyFMM/update_version.yml?label=update%20version">
+  <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/Dengda98/PyFMM/publish_pypi.yml?label=pypi%20publish">
+
 </p>
 
 
@@ -61,25 +64,33 @@
 # 安装 Installation 
 
 
-## For Linux or Mac
-要求系统上有`gcc`，`make`开发工具。安装有两个选择：
-+ **不提前下载程序包**  
-
-  要求你当前环境中有git工具。这样可直接运行
+## For Linux or Mac 
+要求系统上有`gcc`，`make`开发工具。有多种下载方式：
++ **从[PYPI](https://pypi.org/)下载（推荐）**  
+  **最新更新，已将PyFMM程序源码同步到[PYPI](https://pypi.org/)，可直接运行：**  
   ```bash
-  # vx.x.x指代Release中的版本号，建议下载最新稳定版本
-  pip install -v git+https://github.com/Dengda98/PyFMM@vx.x.x 
-  # 若网速不好可改为gitee镜像
-  # pip install -v git+https://gitee.com/Dengda98/PyFMM@vx.x.x
-  ```
+  pip install -v pyfmm-kit
+  ```  
+  进行安装，-v选项以查看源码的编译进度。各操作平台的wheels后续会逐步支持。
+
++ 从Github下载安装，安装有两个选择：
+  + **不提前下载程序包**  
+
+    要求你当前环境中有git工具。这样可直接运行
+    ```bash
+    # vx.x.x指代Release中的版本号，建议下载最新稳定版本
+    pip install -v git+https://github.com/Dengda98/PyFMM@vx.x.x 
+    # 若网速不好可改为gitee镜像
+    # pip install -v git+https://gitee.com/Dengda98/PyFMM@vx.x.x
+    ```
 
 
-+ **提前下载好程序包** 
+  + **提前下载好程序包** 
 
-  注意代码主页更新频繁，**建议在[Release](https://github.com/Dengda98/PyFMM/releases)中下载最新稳定版本**，不推荐clone，不推荐直接下载主分支。在下载解压后，在程序根目录下运行
-  ```bash
-  pip install -v .
-  ``` 
+    注意代码主页更新频繁，**建议在[Release](https://github.com/Dengda98/PyFMM/releases)中下载最新稳定版本**，不推荐clone，不推荐直接下载主分支。在下载解压后，在程序根目录下运行
+    ```bash
+    pip install -v .
+    ``` 
 
 这样可安装到你的虚拟环境中。 
 
