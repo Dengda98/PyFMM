@@ -630,7 +630,7 @@ MYREAL get_neighbour_travt(
     double dr, double dt, double dp, 
     char *stat)
 {   
-    *stat = 0;
+    if(stat!=NULL) *stat = 0;
 
     double Acoef, Bcoef, Ccoef;
     Acoef = Bcoef = 0.0;
@@ -654,7 +654,7 @@ MYREAL get_neighbour_travt(
     for(odr=0; odr<maxodr; ++odr){
         if(ir-odr<1) break;
         jdx = idx - (odr+1)*ntp;
-        if(FMM_stat[jdx]!=1) break;
+        if(FMM_stat[jdx]!=FMM_ALV) break;
         tarr[odr+1] = TT[jdx];
         if(tarr[odr+1] >= TT[jdx+ntp]) break;
     }
@@ -663,7 +663,7 @@ MYREAL get_neighbour_travt(
     for(odrR=0; odrR<maxodr; ++odrR){
         if(ir+odrR+1>nr-1) break;
         jdx = idx + (odrR+1)*ntp;
-        if(FMM_stat[jdx]!=1) break;
+        if(FMM_stat[jdx]!=FMM_ALV) break;
         tarrR[odrR+1] = TT[jdx];
         if(tarrR[odrR+1] >= TT[jdx-ntp]) break;
     }
@@ -693,7 +693,7 @@ MYREAL get_neighbour_travt(
     for(odr=0; odr<maxodr; ++odr){
         if(it-odr<1) break;
         jdx = idx - (odr+1)*np;
-        if(FMM_stat[jdx]!=1) break;
+        if(FMM_stat[jdx]!=FMM_ALV) break;
         tarr[odr+1] = TT[jdx];
         if(tarr[odr+1] >= TT[jdx+np]) break;
     }
@@ -702,7 +702,7 @@ MYREAL get_neighbour_travt(
     for(odrT=0; odrT<maxodr; ++odrT){
         if(it+odrT+1>nt-1) break;
         jdx = idx + (odrT+1)*np;
-        if(FMM_stat[jdx]!=1) break;
+        if(FMM_stat[jdx]!=FMM_ALV) break;
         tarrT[odrT+1] = TT[jdx];
         if(tarrT[odrT+1] >= TT[jdx-np]) break;
     }
@@ -734,7 +734,7 @@ MYREAL get_neighbour_travt(
     for(odr=0; odr<maxodr; ++odr){
         if(ip-odr<1) break;
         jdx = idx - (odr+1);
-        if(FMM_stat[jdx]!=1) break;
+        if(FMM_stat[jdx]!=FMM_ALV) break;
         tarr[odr+1] = TT[jdx];
         if(tarr[odr+1] >= TT[jdx+1]) break;
     }
@@ -743,7 +743,7 @@ MYREAL get_neighbour_travt(
     for(odrP=0; odrP<maxodr; ++odrP){
         if(ip+odrP+1>np-1) break;
         jdx = idx + (odrP+1);
-        if(FMM_stat[jdx]!=1) break;
+        if(FMM_stat[jdx]!=FMM_ALV) break;
         tarrP[odrP+1] = TT[jdx];
         if(tarrP[odrP+1] >= TT[jdx-1]) break;
     }
@@ -778,7 +778,7 @@ MYREAL get_neighbour_travt(
     double jdg = Bcoef*Bcoef - 4*Acoef*Ccoef;
     if(jdg <= 0.0) jdg = 0.0;
     if(fabs(Acoef)<1e-10 || fabs(Bcoef)<1e-10){
-        *stat = -1;
+        if(stat!=NULL) *stat = -1;
 #if _PRINT_ODR_BUG_ == 1
         printf("Acoef, Bcoef, Ccoef = %f, %f, %f\n", Acoef, Bcoef, Ccoef);
         printf("jdg=%f <= 0.0\n", jdg);

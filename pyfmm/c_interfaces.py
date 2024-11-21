@@ -21,6 +21,7 @@ NPCT_REAL_TYPE:str = 'f8'
 
 C_FastMarching:Any = None
 C_FMM_raytracing:Any = None
+C_FastSweeping:Any = None
 
 def load_c_lib(use_float:bool=False):
     r'''
@@ -28,7 +29,7 @@ def load_c_lib(use_float:bool=False):
 
         :param       use_float:    是否使用单精度
     '''
-    global USE_FLOAT, NPCT_REAL_TYPE, C_FastMarching, C_FMM_raytracing
+    global USE_FLOAT, NPCT_REAL_TYPE, C_FastMarching, C_FMM_raytracing, C_FastSweeping
 
     USE_FLOAT = use_float
     NPCT_REAL_TYPE = 'f4' if USE_FLOAT else 'f8'
@@ -72,4 +73,14 @@ def load_c_lib(use_float:bool=False):
         c_double, c_double, c_double, c_double, c_double, 
         PREAL, c_bool,
         PDOUBLE, PINT
+    ]
+
+    C_FastSweeping = libfmm.FastSweeping
+    C_FastSweeping.restype = None 
+    C_FastSweeping.argtypes = [
+        PDOUBLE, c_int,
+        PDOUBLE, c_int,
+        PDOUBLE, c_int,
+        c_double, c_double, c_double,
+        REAL, PREAL, PREAL, c_bool,
     ]
