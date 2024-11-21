@@ -129,7 +129,7 @@ def travel_time_source_FSW(
         c_yarr, len(yarr),
         c_zarr, len(zarr),
         xx, yy, zz,
-        999999.0, c_slw, c_TT, sphcoord,
+        maxodr, 999999.0, c_slw, c_TT, sphcoord,
     )
 
     return TT

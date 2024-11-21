@@ -133,7 +133,7 @@ HEAP_DATA * FastMarching_with_initial(
     static const char xt[6] = { 0, 0, -1, 1,  0, 0};
     static const char xp[6] = { 0, 0,  0, 0, -1, 1};
 
-     // convenient arrays
+    // convenient arrays
     double sin_ts[nt];
     if(sphcoord){
         for(int it=0; it<nt; ++it){

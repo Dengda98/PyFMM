@@ -82,5 +82,5 @@ def load_c_lib(use_float:bool=False):
         PDOUBLE, c_int,
         PDOUBLE, c_int,
         c_double, c_double, c_double,
-        REAL, PREAL, PREAL, c_bool,
+        c_int, REAL, PREAL, PREAL, c_bool,
     ]
