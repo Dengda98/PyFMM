@@ -25,7 +25,7 @@
 
 [**PyFMM**](https://github.com/Dengda98/PyFMM) 是一个基于 **Fast Marching/Sweeping Method** 求解程函方程 $|\nabla T|^2 = s^2$ 的C/Python程序包，包括示例和注释。  其中 **Fast Sweeping Method** 包括了并行版本，详见[**在线文档**](https://pyfmm.readthedocs.io/zh-cn/latest/)或文献 [(Zhao, 2007)](https://www.jstor.org/stable/43693378)。
 
-[**PyFMM**](https://github.com/Dengda98/PyFMM) is a C/Python package for solving eikonal equation using Fast Marching Method, with examples and annotations.  
+[**PyFMM**](https://github.com/Dengda98/PyFMM) is a C/Python package for solving eikonal equation using Fast Marching/Sweeping Method, with examples and annotations.  
 
 **PyFMM** 目前可在Linux、Mac系统上运行，在Windows系统上可借助[WSL](https://learn.microsoft.com/en-us/windows/wsl/)、[WinLibs](https://winlibs.com/)等工具运行。
 
