@@ -27,7 +27,6 @@ class Install(install_orig):
 class Develop(develop_orig):
     def run(self):
         self.run_command('build')
-        print("------------------------ start")
         super().run()
 
 
@@ -45,7 +44,7 @@ def read_readme():
 setup(
     name='pyfmm-kit',
     version=read_version(),
-    description='A C/Python package for solving eikonal equation using Fast Marching Method',
+    description='A C/Python package for solving eikonal equation using Fast Marching/Sweeping Method',
     author='Zhu Dengda',
     author_email='zhudengda@mail.iggcas.ac.cn',
     long_description=read_readme(),  

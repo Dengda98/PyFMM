@@ -19,8 +19,8 @@
 -----------------------------------------------------------
 
 
-**PyFMM** ： 基于Fast Marching Method求解程函方程 :math:`|\nabla T|^2 = s^2` 的程序包。
-代码根据 :ref:`主要参考 <main_ref>` 中详述的原理进行实现。 
+**PyFMM** ： 基于 **Fast Marching/Sweeping Method** 求解程函方程 :math:`|\nabla T|^2 = s^2` 的程序包。
+代码根据 :ref:`主要参考 <main_ref>` 中详述的原理进行实现，其中 **Fast Sweeping 及其并行方法** 基于 :ref:`(Zhao, 2004) <zhao_2004>` 和 :ref:`(Zhao, 2007) <zhao_2007>`
 
 我主要使用该代码计算地震波从震源出发在复杂介质中传播形成的初至波走时场，
 并使用梯度下降获得满足费马原理的射线路径，故代码中的一些术语偏专业性。
@@ -77,6 +77,7 @@
 
    install
    jupyter_examples
+   about_FSM
    API/pyfmm_api
    API/h_pyfmm_api
 
@@ -98,3 +99,14 @@
 .. [3] Rawlinson, N., and M. Sambridge (2004). Wave front evolution in 
        strongly heterogeneous layered media using the fast marching method, 
        Geophysical Journal International 156, no. 3, 631–647, doi: 10.1111/j.1365-246X.2004.02153.x.
+
+.. _zhao_2004:
+
+.. [4] Zhao, H. (2004). A fast sweeping method for Eikonal equations, 
+       Math. Comp. 74, no. 250, 603–627, doi: 10.1090/S0025-5718-04-01678-3.  
+
+.. _zhao_2007:
+
+.. [5] Zhao, H. (2007). Parallel implementations of the fast sweeping method, 
+       Journal of Computational Mathematics 25, no. 4, 421–429.
+

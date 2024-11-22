@@ -17,6 +17,9 @@ from . import c_interfaces
 FSM_nsweep = 0
 
 def get_FSM_nsweep():
+    r'''
+        返回使用FSM计算走时场时，sweep的次数
+    '''
     global FSM_nsweep 
     return FSM_nsweep
 

@@ -8,6 +8,7 @@ C extension API
    C_extension/include/const
    C_extension/include/coord
    C_extension/include/diff
+   C_extension/include/fsm
    C_extension/include/fmm
    C_extension/include/heapsort
    C_extension/include/index

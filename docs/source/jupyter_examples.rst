@@ -7,7 +7,7 @@ Jupyter 使用示例
 
 -----------------------------------------------------------
 
-以下示例的 *.ipynb* 文件 可在 `链接 <https://github.com/Dengda98/PyFMM/tree/main/docs/source/examples>`_ 中下载。
+以下示例的 :code:`.ipynb` 文件 可在 `链接 <https://github.com/Dengda98/PyFMM/tree/main/docs/source/examples>`_ 中下载。
 更多示例有待补充。
 
 

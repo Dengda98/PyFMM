@@ -19,13 +19,19 @@
     jupyter 
 
 
-C程序的编译链接基于 :code:`gcc` 编译器，编译命令使用 :code:`make`，确保系统已安装相应工具。 
+C程序的编译链接基于 :code:`gcc` 编译器 + :code:`OpenMP` ，编译命令使用 :code:`make`，确保系统已安装相应工具。 
 
 以ubuntu为例，安装 :code:`gcc` 和 :code:`make` :
 
 ::
 
     sudo apt install build-essential 
+
+目前常见编译器应该已内置 :code:`OpenMP` 工具，或可运行以下命令安装:
+
+:: 
+
+    sudo apt install libomp-dev
 
 
 Makefile位于 :code:`pyfmm/C_extension/Makefile` ，你可以自定义你的编译器和编译命令。 
@@ -135,4 +141,6 @@ For Windows
   + 下载 **PyFMM** 程序包
   + 在 :code:`pyfmm/C_extension/Makefile` 中修改编译器为 :code:`CC = clang` （似乎 :code:`gcc` 不太好做交叉编译），将编译选项增加为 :code:`CFLAGS = --target=x86_64-apple-darwin ...(其它不变)`  
   + 在程序根目录下，运行 :code:`pip install -v .` 重新安装
+  
   这样更改后重新安装，就可解决架构不匹配的问题。 **如果你是类似问题，可以在** :code:`CFLAGS` **中指定其它架构，详见** `clang编译器说明 <https://clang.llvm.org/docs/CrossCompilation.html>`_ 。
+

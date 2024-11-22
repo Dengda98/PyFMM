@@ -41,6 +41,7 @@ void set_fsm_num_threads(int num_threads);
  * @param     maxLoops   (in)Fast Sweeping Method整体迭代次数（对于3D模型，向8个方向各Sweep一次为迭代一次）  
  * @param     isparallel (in)是否使用并行FSM
  * 
+ * @return    nsweep, sweep次数
  * 
  */
 int FastSweeping(
@@ -73,7 +74,7 @@ int FastSweeping(
  * @param     maxLoops   (in)Fast Sweeping Method整体迭代次数（对于3D模型，向8个方向各Sweep一次为迭代一次）  
  * @param     isparallel (in)是否使用并行FSM
  * 
- * @return    nsweep, 
+ * @return    nsweep, sweep次数
  */
 int FastSweeping_with_initial(
     const double *rs, int nr, 
