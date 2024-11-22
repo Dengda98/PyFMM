@@ -15,8 +15,10 @@ Jupyter 使用示例
    :maxdepth: 2
 
    examples/01_uniform
+   examples/01_uniform_spherical
    examples/02_random_model
    examples/02_cplxmodel_raytracing
    examples/03_spherical
+   examples/03_spherical2
    examples/04_distance
 

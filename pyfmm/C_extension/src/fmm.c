@@ -137,8 +137,8 @@ HEAP_DATA * FastMarching_with_initial(
     double sin_ts[nt];
     if(sphcoord){
         for(int it=0; it<nt; ++it){
-            sin_ts[it] = sin(ts[it]);
-            if(fabs(sin_ts[it]) < 1e-12) sin_ts[it] += 1e-12;
+            sin_ts[it] = fabs(sin(ts[it]));
+            if(sin_ts[it] < 1e-12) sin_ts[it] += 1e-12;
         }
     }
 
@@ -592,7 +592,7 @@ HEAP_DATA * init_source_TT_refinegrid(
             TT[jdx] = rfg_TT[rfg_jdx];
             // printf("rfg_TT = %f, jr, jt, jp %d, %d, %d\n", rfg_TT[rfg_jdx], jr, jt, jp);
             FMM_stat[jdx] = FMM_ALV;
-            (*pNdots)--;
+            if(pNdots!=NULL) (*pNdots)--;
         }
         if(jdx1>=0){
             FMM_data = HeapPush(FMM_data, psize, pcap, jdx1, NroIdx, TT);
@@ -828,16 +828,6 @@ MYREAL FMM_raytracing(
 
     
     int ntp = nt*np;
-
-    double sin_ts[nt];
-    if(sphcoord){
-        for(int it=0; it<nt; ++it){
-            sin_ts[it] = sin(ts[it]);
-            if(fabs(sin_ts[it]) < 1e-6) sin_ts[it] += 1e-6;
-        }
-    } else {
-        for(int it=0; it<nt; sin_ts[it]=0.0, ++it);
-    }
     
     int idot = 0;
 

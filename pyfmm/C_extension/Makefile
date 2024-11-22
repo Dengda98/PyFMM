@@ -35,8 +35,9 @@ LIB_NAME = $(LIB_DIR)$(FILESEP)libfmm
 LIB_EXT = .so
 
 CC = gcc
-CFLAGS =  -O3 -g -ffast-math -march=native -mtune=native -fPIC -Wimplicit-function-declaration -I$(INC_DIR) -lm   # -fsanitize=address -lasan
-LDFLAGS = -shared -lm # -lasan
+FOMPFLAGS = -fopenmp 
+CFLAGS = $(FOMPFLAGS) -O3 -g -ffast-math -march=native -mtune=native -fPIC -Wimplicit-function-declaration -I$(INC_DIR) -lm   # -fsanitize=address -lasan
+LDFLAGS = $(FOMPFLAGS) -shared -lm # -lasan
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 INCS = $(wildcard $(INC_DIR)/*.h)

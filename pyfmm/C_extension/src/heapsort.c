@@ -84,7 +84,7 @@ HEAP_DATA * HeapPush(HEAP_DATA *HEAP_data, int *psize, int *pcap, HEAP_DATA newd
     HEAP_data[*psize] = newdata;
     (*psize)++;
 
-    NroIdx[newdata] = *psize-1;
+    if(NroIdx!=NULL) NroIdx[newdata] = *psize-1;
 
     MinHeap_AdjustUp(HEAP_data, *psize-1, NroIdx, TT);
 

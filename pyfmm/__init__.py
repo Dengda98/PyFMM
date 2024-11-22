@@ -1,4 +1,4 @@
-from .c_interfaces import load_c_lib
+from .c_interfaces import load_c_lib, set_fsm_num_threads
 
 # 默认使用双精度
 load_c_lib(use_float=False)
