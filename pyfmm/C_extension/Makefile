@@ -25,6 +25,7 @@ else
 	FILESEP = /
 endif
 
+BIN_DIR = bin
 SRC_DIR = src
 INC_DIR = include
 BUILD_DIR = build
@@ -44,7 +45,10 @@ INCS = $(wildcard $(INC_DIR)/*.h)
 
 # 不同版本的目标文件目录
 OBJS_FLOAT = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR_FLOAT)/%.o, $(SRCS))
+OBJS_FLOAT := $(filter-out $(BUILD_DIR_FLOAT)/grt_fmm.o, $(OBJS_FLOAT))
 OBJS_DOUBLE = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR_DOUBLE)/%.o, $(SRCS))
+OBJS_DOUBLE := $(filter-out $(BUILD_DIR_DOUBLE)/grt_fmm.o, $(OBJS_DOUBLE))
+
 
 # 生成的库名称
 TARGET_FLOAT = $(LIB_NAME)_float$(LIB_EXT)
@@ -52,7 +56,11 @@ TARGET_DOUBLE = $(LIB_NAME)_double$(LIB_EXT)
 
 .PHONY: all clean
 
-all: $(TARGET_FLOAT) $(TARGET_DOUBLE)
+all: $(TARGET_FLOAT) $(TARGET_DOUBLE) $(BIN_DIR)$(FILESEP)grt.fmm
+
+$(BIN_DIR)$(FILESEP)grt.fmm: $(OBJS_DOUBLE) $(BUILD_DIR_DOUBLE)/grt_fmm.o
+	@$(call MKDIR_FUNC, $(BIN_DIR))
+	$(CC) -o $@ $^  $(CFLAGS) $(FOMPFLAGS) 
 
 # 链接动态库，生成 float 版本
 $(TARGET_FLOAT): $(OBJS_FLOAT)
