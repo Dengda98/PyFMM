@@ -55,6 +55,7 @@ def travel_time_source(
     global FSM_nsweep 
 
     check_xyz_arr(xarr, yarr, zarr, sphcoord)
+    check_slowness(slw)
 
     # 对于并行情况，至少迭代两次
     if FSMparallel:
@@ -74,6 +75,12 @@ def travel_time_source(
         raise ValueError("yy out of bound.")
     if zz < zarr[0] or zz > zarr[-1]:
         raise ValueError("zz out of bound.")
+    
+    # 对于在边界上的点，提出warning
+    if xx == xarr[0] or xx == xarr[-1] or \
+       yy == yarr[0] or yy == yarr[-1] or \
+       zz == zarr[0] or zz == zarr[-1]:
+        print(f"WARNING! Source ({str(srcloc)}) is on the boundary.")
 
     c_xarr = npct.as_ctypes(xarr.astype('f8'))
     c_yarr = npct.as_ctypes(yarr.astype('f8'))
@@ -131,6 +138,7 @@ def travel_time_iniTT(
     global FSM_nsweep
 
     check_xyz_arr(xarr, yarr, zarr, sphcoord)
+    check_slowness(slw)
 
     # 对于并行情况，至少迭代两次
     if FSMparallel:
@@ -181,14 +189,37 @@ def raytracing(
         :param     rcvloc:    接收点坐标，直角坐标系 :math:`(x,y,z)` 或球坐标系 :math:`(r,\theta,\phi)` 
         :param       xarr:    :math:`x` 或 :math:`r` 节点坐标数组，要求等距升序排列 
         :param       yarr:    :math:`y` 或 :math:`\theta` 节点坐标数组，要求等距升序排列 
-        :param       yarr:    :math:`z` 或 :math:`\phi` 节点坐标数组，要求等距升序排列 
-        :param     seglen:    射线段长度
+        :param       zarr:    :math:`z` 或 :math:`\phi` 节点坐标数组，要求等距升序排列 
+        :param     seglen:    射线段长度，与xyz的长度量纲保持一致
         :param     segfac:    t < segfac*seglen/v，当射线追踪到在源点附近时，射线直接连接源点
         :param   sphcoord:    是否使用球坐标
         :param    maxdots:    射线最大点数
 
         :return:  (接收点走时，形状为(ndots, 3)的射线坐标)
     '''
+
+    sx, sy, sz = np.array(srcloc).astype('f8')
+    rx, ry, rz = np.array(rcvloc).astype('f8')
+
+    # 检查点的范围
+    if sx < xarr[0] or sx > xarr[-1] or \
+       sy < yarr[0] or sy > yarr[-1] or \
+       sz < zarr[0] or sz > zarr[-1]:
+        raise ValueError(f"Source location ({str(srcloc)}) is out of bound.")
+    if rx < xarr[0] or rx > xarr[-1] or \
+       ry < yarr[0] or ry > yarr[-1] or \
+       rz < zarr[0] or rz > zarr[-1]:
+        raise ValueError(f"Receiver location ({str(rcvloc)}) is out of bound.")
+    
+    if sx == xarr[0] or sx == xarr[-1] or \
+       sy == yarr[0] or sy == yarr[-1] or \
+       sz == zarr[0] or sz == zarr[-1]:
+        print(f"WARNING! Source ({str(srcloc)}) is on the boundary.")
+
+    if rx == xarr[0] or rx == xarr[-1] or \
+       ry == yarr[0] or ry == yarr[-1] or \
+       rz == zarr[0] or rz == zarr[-1]:
+        print(f"WARNING! Receiver ({str(rcvloc)}) is on the boundary.")
 
 
     TT_ravel = TT.ravel().astype(c_interfaces.NPCT_REAL_TYPE)
@@ -197,9 +228,6 @@ def raytracing(
     c_xarr = npct.as_ctypes(xarr.astype('f8'))
     c_yarr = npct.as_ctypes(yarr.astype('f8'))
     c_zarr = npct.as_ctypes(zarr.astype('f8'))
-
-    sx, sy, sz = np.array(srcloc).astype('f8')
-    rx, ry, rz = np.array(rcvloc).astype('f8')
 
     rays = np.empty((maxdots*3,), dtype='f8')
     c_rays = npct.as_ctypes(rays)
@@ -214,6 +242,11 @@ def raytracing(
         c_TT, sphcoord, 
         c_rays, byref(c_ndots)
     )
+
+    # 对射线结果做检查
+    if c_ndots.value >= maxdots:
+        print(f"WARNING! The number of dots exceed {maxdots}, and has been truncated. "
+               "You may need to set larger seglen or set more maxdots.")
 
     return travt, rays.reshape((-1,3))[:c_ndots.value, ]
 
@@ -240,6 +273,9 @@ def get_traveltime(
 
 def check_xyz_arr(
     xarr:np.ndarray, yarr:np.ndarray, zarr:np.ndarray, sphcoord:bool):
+    r'''
+        检查三个维度的数组是否符合基本要求
+    '''
 
     # 检查维数
     if len(xarr)==0:
@@ -268,3 +304,14 @@ def check_xyz_arr(
 
     #     if np.any(yarr < 0.0) or np.any(yarr > np.pi):
     #         raise ValueError(f"Theta array is out of bound.")
+
+
+
+def check_slowness(slw:np.ndarray):
+    r'''
+        对慢度数组进行检查
+    '''
+    if np.any(slw <= 0.0):
+        raise ValueError("Slowness should be positive.")
+    
+    
