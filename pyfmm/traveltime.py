@@ -13,6 +13,7 @@ from ctypes import byref, c_int
 from scipy import interpolate
 
 from . import c_interfaces
+from .logger import myLogger
 
 FSM_nsweep = 0
 
@@ -60,7 +61,7 @@ def travel_time_source(
     # 对于并行情况，至少迭代两次
     if FSMparallel:
         if FSMmaxLoops <= 1:
-            print("WARNING! For parallel FSM, maxLoops must set at least 2 (already changed).")
+            myLogger.warning("For parallel FSM, maxLoops must set at least 2 (already changed).")
             FSMmaxLoops = 2
 
     maxodr = int(maxodr)
@@ -80,7 +81,7 @@ def travel_time_source(
     if xx == xarr[0] or xx == xarr[-1] or \
        yy == yarr[0] or yy == yarr[-1] or \
        zz == zarr[0] or zz == zarr[-1]:
-        print(f"WARNING! Source ({str(srcloc)}) is on the boundary.")
+        myLogger.warning("Source ({str(srcloc)}) is on the boundary.")
 
     c_xarr = npct.as_ctypes(xarr.astype('f8'))
     c_yarr = npct.as_ctypes(yarr.astype('f8'))
@@ -143,7 +144,7 @@ def travel_time_iniTT(
     # 对于并行情况，至少迭代两次
     if FSMparallel:
         if FSMmaxLoops <= 1:
-            print("WARNING! For parallel FSM, maxLoops must set at least 2 (already changed).")
+            myLogger.warning("For parallel FSM, maxLoops must set at least 2 (already changed).")
             FSMmaxLoops = 2
 
     maxodr = int(maxodr)
@@ -205,21 +206,21 @@ def raytracing(
     if sx < xarr[0] or sx > xarr[-1] or \
        sy < yarr[0] or sy > yarr[-1] or \
        sz < zarr[0] or sz > zarr[-1]:
-        raise ValueError(f"Source location ({str(srcloc)}) is out of bound.")
+        raise ValueError(f"Source ({str(srcloc)}) is out of bound.")
     if rx < xarr[0] or rx > xarr[-1] or \
        ry < yarr[0] or ry > yarr[-1] or \
        rz < zarr[0] or rz > zarr[-1]:
-        raise ValueError(f"Receiver location ({str(rcvloc)}) is out of bound.")
+        raise ValueError(f"Receiver ({str(rcvloc)}) is out of bound.")
     
     if sx == xarr[0] or sx == xarr[-1] or \
        sy == yarr[0] or sy == yarr[-1] or \
        sz == zarr[0] or sz == zarr[-1]:
-        print(f"WARNING! Source ({str(srcloc)}) is on the boundary.")
+        myLogger.warning(f"Source ({str(srcloc)}) is on the boundary.")
 
     if rx == xarr[0] or rx == xarr[-1] or \
        ry == yarr[0] or ry == yarr[-1] or \
        rz == zarr[0] or rz == zarr[-1]:
-        print(f"WARNING! Receiver ({str(rcvloc)}) is on the boundary.")
+        myLogger.warning(f"Receiver ({str(rcvloc)}) is on the boundary.")
 
 
     TT_ravel = TT.ravel().astype(c_interfaces.NPCT_REAL_TYPE)
@@ -245,8 +246,8 @@ def raytracing(
 
     # 对射线结果做检查
     if c_ndots.value >= maxdots:
-        print(f"WARNING! The number of dots exceed {maxdots}, and has been truncated. "
-               "You may need to set larger seglen or set more maxdots.")
+        myLogger.warning(f"The number of dots exceed {maxdots}, and has been truncated. "
+                          "You may need to set larger seglen or set more maxdots.")
 
     return travt, rays.reshape((-1,3))[:c_ndots.value, ]
 

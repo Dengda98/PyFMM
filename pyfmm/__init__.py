@@ -8,5 +8,7 @@ from .traveltime import *
 
 from . import c_interfaces
 
+from . import logger 
+from .logger import myLogger
 
 from ._version import __version__
