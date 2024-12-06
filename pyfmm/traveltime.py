@@ -81,7 +81,7 @@ def travel_time_source(
     if xx == xarr[0] or xx == xarr[-1] or \
        yy == yarr[0] or yy == yarr[-1] or \
        zz == zarr[0] or zz == zarr[-1]:
-        myLogger.warning("Source ({str(srcloc)}) is on the boundary.")
+        myLogger.warning(f"Source ({str(srcloc)}) is on the boundary.")
 
     c_xarr = npct.as_ctypes(xarr.astype('f8'))
     c_yarr = npct.as_ctypes(yarr.astype('f8'))
