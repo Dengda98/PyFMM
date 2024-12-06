@@ -27,7 +27,7 @@
 
 [**PyFMM**](https://github.com/Dengda98/PyFMM) is a C/Python package for solving eikonal equation using Fast Marching/Sweeping Method, with examples and annotations.  
 
-**PyFMM** 目前可在Linux、Mac系统上运行，在Windows系统上可借助[WSL](https://learn.microsoft.com/en-us/windows/wsl/)、[WinLibs](https://winlibs.com/)等工具运行。
+**PyFMM** 目前可在Linux、Mac系统上运行，在Windows系统上可借助[WSL](https://learn.microsoft.com/en-us/windows/wsl/)兼容。
 
 ----
 
@@ -62,72 +62,23 @@
 
 <br>
 
-# 安装 Installation 
-
-
-## For Linux or Mac 
-要求系统上有`gcc`，`make`开发工具。有多种下载方式：
-+ **从[PYPI](https://pypi.org/project/pyfmm-kit/)下载（推荐）**  
-  **最新更新，已将PyFMM程序源码同步到[PYPI](https://pypi.org/project/pyfmm-kit/)，可直接运行：**  
-  ```bash
-  pip install -v pyfmm-kit
-  ```  
-  进行安装，-v选项以查看源码的编译进度。各操作平台的wheels后续会逐步支持。
-
-+ 从Github下载安装，安装有两个选择：
-  + **不提前下载程序包**  
-
-    要求你当前环境中有git工具。这样可直接运行
-    ```bash
-    # vx.x.x指代Release中的版本号，建议下载最新稳定版本
-    pip install -v git+https://github.com/Dengda98/PyFMM@vx.x.x 
-    # 若网速不好可改为gitee镜像
-    # pip install -v git+https://gitee.com/Dengda98/PyFMM@vx.x.x
-    ```
-
-
-  + **提前下载好程序包** 
-
-    注意代码主页更新频繁，**建议在[Release](https://github.com/Dengda98/PyFMM/releases)中下载最新稳定版本**，不推荐clone，不推荐直接下载主分支。在下载解压后，在程序根目录下运行
-    ```bash
-    pip install -v .
-    ``` 
-
-这样可安装到你的虚拟环境中。 
-
-## For Windows 
-尽管我仍然建议在Linux或Mac上运行，不过经过测试和调整，借助于WSL、WinLibs等工具，**PyFMM**可以在Windows系统上运行。这里介绍两种方法：
-
-+ [WSL](https://learn.microsoft.com/en-us/windows/wsl/)（**推荐**）  
-  WSL可以简单理解为Windows上的更轻便简洁的Linux虚拟机。安装见[WSL](https://learn.microsoft.com/en-us/windows/wsl/)链接，建议使用WSL2版本。在WSL中，安装**PyFMM**的方法就和在[Linux](#for-linux-or-mac)中一样了。事实上，由于条件受限，我就是在WSL上开发的**PyFMM**。
-
-+ [WinLibs](https://winlibs.com/)  
-  WinLibs可认为是GCC+[MinGW-w64](http://mingw-w64.org/)的集成体，可以在Windows平台使用Linux中的工具。无需安装，二进制文件均已打包好。  
-  1、下载[WinLibs](https://winlibs.com/) (with POSIX threads)(UCRT)，解压后将文件夹放在合适目录，将路径下的`bin`目录路径添加到`PATH`环境变量。     
-  2、将`bin`目录中的`mingw32-make.exe`原地复制一份，并改名为`make.exe`。    
-  3、此时在Windows的终端上就可以运行`gcc`和`make`命令，之后安装**PyFMM**的方法就和在[Linux](#for-linux-or-mac)中一样了。
-
-
-## 关于一些安装问题  
-
-+ Q：安装过程没发现问题，但在Python中运行`import pyfmm`报错：
-    ```
-    OSError: dlopen(...) ... (no such file) ... (mach-o file, but is anincompatible architecture (have 'arm64', need 'x86_64'))
-    ```
-    
-  A：这是安装编译的PyFMM和系统架构不匹配，属于比较少见的情况。正常情况下，不论Mac的芯片是Intel(x86_64)还是Apple Silicon(arm64)，编译C库时编译器会自动匹配架构。如果出现上述特殊情况，可以手动修改Makefile，在编译时指定架构，具体为  
-    + 下载 **PyFMM** 程序包
-    + 在 `pyfmm/C_extension/Makefile` 中修改编译器为`CC = clang` （似乎`gcc`不太好做交叉编译），将编译选项增加为`CFLAGS = --target=x86_64-apple-darwin ...(其它不变)`  
-    + 在程序根目录下，运行`pip install -v .`重新安装
-  这样更改后重新安装，就可解决架构不匹配的问题。**如果你是类似问题，可以在`CFLAGS`中指定其它架构，详见[clang编译器说明](https://clang.llvm.org/docs/CrossCompilation.html)。**
-
-
-<br>
 
 # 文档 Documents
 为方便使用，我建立了[**在线文档**](https://pyfmm.readthedocs.io/zh-cn/latest/)，包括简易安装、API的介绍以及使用示例。  
 
 <br>
+
+# 安装 Installation 
+
+要求系统上有`gcc`，`make`，`openmp`等开发工具，支持`pip`命令一键安装：
+```bash
+pip install -v pyfmm-kit
+```
+对于不同系统以及安装问题，详见文档[**安装说明**](https://pyfmm.readthedocs.io/zh-cn/latest/install.html)。
+
+
+<br>
+
 
 
 # 其它

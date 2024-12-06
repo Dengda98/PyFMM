@@ -8,3 +8,4 @@
    pyfmm/_version
    pyfmm/traveltime
    pyfmm/c_interfaces
+   pyfmm/logger

@@ -11,6 +11,8 @@ import logging
 
 
 myLogger = logging.getLogger("pyfmm")
+'''自定义logger, 基于logging库'''
+
 myLogger.setLevel(logging.WARNING)
 
 console_handler = logging.StreamHandler()

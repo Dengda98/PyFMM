@@ -33,6 +33,11 @@ C程序的编译链接基于 :code:`gcc` 编译器 + :code:`OpenMP` ，编译命
 
     sudo apt install libomp-dev
 
+在Mac系统上则运行:
+
+::
+
+    brew install libomp
 
 Makefile位于 :code:`pyfmm/C_extension/Makefile` ，你可以自定义你的编译器和编译命令。 
 
@@ -74,7 +79,7 @@ For Linux or Mac
 
 
 
-要求系统上有 :code:`gcc`，:code:`make` 开发工具。有多种下载方式：  
+要求系统上有 :code:`gcc`，:code:`make`，:code:`openmp` 等开发工具。有多种下载方式：  
 
 + **从** `PYPI <https://pypi.org/project/pyfmm-kit/>`_ **下载（推荐）**    
   
@@ -109,22 +114,10 @@ For Linux or Mac
 这将完成以上Python库的安装，以及C程序的编译链接。
 
 
-For Windows
+For Windows (based on WSL)
 ^^^^^^^^^^^^^^^^^^
 
-尽管我仍然建议在Linux或Mac上运行，不过经过测试和调整，借助于WSL、WinLibs等工具， **PyFMM** 可以在Windows系统上运行。这里介绍两种方法：
-
-+ `WSL <https://learn.microsoft.com/en-us/windows/wsl/>`_ （**推荐**）
-
-  WSL可以简单理解为Windows上的更轻便简洁的Linux虚拟机。安装见 `WSL <https://learn.microsoft.com/en-us/windows/wsl/>`_ 链接，建议使用WSL2版本。在WSL中，安装 **PyFMM** 的方法就和在 :ref:`Linux <for_linux_or_mac>` 中一样了。事实上，由于条件受限，我就是在WSL上开发的 **PyFMM** 。
-
-+ `WinLibs <https://winlibs.com/>`_
-
-  WinLibs可认为是GCC+ `MinGW-w64 <http://mingw-w64.org/>`_ 的集成体，可以在Windows平台使用Linux中的工具。无需安装，二进制文件均已打包好。
-
-  1. 下载 `WinLibs <https://winlibs.com/>`_ (with POSIX threads)(UCRT)，解压后将文件夹放在合适目录，将路径下的 `bin` 目录路径添加到`PATH`环境变量。
-  2. 将 :code:`bin` 目录中的 :code:`mingw32-make.exe` 原地复制一份，并改名为 :code:`make.exe` 。
-  3. 此时在Windows的终端上就可以运行 :code:`gcc` 和 :code:`make` 命令，之后安装 **PyFMM** 的方法就和在 :ref:`Linux <for_linux_or_mac>` 中一样了。
+尽管我仍然建议在Linux或Mac上运行，但借助于 `WSL <https://learn.microsoft.com/en-us/windows/wsl/>`_ ， **PyFMM** 可以在Windows系统上运行。WSL可以简单理解为Windows上的更轻便简洁的Linux虚拟机。安装见 `WSL <https://learn.microsoft.com/en-us/windows/wsl/>`_ 链接，建议使用WSL2版本。在WSL中，安装 **PyFMM** 的方法就和在 :ref:`Linux <for_linux_or_mac>` 中一样了。事实上，由于条件受限，我就是在WSL上开发的 **PyFMM** 。
 
 
 关于一些安装问题
