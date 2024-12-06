@@ -8,7 +8,7 @@
 -----------------------------------------------------------
 
 
-**PyFMM**  目前可在Linux、Mac系统上运行，在Windows系统上可借助 `WSL <https://learn.microsoft.com/en-us/windows/wsl/>`_ 、 `WinLibs <https://winlibs.com/>`_ 等工具运行。依赖库包括：
+**PyFMM**  目前可在Linux、Mac系统上运行，在Windows系统上可借助 `WSL <https://learn.microsoft.com/en-us/windows/wsl/>`_ 兼容运行。依赖库包括：
 
 :: 
 
