@@ -19,7 +19,7 @@
     jupyter 
 
 
-C程序的编译链接基于 :code:`gcc` 编译器 + :code:`OpenMP` ，编译命令使用 :code:`make`，确保系统已安装相应工具。 
+C程序的编译链接基于 :code:`gcc` 编译器 + :code:`OpenMP` ，编译命令使用 :code:`make`，**确保系统已安装相应工具**。 
 
 以ubuntu为例，安装 :code:`gcc` 和 :code:`make` :
 
@@ -137,3 +137,6 @@ For Windows (based on WSL)
   
   这样更改后重新安装，就可解决架构不匹配的问题。 **如果你是类似问题，可以在** :code:`CFLAGS` **中指定其它架构，详见** `clang编译器说明 <https://clang.llvm.org/docs/CrossCompilation.html>`_ 。
 
++ Q：关于安装错误  
+  
+  A：建议在使用 :code:`pip` 安装时加上 :code:`-v` 选项，对于安装过程的输出可往前翻看具体原因，常常输出的最后一段不是直接原因。例如常见的，系统没有 :code:`openmp` 导致安装错误，建议在安装前确保这些编译工具已安装。
