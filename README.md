@@ -80,6 +80,73 @@ pip install -v pyfmm-kit
 <br>
 
 
+# 使用示例 Usage Example 
+更多使用示例详见[**在线文档**](https://pyfmm.readthedocs.io/zh-cn/latest/)。
+``` python 
+import pyfmm 
+import numpy as np 
+import matplotlib.pyplot as plt
+from scipy import interpolate
+
+pyfmm.logger.myLogger.setLevel('ERROR')
+
+# 定义网格 
+nx, ny, nz = 401, 1, 101
+xarr = np.linspace(0, 200, nx)
+yarr = np.array([0.0])
+zarr = np.linspace(0, 50, nz)
+
+# 定义1D速度
+vel1d = np.array([
+    [0.0, 3.2],
+    [5.0, 5.8],
+    [15.0, 6.5],
+    [30.0, 6.8],
+    [35.0, 8.1],
+    [80.0, 8.2]
+])
+
+# 插值1d分层速度
+# _idxs = np.searchsorted(vel1d[:,0], zarr)
+# velocity = vel1d[_idxs, 1]
+# OR
+# 插值1d梯度速度 
+velocity = interpolate.interpn((vel1d[:,0],), vel1d[:,1], zarr)
+
+# 慢度数组 
+slowness = np.empty((nx, ny, nz))
+slowness[...] = 1.0/velocity[None,None,:]
+
+# 定义震源位置
+srcloc = [0.0, 0.0, 0.0]
+
+# 计算时间场
+TT = pyfmm.travel_time_source(
+    srcloc,
+    xarr, yarr, zarr, slowness)
+
+#====================================================================
+# 绘制走时场和射线
+fig, ax1 = plt.subplots(1, 1)
+cs = ax1.contour(xarr, zarr, TT[:, 0, :].T, levels=30, linewidths=0.5)
+ax1.clabel(cs)
+
+for x in np.arange(5, 200, 5):
+    # 射线追踪
+    rcvloc = [x, 0, 0]
+
+    travt, rays = pyfmm.raytracing(
+        TT, srcloc, rcvloc, xarr, yarr, zarr, 0.1)
+    ax1.plot(rays[:,0], rays[:,2], c='r', lw=0.8, ls='--')
+
+ax1.set_aspect('equal')
+ax1.set_xlim(0, 200)
+ax1.set_ylim(0, 50)
+ax1.yaxis.set_inverted(True)
+
+```
+![](https://github.com/Dengda98/PyFMM/blob/main/figs/example.png)
+
 
 # 其它
 代码是我在研二写的，如果遇到bug，欢迎联系我(zhudengda@mail.iggcas.ac.cn)，我会完善！
