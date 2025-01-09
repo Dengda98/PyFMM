@@ -810,7 +810,7 @@ MYREAL FMM_raytracing(
     const double *ps, int np,
     double r0, double t0, double p0,
     double rr, double tt, double pp, double seglen, double segfac,
-    const MYREAL *TT, bool sphcoord,
+    const MYREAL *Slw, const MYREAL *TT, bool sphcoord,
     // MYREAL *gTr, MYREAL *gTt, MYREAL *gTp, 
     double *rays, int *N)
 {
@@ -818,6 +818,7 @@ MYREAL FMM_raytracing(
     double dt = (nt>1)? ts[1] - ts[0] : 1e-6;
     double dp = (np>1)? ps[1] - ps[0] : 1e-6;
     double seglen0 = seglen;
+    double seglen1;
 
     double xx, yy, zz, x0, y0, z0;
     double dx, dy, dz;
@@ -843,6 +844,7 @@ MYREAL FMM_raytracing(
     double r1, t1, p1;
     double x1, y1, z1;
     double r11, t11, p11;
+    double rmid, tmid, pmid, vmid;
     r1 = rr;
     t1 = tt;
     p1 = pp;
@@ -871,6 +873,7 @@ MYREAL FMM_raytracing(
         rs, nr, ts, nt, ps, np, ntp, TT, r1, t1, p1, 
         &gtr, &gtt, &gtp, NULL, NULL);
     MYREAL trem = travt, trem1;
+    MYREAL travt1 = 0.0;
 
     // normalize gradient
     gtr /= dr; 
@@ -903,6 +906,7 @@ MYREAL FMM_raytracing(
         // update
         seglen = seglen0;
         for(int i=0; i<5; ++i){
+            seglen1 = seglen;
             if(sphcoord){
                 p11 = p1 - gtp*seglen/(r1*sin(t1));
                 t11 = t1 - gtt*seglen/r1;
@@ -959,6 +963,17 @@ MYREAL FMM_raytracing(
         gtt /= norm;
         gtp /= norm;
 
+        // 求中点速度，算走时
+        // 这里做了近似，认为射线段比较小，不论坐标系为何，直接去平均值作为中点
+        if(Slw != NULL){
+            rmid = (r1 + rays[3*idot-3])/2.0;
+            tmid = (t1 + rays[3*idot-2])/2.0;
+            pmid = (p1 + rays[3*idot-1])/2.0;
+            travt1 += trilinear_one_ravel(
+                rs, nr, ts, nt, ps, np, ntp, Slw, rmid, tmid, pmid, 
+                NULL, NULL, NULL, NULL, NULL) * seglen1;
+        }
+        
     } // END tracing
 
     rays[3*idot] = r0;
@@ -968,7 +983,18 @@ MYREAL FMM_raytracing(
     idot++;
     *N = idot;
 
-    return travt;
+    if(Slw != NULL){
+        rmid = (r0 + rays[3*idot-3])/2.0;
+        tmid = (t0 + rays[3*idot-2])/2.0;
+        pmid = (p0 + rays[3*idot-1])/2.0;
+        travt1 += trilinear_one_ravel(
+            rs, nr, ts, nt, ps, np, ntp, Slw, rmid, tmid, pmid, 
+            NULL, NULL, NULL, NULL, NULL) * seglen1;
+        return travt1;
+    } else {
+        return travt;
+    }
+    
 }
 
 

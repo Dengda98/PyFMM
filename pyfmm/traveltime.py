@@ -56,7 +56,7 @@ def travel_time_source(
     global FSM_nsweep 
 
     check_xyz_arr(xarr, yarr, zarr, sphcoord)
-    check_slowness(slw)
+    check_slowness(xarr, yarr, zarr, slw)
 
     # 对于并行情况，至少迭代两次
     if FSMparallel:
@@ -139,7 +139,7 @@ def travel_time_iniTT(
     global FSM_nsweep
 
     check_xyz_arr(xarr, yarr, zarr, sphcoord)
-    check_slowness(slw)
+    check_slowness(xarr, yarr, zarr, slw)
 
     # 对于并行情况，至少迭代两次
     if FSMparallel:
@@ -181,7 +181,7 @@ def travel_time_iniTT(
 def raytracing(
     TT:np.ndarray, srcloc:list, rcvloc:list,
     xarr:np.ndarray, yarr:np.ndarray, zarr:np.ndarray,
-    seglen:float, segfac:int=3, sphcoord:bool=False, maxdots:int=10000):
+    seglen:float, slw:np.ndarray|None=None, segfac:int=3, sphcoord:bool=False, maxdots:int=10000):
     r'''
         根据给定源点坐标计算的走时场，使用梯度下降法做射线追踪
 
@@ -192,12 +192,16 @@ def raytracing(
         :param       yarr:    :math:`y` 或 :math:`\theta` 节点坐标数组，要求等距升序排列 
         :param       zarr:    :math:`z` 或 :math:`\phi` 节点坐标数组，要求等距升序排列 
         :param     seglen:    射线段长度，与xyz的长度量纲保持一致
+        :param        slw:    形状为(nx, ny, nz)的三维慢度场，若非None则使用累加求和计算走时，否则直接从走时场中插值得到走时
         :param     segfac:    t < segfac*seglen/v，当射线追踪到在源点附近时，射线直接连接源点
         :param   sphcoord:    是否使用球坐标
         :param    maxdots:    射线最大点数
 
         :return:  (接收点走时，形状为(ndots, 3)的射线坐标)
     '''
+
+    if isinstance(slw, np.ndarray):
+        check_slowness(xarr, yarr, zarr, slw)
 
     sx, sy, sz = np.array(srcloc).astype('f8')
     rx, ry, rz = np.array(rcvloc).astype('f8')
@@ -225,6 +229,10 @@ def raytracing(
 
     TT_ravel = TT.ravel().astype(c_interfaces.NPCT_REAL_TYPE)
     c_TT = npct.as_ctypes(TT_ravel)
+    c_slw = None 
+    if slw is not None:
+        slw_ravel = slw.ravel().astype(c_interfaces.NPCT_REAL_TYPE)
+        c_slw = npct.as_ctypes(slw_ravel)
 
     c_xarr = npct.as_ctypes(xarr.astype('f8'))
     c_yarr = npct.as_ctypes(yarr.astype('f8'))
@@ -240,7 +248,7 @@ def raytracing(
         c_zarr, len(zarr),
         sx, sy, sz,
         rx, ry, rz, float(seglen), int(segfac),
-        c_TT, sphcoord, 
+        c_slw, c_TT, sphcoord, 
         c_rays, byref(c_ndots)
     )
 
@@ -278,6 +286,14 @@ def check_xyz_arr(
         检查三个维度的数组是否符合基本要求
     '''
 
+    # 检查类型
+    if not isinstance(xarr, np.ndarray):
+        raise ValueError("xarr should be an instance of numpy.ndarray.")
+    if not isinstance(yarr, np.ndarray):
+        raise ValueError("yarr should be an instance of numpy.ndarray.")
+    if not isinstance(zarr, np.ndarray):
+        raise ValueError("zarr should be an instance of numpy.ndarray.")
+
     # 检查维数
     if len(xarr)==0:
         raise ValueError("xarr is empty.")
@@ -308,11 +324,17 @@ def check_xyz_arr(
 
 
 
-def check_slowness(slw:np.ndarray):
+def check_slowness(xarr:np.ndarray, yarr:np.ndarray, zarr:np.ndarray, slw:np.ndarray):
     r'''
         对慢度数组进行检查
     '''
+    if not isinstance(slw, np.ndarray):
+        raise ValueError("slw should be an instance of numpy.ndarray.")
+
     if np.any(slw <= 0.0):
         raise ValueError("Slowness should be positive.")
     
+    shapexyz = (len(xarr), len(yarr), len(zarr))
+    if slw.shape != shapexyz:
+        raise ValueError(f"Shape of slowness should be {shapexyz}, but {slw.shape}.")
     

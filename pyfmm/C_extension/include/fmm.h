@@ -210,6 +210,7 @@ MYREAL get_neighbour_travt(
  * @param     pp     (in)接收点维度3坐标
  * @param     seglen (in)射线段长度
  * @param     segfac (in)t < segfac*seglen/v，当射线追踪到在源点附近时，射线直接连接源点
+ * @param     Slw    (in)展平的三维慢度场，若非NULL则使用累加求和计算走时，否则直接从走时场中插值得到走时
  * @param     TT     (in)展平的三维走时场
  * @param     sphcoord  (in)是否使用球坐标
  * @param     rays      (out)输出展平的三维射线
@@ -224,5 +225,5 @@ MYREAL FMM_raytracing(
     const double *ps, int np,
     double r0, double t0, double p0,
     double rr, double tt, double pp, double seglen, double segfac,
-    const MYREAL *TT, bool sphcoord,
+    const MYREAL *Slw, const MYREAL *TT, bool sphcoord,
     double *rays, int *N);

@@ -8,4 +8,5 @@
 /pyfmm/__pycache__
 /pyfmm/C_extension/build
 /pyfmm/C_extension/lib
+/pyfmm/C_extension/bin
 /test_w
