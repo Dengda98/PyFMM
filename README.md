@@ -10,7 +10,6 @@
   </a>
   <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/Dengda98/PyFMM">
   <img alt="GitHub License" src="https://img.shields.io/github/license/Dengda98/PyFMM">
-  <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/Dengda98/PyFMM/update_version.yml?label=update%20version">
   <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/Dengda98/PyFMM/publish_pypi.yml?label=pypi%20publish">
 
 </p>
