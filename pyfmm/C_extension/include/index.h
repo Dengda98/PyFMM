@@ -19,7 +19,7 @@
  * @param      ip       (out)第3维索引
  * 
  */
-inline void unravel_index(int idx, int ntp, int np, int *ir, int *it, int *ip){
+inline void unravel_index(MYINT idx, MYINT ntp, MYINT np, MYINT *ir, MYINT *it, MYINT *ip){
     *ir = idx / ntp;
     *it = (idx - (*ir)*ntp) / np;
     *ip = idx % np;
@@ -37,6 +37,6 @@ inline void unravel_index(int idx, int ntp, int np, int *ir, int *it, int *ip){
  * @param      ip       (in)第3维索引
  * 
  */
-inline void ravel_index(int *idx, int ntp, int np, int ir, int it, int ip){
+inline void ravel_index(MYINT *idx, MYINT ntp, MYINT np, MYINT ir, MYINT it, MYINT ip){
     *idx = ir*ntp + it*np + ip;
 }

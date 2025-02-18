@@ -38,16 +38,16 @@ static char *command = NULL;
 // 模型路径，模型PYMODEL1D指针，全局最大最小速度
 static char *s_modelpath = NULL;
 static char *s_modelname = NULL;
-static int nlay=0;
+static MYINT nlay=0;
 static double *Dep1d = NULL;
 static double *Vp1d = NULL;
 static double *Vs1d = NULL;
 static double minh = 9e30; // 模型最细厚度
 // 三个维度的数组以及大小
 static double *xs=NULL, *zs=NULL;
-static int nx, nz, nxz;
+static MYINT nx, nz, nxz;
 static const double ys[1]={0.0};
-static const int ny = 1;
+static const MYINT ny = 1;
 // 震源坐标
 static double xsrc=0.0, zsrc=0.0;
 // 场点坐标
@@ -56,22 +56,22 @@ static double xrcv=0.0, zrcv=0.0;
 static MYREAL *SlwP = NULL, *SlwS = NULL;
 // 走时数组
 static MYREAL *TTP = NULL, *TTS = NULL;
-static int nTT=0;
+static MYINT nTT=0;
 // grt命令的输出路径, 以及符合要求的待处理文件夹路径
 // 以及根据文件转化的震源深度、场点深度、震中距
 static char *s_grtoutdir = NULL;
-static int ndir=0;
+static MYINT ndir=0;
 static char **s_outsubdirs=NULL;
 static double *depsrcs=NULL, *deprcvs=NULL, *epidists=NULL;
 static double depmax=-1.0, epidistmax=-1.0;
 // 在outsubdir中，要根据文件名中的非重复震源深度分配要计算多少个走时场，
 // idx_nodup[i]反映的是depsrcs[i]第一次出现在depsrcs中的索引，长度为ndir
-static int *idx_nodup=NULL; 
+static MYINT *idx_nodup=NULL; 
 // 每个文件夹是否已计算对应的走时场，长度ndir
 static bool *subdirs_hasTT=NULL;
 
 // 各选项的标志变量，初始化为0，定义了则为1
-static int X_flag=0, Z_flag=0, M_flag=0, O_flag=0;
+static MYINT X_flag=0, Z_flag=0, M_flag=0, O_flag=0;
 
 
 static void print_help(){
@@ -107,8 +107,8 @@ static char* get_basename(char* path) {
  * 找出double数组中某数第一次出现的索引
  * 
  */
-static int find_index(double *arr, int n, double target){
-    for(int i=0; i<n; ++i){
+static MYINT find_index(double *arr, MYINT n, double target){
+    for(MYINT i=0; i<n; ++i){
         if(arr[i] == target) return i;
     }
     return -1;
@@ -121,8 +121,8 @@ static int find_index(double *arr, int n, double target){
  * @param     argc      命令行的参数个数
  * @param     argv      多个参数字符串指针
  */
-static void getopt_from_command(int argc, char **argv){
-    int opt;
+static void getopt_from_command(MYINT argc, char **argv){
+    MYINT opt;
     while ((opt = getopt(argc, argv, ":M:X:Z:O:")) != -1) {
         switch (opt) {
             // grt命令使用的模型文件
@@ -162,7 +162,7 @@ static void getopt_from_command(int argc, char **argv){
                 // 写数组
                 xs = (double*)malloc(sizeof(double)*nx);
                 dx = xe/nx;
-                for(int i=0; i<nx; ++i){
+                for(MYINT i=0; i<nx; ++i){
                     xs[i] = i*dx;
                 }
                 break;
@@ -183,7 +183,7 @@ static void getopt_from_command(int argc, char **argv){
                 // 写数组
                 zs = (double*)malloc(sizeof(double)*nz);
                 dz = ze/nz;
-                for(int i=0; i<nz; ++i){
+                for(MYINT i=0; i<nz; ++i){
                     zs[i] = i*dz;
                 }
                 break;
@@ -243,7 +243,7 @@ static void getopt_from_command(int argc, char **argv){
  * @return   是否是数字
  */ 
 static bool is_number(const char *str) {
-    int dot_count = 0;
+    MYINT dot_count = 0;
     
     // 遍历字符串的每个字符
     while (*str) {
@@ -267,25 +267,25 @@ static bool is_number(const char *str) {
  * @param    depsrc         提取的场点深度
  * @param    epidist        提取的震中距
  */
-int match_folder_name(const char *folder_name, double *depsrc, double *deprcv, double *epidist) {
+MYINT match_folder_name(const char *folder_name, double *depsrc, double *deprcv, double *epidist) {
     char *name_copy;
     char *token;
-    int ntoken = 0;
+    MYINT ntoken = 0;
     
     // 复制文件夹名，以便分割
     name_copy = strdup(folder_name);
 
     // 分割文件夹名，按下划线分割
     token = strtok(name_copy, "_");
-    int istr=0;
+    MYINT istr=0;
     bool checkstr_done = false;
-    int findnumber = 0;
+    MYINT findnumber = 0;
     double *pnumber[3] = {depsrc, deprcv, epidist};
     while (token != NULL) {
         ntoken++;
         if (!checkstr_done) {
             // 第一部分是 str，假设它是有效的字符串（包含字母或下划线）
-            for (int i = 0; token[i] != '\0'; i++) {
+            for (MYINT i = 0; token[i] != '\0'; i++) {
                 if (token[i]!=s_modelname[istr] && token[i] != '_') {
                     return 0;  // 如果包含无效字符，返回0
                 }
@@ -323,7 +323,7 @@ int match_folder_name(const char *folder_name, double *depsrc, double *deprcv, d
 void list_matching_folders(const char *indir) {
     DIR *dir;
     struct dirent *entry;
-    int lenmax = strlen(indir)+strlen(s_modelpath)+100;
+    MYINT lenmax = strlen(indir)+strlen(s_modelpath)+100;
     char folder_path[lenmax];
 
     if ((dir = opendir(indir)) == NULL) {
@@ -359,7 +359,7 @@ void list_matching_folders(const char *indir) {
                 deprcvs[ndir] = f2;
                 epidists = (double*)realloc(epidists, sizeof(double)*(ndir+1));
                 epidists[ndir] = f3;
-                idx_nodup = (int*)realloc(idx_nodup, sizeof(int)*(ndir+1));
+                idx_nodup = (MYINT*)realloc(idx_nodup, sizeof(MYINT)*(ndir+1));
                 idx_nodup[ndir] = find_index(depsrcs, ndir+1, f1);
                 subdirs_hasTT = (bool*)realloc(subdirs_hasTT, sizeof(bool)*(nlay+1));
                 subdirs_hasTT[ndir] = false;
@@ -381,7 +381,7 @@ void list_matching_folders(const char *indir) {
 /**
  * 从1D模型文件中读取Vp、Vs、Depth
  */
-static int load_model1D(){
+static MYINT load_model1D(){
     FILE *fp;
     if((fp = fopen(s_modelpath, "r")) == NULL){
         fprintf(stderr, "[%s] Model file open error.\n", command);
@@ -389,7 +389,7 @@ static int load_model1D(){
     }
 
     char line[1024];
-    int iline = 0;
+    MYINT iline = 0;
     double h, va, vb, rho, qa, qb;
     h = va = vb = rho = qa = qb = -9.0;
     nlay = 0;
@@ -438,14 +438,14 @@ static int load_model1D(){
  * @param     Slw      2D差分网格慢度
  */
 static void interp1d_vel(const double *Vel1d, MYREAL *Slw){
-    for(int iz=0; iz<nz; ++iz){
+    for(MYINT iz=0; iz<nz; ++iz){
         double v0;
         if(nlay==1){
             v0 = Vel1d[0];
         } else {
             // 找到索引值
             double dep = zs[iz];
-            int j=0; 
+            MYINT j=0; 
             for(j=0; j<nlay; ++j){
                 v0 = Vel1d[j];
                 if(Dep1d[j] <= dep && dep < Dep1d[j+1]){
@@ -457,7 +457,7 @@ static void interp1d_vel(const double *Vel1d, MYREAL *Slw){
         if(v0 == 0.0)  v0 += 1e-5;
 
         // 扩展到X维
-        for(int ix=0; ix<nx; ++ix){
+        for(MYINT ix=0; ix<nx; ++ix){
             Slw[iz+ix*nz] = 1.0/v0;
         }
     }
@@ -509,7 +509,7 @@ static void write_travt_to_sac(const char *subdir, double travtP, double travtS)
 //========================================================================
 //========================================================================
 //========================================================================
-int main(int argc, char **argv){
+MYINT main(MYINT argc, char **argv){
     command = argv[0];
     getopt_from_command(argc, argv);
     
@@ -542,12 +542,12 @@ int main(int argc, char **argv){
     interp1d_vel(Vp1d, SlwP);
     interp1d_vel(Vs1d, SlwS);
 
-    // for(int ix=0; ix<nx; ++ix){
+    // for(MYINT ix=0; ix<nx; ++ix){
     //     printf("%8.2f ", xs[ix]);
     // }
     // printf("\n");
-    // for(int iz=0; iz<nz; ++iz){
-    //     for(int ix=0; ix<nx; ++ix){
+    // for(MYINT iz=0; iz<nz; ++iz){
+    //     for(MYINT ix=0; ix<nx; ++ix){
     //         printf("%8.2f ", zs[iz]);
     //         printf("%8.2f ", 1.0/SlwS[iz+ix*nz]);
     //     }
@@ -555,10 +555,10 @@ int main(int argc, char **argv){
     // }
 
 
-    for(int idir=0; idir<ndir; ++idir){
+    for(MYINT idir=0; idir<ndir; ++idir){
         TTP = NULL;
         TTS = NULL;
-        int isrc = idx_nodup[idir];
+        MYINT isrc = idx_nodup[idir];
 
         // 该深度的震源已经计算过 
         if(subdirs_hasTT[idir]) continue;
@@ -572,7 +572,7 @@ int main(int argc, char **argv){
         FastMarching(xs, nx, ys, ny, zs, nz, 0.0, 0.0, depsrcs[isrc], 2, SlwS, TTS, false, 0, 0, false);
 
         // 给适合该走时的格林函数写入走时
-        for(int kdir=idir; kdir<ndir; ++kdir){
+        for(MYINT kdir=idir; kdir<ndir; ++kdir){
             if(idir != idx_nodup[kdir]) continue;
 
             printf("%s, depsrc=%f, deprcv=%f, r=%f\n", s_outsubdirs[kdir], depsrcs[kdir], deprcvs[kdir], epidists[kdir]);
@@ -594,15 +594,15 @@ int main(int argc, char **argv){
         nTT += 1;
     }
 
-    // for(int iz=0; iz<nz; ++iz){
-    //     for(int ix=0; ix<nx; ++ix){
+    // for(MYINT iz=0; iz<nz; ++iz){
+    //     for(MYINT ix=0; ix<nx; ++ix){
     //         printf("%8.2e ", TTPs[0][iz+ix*nz]);
     //     }
     //     printf("\n");
     // }
 
     // printf("%d\n", ndir);
-    // for(int i=0; i<ndir; ++i){
+    // for(MYINT i=0; i<ndir; ++i){
     //     printf("%d ", idx_nodup[i]);
     // }
     // printf("\n");
@@ -616,7 +616,7 @@ int main(int argc, char **argv){
     free(zs);
     free(Vp1d); free(Vs1d); free(Dep1d);
     free(SlwP); free(SlwS);
-    for(int idir=0; idir<ndir; ++idir){
+    for(MYINT idir=0; idir<ndir; ++idir){
         free(s_outsubdirs[idir]);
     }
     free(s_outsubdirs);

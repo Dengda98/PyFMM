@@ -28,35 +28,35 @@
 
 
 void FastMarching(
-    const double *rs, int nr, 
-    const double *ts, int nt, 
-    const double *ps, int np,
+    const double *rs, MYINT nr, 
+    const double *ts, MYINT nt, 
+    const double *ps, MYINT np,
     double rr,  double tt, double pp,
-    int maxodr,  const MYREAL *Slw, 
+    MYINT maxodr,  const MYREAL *Slw, 
     MYREAL *TT, bool sphcoord, 
-    int rfgfac, int rfgn, bool printbar)
+    MYINT rfgfac, MYINT rfgn, bool printbar)
 {
     // 程序运行开始时间
     struct timeval begin_t;
     gettimeofday(&begin_t, NULL);
 
-    int ntp=nt*np;
-    int nrtp=nr*ntp;
-    int Ndots=nrtp;
+    MYINT ntp=nt*np;
+    MYINT nrtp=nr*ntp;
+    MYINT Ndots=nrtp;
 
     char *FMM_stat = (char *)malloc1d(nrtp, sizeof(char)); // 1 alive, 0 close, -1 far
 
-    int heapsize=0, heapcapcity=nr*nt + nt*np + nr*np;
-    int *psize, *pcap;
+    MYINT heapsize=0, heapcapcity=nr*nt + nt*np + nr*np;
+    MYINT *psize, *pcap;
     psize = &heapsize;
     pcap = &heapcapcity;
     HEAP_DATA *FMM_data = (HEAP_DATA *)malloc1d(heapcapcity, sizeof(HEAP_DATA));
-    int *NroIdx = (int *)malloc1d(nrtp, sizeof(int));
+    MYINT *NroIdx = (MYINT *)malloc1d(nrtp, sizeof(MYINT));
 
     // All non-zero value of TT will be treated as efficient value,
     // and set FMM_CLS
     bool allzeroTT = true; 
-    for(int i=0; i<nrtp; ++i){
+    for(MYINT i=0; i<nrtp; ++i){
         if(TT[i] == 0.0){
             TT[i] = 9.9e30f;// init FAR Traveltime 
             FMM_stat[i] = FMM_FAR;
@@ -117,12 +117,12 @@ void FastMarching(
 
 
 HEAP_DATA * FastMarching_with_initial(
-    const double *rs, int nr, 
-    const double *ts, int nt, 
-    const double *ps, int np,
-    int maxodr,  const MYREAL *Slw, MYREAL *TT, 
+    const double *rs, MYINT nr, 
+    const double *ts, MYINT nt, 
+    const double *ps, MYINT np,
+    MYINT maxodr,  const MYREAL *Slw, MYREAL *TT, 
     char *FMM_stat, bool sphcoord, bool *edgeStop, bool printbar,
-    HEAP_DATA *FMM_data, int *psize, int *pcap, int *NroIdx, int *pNdots)
+    HEAP_DATA *FMM_data, MYINT *psize, MYINT *pcap, MYINT *NroIdx, MYINT *pNdots)
 {
     double dr = (nr>1)? rs[1] - rs[0] : 0.0;
     double dt = (nt>1)? ts[1] - ts[0] : 0.0;
@@ -136,17 +136,17 @@ HEAP_DATA * FastMarching_with_initial(
     // convenient arrays
     double sin_ts[nt];
     if(sphcoord){
-        for(int it=0; it<nt; ++it){
+        for(MYINT it=0; it<nt; ++it){
             sin_ts[it] = fabs(sin(ts[it]));
             if(sin_ts[it] < 1e-12) sin_ts[it] += 1e-12;
         }
     }
 
-    int ntp=nt*np;
+    MYINT ntp=nt*np;
 
     HEAP_DATA popdata, newdata;
-    int ir0, it0, ip0, ir, it, ip;
-    int idx, idx0;
+    MYINT ir0, it0, ip0, ir, it, ip;
+    MYINT idx, idx0;
     MYREAL s;
     MYREAL travt_bak, travt, travt0, travt1;
     double h;
@@ -155,8 +155,8 @@ HEAP_DATA * FastMarching_with_initial(
     char *pstat;
 
     // 打印进度条时每隔print_interv打印一次
-    int size_bak = nr*ntp;
-    int last_barpercent = 0, barpercent;
+    MYINT size_bak = nr*ntp;
+    MYINT last_barpercent = 0, barpercent;
 
     // printf("loop start, size=%d\n", *psize );
     char travt_stat;
@@ -274,9 +274,10 @@ HEAP_DATA * FastMarching_with_initial(
 
 
         // 打印进度条 
-        barpercent = 100 - (*pNdots*100) / size_bak;
+        barpercent = 100.0 - (double)(*pNdots) / (double)(size_bak) * 100.0;
         if(printbar && barpercent != last_barpercent){
             printprogressBar("Fast Marching...  ", barpercent);
+            // printf("\npNdots=%d, barpercent=%d, size_bak=%d\n", *pNdots, barpercent, size_bak);
             last_barpercent = barpercent;
         }
 
@@ -291,15 +292,15 @@ HEAP_DATA * FastMarching_with_initial(
 
 
 HEAP_DATA * init_source_TT(
-    const double *rs, int nr, 
-    const double *ts, int nt, 
-    const double *ps, int np,
+    const double *rs, MYINT nr, 
+    const double *ts, MYINT nt, 
+    const double *ps, MYINT np,
     double rr, double tt, double pp,
     const MYREAL *Slw, MYREAL *TT, 
     char *FMM_stat, bool sphcoord,
-    HEAP_DATA *FMM_data, int *psize, int *pcap, int *NroIdx, int *pNdots)
+    HEAP_DATA *FMM_data, MYINT *psize, MYINT *pcap, MYINT *NroIdx, MYINT *pNdots)
 {   
-    int ir, it, ip;
+    MYINT ir, it, ip;
     ir = dicho_find(rs, nr, rr);
     it = dicho_find(ts, nt, tt);
     ip = dicho_find(ps, np, pp);
@@ -314,15 +315,15 @@ HEAP_DATA * init_source_TT(
 
     HEAP_DATA newdata;
     MYREAL travt, s;
-    int jr, jt, jp;
-    int jdx;
+    MYINT jr, jt, jp;
+    MYINT jdx;
     double dist;
     double r2, t2, p2, dr, dt, dp;
     double x2, y2, z2;
     double dx, dy, dz;
     
     MYREAL mtravt=9.9e30;
-    int mir, mit, mip, midx=0;  // 最小走时节点的索引
+    MYINT mir, mit, mip, midx=0;  // 最小走时节点的索引
 
     // Tiny 2x2x2 cube
     for(char kr=0; kr<2; ++kr){
@@ -452,24 +453,24 @@ HEAP_DATA * init_source_TT(
 
 
 HEAP_DATA * init_source_TT_refinegrid(
-    const double *rs, int nr, 
-    const double *ts, int nt, 
-    const double *ps, int np,
+    const double *rs, MYINT nr, 
+    const double *ts, MYINT nt, 
+    const double *ps, MYINT np,
     double rr, double tt, double pp, 
-    int maxodr,  const MYREAL *Slw, MYREAL *TT, 
+    MYINT maxodr,  const MYREAL *Slw, MYREAL *TT, 
     char *FMM_stat, bool sphcoord,
-    int rfgfac, int rfgn, // refine grid factor and number of grids
+    MYINT rfgfac, MYINT rfgn, // refine grid factor and number of grids
     bool printbar,
-    HEAP_DATA *FMM_data, int *psize, int *pcap, int *NroIdx, int *pNdots)
+    HEAP_DATA *FMM_data, MYINT *psize, MYINT *pcap, MYINT *NroIdx, MYINT *pNdots)
 {   
     double dr = (nr>1)? rs[1] - rs[0] : 0.0;
     double dt = (nt>1)? ts[1] - ts[0] : 0.0;
     double dp = (np>1)? ps[1] - ps[0] : 0.0;
 
-    int ntp=nt*np;
+    MYINT ntp=nt*np;
 
     // find the closest point
-    int ir, it, ip;
+    MYINT ir, it, ip;
     ir = dicho_find(rs, nr, rr);
     it = dicho_find(ts, nt, tt);
     ip = dicho_find(ps, np, pp);
@@ -482,15 +483,15 @@ HEAP_DATA * init_source_TT_refinegrid(
     rfg_dt = dt/rfgfac;
     rfg_dp = dp/rfgfac;
     
-    int rfg_ir1, rfg_ir2;
-    int rfg_it1, rfg_it2;
-    int rfg_ip1, rfg_ip2;
+    MYINT rfg_ir1, rfg_ir2;
+    MYINT rfg_it1, rfg_it2;
+    MYINT rfg_ip1, rfg_ip2;
     rfg_ir1 = rfg_ir2 = ir;
     rfg_it1 = rfg_it2 = it;
     rfg_ip1 = rfg_ip2 = ip;
 
     // 确定加密范围
-    for(int i=1; i<=rfgn; ++i){
+    for(MYINT i=1; i<=rfgn; ++i){
         if(rfg_ir1>0)    rfg_ir1--;
         if(rfg_ir2<nr-1) rfg_ir2++;
         if(rfg_it1>0)    rfg_it1--;
@@ -501,8 +502,8 @@ HEAP_DATA * init_source_TT_refinegrid(
     // printf("rfg_ir12: %d %d, rfg_it12: %d %d, rfg_ip12: %d %d\n ", 
     //         rfg_ir1, rfg_ir2, rfg_it1, rfg_it2, rfg_ip1, rfg_ip2);
 
-    int rfg_nr, rfg_nt, rfg_np, rfg_nrtp, rfg_ntp;
-    int rfg_Ndots;
+    MYINT rfg_nr, rfg_nt, rfg_np, rfg_nrtp, rfg_ntp;
+    MYINT rfg_Ndots;
     rfg_nr = (rfg_ir2 - rfg_ir1)*rfgfac + 1;
     rfg_nt = (rfg_it2 - rfg_it1)*rfgfac + 1;
     rfg_np = (rfg_ip2 - rfg_ip1)*rfgfac + 1;
@@ -514,13 +515,13 @@ HEAP_DATA * init_source_TT_refinegrid(
     double *rfg_ts = (double *)malloc1d(rfg_nt, sizeof(double));
     double *rfg_ps = (double *)malloc1d(rfg_np, sizeof(double));
     
-    for(int i=0; i<rfg_nr; ++i){
+    for(MYINT i=0; i<rfg_nr; ++i){
         rfg_rs[i] = rs[rfg_ir1] + rfg_dr*i;
     }
-    for(int i=0; i<rfg_nt; ++i){
+    for(MYINT i=0; i<rfg_nt; ++i){
         rfg_ts[i] = ts[rfg_it1] + rfg_dt*i;
     }
-    for(int i=0; i<rfg_np; ++i){
+    for(MYINT i=0; i<rfg_np; ++i){
         rfg_ps[i] = ps[rfg_ip1] + rfg_dp*i;
     }
 
@@ -529,11 +530,11 @@ HEAP_DATA * init_source_TT_refinegrid(
     char *rfg_FMM_stat = (char *)malloc1d(rfg_nrtp, sizeof(char)); // 1 alive, 0 close, -1 far
     
     // 插值加密的慢度场
-    for(int i=0; i<rfg_nrtp; ++i){
+    for(MYINT i=0; i<rfg_nrtp; ++i){
         rfg_TT[i] = 9.9e30f;// init FAR Traveltime 
         rfg_FMM_stat[i] = FMM_FAR;
 
-        int ir0, it0, ip0;
+        MYINT ir0, it0, ip0;
         unravel_index(i, rfg_ntp, rfg_np, &ir0, &it0, &ip0);
         rfg_Slw[i] = trilinear_one_ravel(
             rs, nr, 
@@ -543,12 +544,12 @@ HEAP_DATA * init_source_TT_refinegrid(
             NULL, NULL, NULL, NULL, NULL);
     }
 
-    int rfg_heapsize=0, rfg_heapcapcity=rfg_nr*rfg_nt + rfg_nt*rfg_np + rfg_nr*rfg_np;
-    int *prfg_size, *prfg_cap;
+    MYINT rfg_heapsize=0, rfg_heapcapcity=rfg_nr*rfg_nt + rfg_nt*rfg_np + rfg_nr*rfg_np;
+    MYINT *prfg_size, *prfg_cap;
     prfg_size = &rfg_heapsize;
     prfg_cap = &rfg_heapcapcity;
     HEAP_DATA *rfg_FMM_data = (HEAP_DATA *)malloc1d(rfg_heapcapcity, sizeof(HEAP_DATA));
-    int *rfg_NroIdx = (int *)malloc1d(rfg_nrtp, sizeof(int));
+    MYINT *rfg_NroIdx = (MYINT *)malloc1d(rfg_nrtp, sizeof(MYINT));
 
     rfg_FMM_data = init_source_TT(
         rfg_rs, rfg_nr, rfg_ts, rfg_nt, rfg_ps, rfg_np, 
@@ -574,12 +575,12 @@ HEAP_DATA * init_source_TT_refinegrid(
         rfg_FMM_data, prfg_size, prfg_cap, rfg_NroIdx, &rfg_Ndots);
 
     // record result to main TT 
-    for(int jr=rfg_ir1, rfg_jr=0; jr<=rfg_ir2; ++jr, rfg_jr+=rfgfac){
-    for(int jt=rfg_it1, rfg_jt=0; jt<=rfg_it2; ++jt, rfg_jt+=rfgfac){
-        int jdx1, jdx2;
+    for(MYINT jr=rfg_ir1, rfg_jr=0; jr<=rfg_ir2; ++jr, rfg_jr+=rfgfac){
+    for(MYINT jt=rfg_it1, rfg_jt=0; jt<=rfg_it2; ++jt, rfg_jt+=rfgfac){
+        MYINT jdx1, jdx2;
         jdx1 = jdx2 = -1;
-        for(int jp=rfg_ip1, rfg_jp=0; jp<=rfg_ip2; ++jp, rfg_jp+=rfgfac){
-            int jdx, rfg_jdx;
+        for(MYINT jp=rfg_ip1, rfg_jp=0; jp<=rfg_ip2; ++jp, rfg_jp+=rfgfac){
+            MYINT jdx, rfg_jdx;
             ravel_index(&jdx, ntp, np, jr, jt, jp);
             ravel_index(&rfg_jdx, rfg_ntp, rfg_np, rfg_jr, rfg_jt, rfg_jp);
 
@@ -623,9 +624,9 @@ HEAP_DATA * init_source_TT_refinegrid(
 
 
 MYREAL get_neighbour_travt(
-    int nr, int nt, int np, int ntp,
-    int ir, int it, int ip, int idx,
-    int maxodr, MYREAL *TT,
+    MYINT nr, MYINT nt, MYINT np, MYINT ntp,
+    MYINT ir, MYINT it, MYINT ip, MYINT idx,
+    MYINT maxodr, MYREAL *TT,
     char *FMM_stat,  double s,
     double dr, double dt, double dp, 
     char *stat)
@@ -638,11 +639,11 @@ MYREAL get_neighbour_travt(
 
     MYREAL tarr[5], tarrR[5], tarrT[5], tarrP[5]; // max(maxodr) = 3
     tarr[0] = tarrR[0] = tarrT[0] = tarrP[0] = TT[idx];
-    int odr, odrR, odrT, odrP;
+    MYINT odr, odrR, odrT, odrP;
     odr = odrR = odrT = odrP = 0;
 
-    int jdx;
-    int i;
+    MYINT jdx;
+    MYINT i;
 
     char sgn_r, sgn_t, sgn_p;
     sgn_r = sgn_t = sgn_p = 0;
@@ -805,14 +806,14 @@ MYREAL get_neighbour_travt(
 
 
 MYREAL FMM_raytracing(
-    const double *rs, int nr, 
-    const double *ts, int nt, 
-    const double *ps, int np,
+    const double *rs, MYINT nr, 
+    const double *ts, MYINT nt, 
+    const double *ps, MYINT np,
     double r0, double t0, double p0,
     double rr, double tt, double pp, double seglen, double segfac,
     const MYREAL *Slw, const MYREAL *TT, bool sphcoord,
     // MYREAL *gTr, MYREAL *gTt, MYREAL *gTp, 
-    double *rays, int *N)
+    double *rays, MYINT *N)
 {
     double dr = (nr>1)? rs[1] - rs[0] : 1e-6;
     double dt = (nt>1)? ts[1] - ts[0] : 1e-6;
@@ -828,9 +829,9 @@ MYREAL FMM_raytracing(
     }
 
     
-    int ntp = nt*np;
+    MYINT ntp = nt*np;
     
-    int idot = 0;
+    MYINT idot = 0;
 
     double gtr, gtt, gtp, norm;
     double limitdist;  
@@ -891,7 +892,7 @@ MYREAL FMM_raytracing(
     // printf("%f, %f, %f, %f, \n", trem, gtr, gtt, gtp);
 
     //-------------------------------------------------------------------
-    int N0 = *N;
+    MYINT N0 = *N;
     double dist;
     while(idot < N0-1){
         rays[3*idot] = r1;
@@ -905,7 +906,7 @@ MYREAL FMM_raytracing(
         
         // update
         seglen = seglen0;
-        for(int i=0; i<5; ++i){
+        for(MYINT i=0; i<5; ++i){
             seglen1 = seglen;
             if(sphcoord){
                 p11 = p1 - gtp*seglen/(r1*sin(t1));
@@ -1018,9 +1019,9 @@ MYREAL FMM_raytracing(
         // if(idot==1) {
         //     printf("IXYZ, %d, %d, %d, %d, %d, %d\n", IXYZ[0], IXYZ[1], IXYZ[2], IXYZ[3], IXYZ[4], IXYZ[5]);
         //     printf("WGHT: \n");
-        //     for(int i=0; i<2; ++i){
-        //         for(int j=0; j<2; ++j){
-        //             for(int k=0; k<2; ++k){
+        //     for(MYINT i=0; i<2; ++i){
+        //         for(MYINT j=0; j<2; ++j){
+        //             for(MYINT k=0; k<2; ++k){
         //                 printf("%f ", WGHT[i][j][k]);
         //             }
         //             printf("\n");
@@ -1029,9 +1030,9 @@ MYREAL FMM_raytracing(
         //     }
 
         //     printf("TT: \n");
-        //     for(int i=-1; i<2; ++i){
-        //         for(int j=-1; j<2; ++j){
-        //             for(int k=-1; k<2; ++k){
+        //     for(MYINT i=-1; i<2; ++i){
+        //         for(MYINT j=-1; j<2; ++j){
+        //             for(MYINT k=-1; k<2; ++k){
         //                 printf("%f ", TT[(148+i)*ntp + (147+j)*np + 149+k]);
         //             }
         //             printf("\n");

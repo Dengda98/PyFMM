@@ -41,13 +41,13 @@
  * 
  */
 void FastMarching(
-    const double *rs, int nr, 
-    const double *ts, int nt, 
-    const double *ps, int np,
+    const double *rs, MYINT nr, 
+    const double *ts, MYINT nt, 
+    const double *ps, MYINT np,
     double rr,  double tt, double pp,
-    int maxodr,  const MYREAL *Slw, 
+    MYINT maxodr,  const MYREAL *Slw, 
     MYREAL *TT, bool sphcoord, 
-    int rfgfac, int rfgn, bool printbar);
+    MYINT rfgfac, MYINT rfgn, bool printbar);
 
 
 /**
@@ -74,12 +74,12 @@ void FastMarching(
  * 
  */
 HEAP_DATA * FastMarching_with_initial(
-    const double *rs, int nr, 
-    const double *ts, int nt, 
-    const double *ps, int np,
-    int maxodr,  const MYREAL *Slw, MYREAL *TT, 
+    const double *rs, MYINT nr, 
+    const double *ts, MYINT nt, 
+    const double *ps, MYINT np,
+    MYINT maxodr,  const MYREAL *Slw, MYREAL *TT, 
     char *FMM_stat, bool sphcoord, bool *edgeStop, bool printbar,
-    HEAP_DATA *FMM_data, int *psize, int *pcap, int *NroIdx, int *pNdots);
+    HEAP_DATA *FMM_data, MYINT *psize, MYINT *pcap, MYINT *NroIdx, MYINT *pNdots);
 
 
 
@@ -109,13 +109,13 @@ HEAP_DATA * FastMarching_with_initial(
  * @return    堆首指针
  */
 HEAP_DATA * init_source_TT(
-    const double *rs, int nr, 
-    const double *ts, int nt, 
-    const double *ps, int np,
+    const double *rs, MYINT nr, 
+    const double *ts, MYINT nt, 
+    const double *ps, MYINT np,
     double rr, double tt, double pp,
     const MYREAL *Slw, MYREAL *TT, 
     char *FMM_stat, bool sphcoord,
-    HEAP_DATA *FMM_data, int *psize, int *pcap, int *NroIdx, int *pNdots);
+    HEAP_DATA *FMM_data, MYINT *psize, MYINT *pcap, MYINT *NroIdx, MYINT *pNdots);
 
 
 
@@ -148,15 +148,15 @@ HEAP_DATA * init_source_TT(
  * @return    堆首指针
  */
 HEAP_DATA * init_source_TT_refinegrid(
-    const double *rs, int nr, 
-    const double *ts, int nt, 
-    const double *ps, int np,
+    const double *rs, MYINT nr, 
+    const double *ts, MYINT nt, 
+    const double *ps, MYINT np,
     double rr, double tt, double pp, 
-    int maxodr,  const MYREAL *Slw, MYREAL *TT, 
+    MYINT maxodr,  const MYREAL *Slw, MYREAL *TT, 
     char *FMM_stat, bool sphcoord,
-    int rfgfac, int rfgn, // refine grid factor and number of grids
+    MYINT rfgfac, MYINT rfgn, // refine grid factor and number of grids
     bool printbar,
-    HEAP_DATA *FMM_data, int *psize, int *pcap, int *NroIdx, int *pNdots);
+    HEAP_DATA *FMM_data, MYINT *psize, MYINT *pcap, MYINT *NroIdx, MYINT *pNdots);
 
 
 
@@ -184,9 +184,9 @@ HEAP_DATA * init_source_TT_refinegrid(
  * 
  */
 MYREAL get_neighbour_travt(
-    int nr, int nt, int np, int ntp,
-    int ir, int it, int ip, int idx,
-    int maxodr, MYREAL *TT,
+    MYINT nr, MYINT nt, MYINT np, MYINT ntp,
+    MYINT ir, MYINT it, MYINT ip, MYINT idx,
+    MYINT maxodr, MYREAL *TT,
     char *FMM_stat,  double s,
     double dr, double dt, double dp, 
     char *stat);
@@ -220,10 +220,10 @@ MYREAL get_neighbour_travt(
  * 
  */
 MYREAL FMM_raytracing(
-    const double *rs, int nr, 
-    const double *ts, int nt, 
-    const double *ps, int np,
+    const double *rs, MYINT nr, 
+    const double *ts, MYINT nt, 
+    const double *ps, MYINT np,
     double r0, double t0, double p0,
     double rr, double tt, double pp, double seglen, double segfac,
     const MYREAL *Slw, const MYREAL *TT, bool sphcoord,
-    double *rays, int *N);
+    double *rays, MYINT *N);

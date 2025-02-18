@@ -56,4 +56,4 @@ void get_diff_odr3(const MYREAL *pt, double h, double *acoef, double *bcoef, dou
  * @param    bcoef   (out)系数结果b
  * @param    diff    (out) \f$ aT-b \f$ 值
  */
-void get_diff_odr123(int odr, const MYREAL *pt, double h, double *acoef, double *bcoef, double *diff);
+void get_diff_odr123(MYINT odr, const MYREAL *pt, double h, double *acoef, double *bcoef, double *diff);

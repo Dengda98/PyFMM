@@ -9,7 +9,7 @@
 import os 
 import numpy as np
 import numpy.ctypeslib as npct
-from ctypes import byref, c_int
+from ctypes import byref
 from scipy import interpolate
 
 from . import c_interfaces
@@ -240,7 +240,7 @@ def raytracing(
 
     rays = np.empty((maxdots*3,), dtype='f8')
     c_rays = npct.as_ctypes(rays)
-    c_ndots = c_int(maxdots)
+    c_ndots = c_interfaces.INT(maxdots)
 
     travt = c_interfaces.C_FMM_raytracing(
         c_xarr, len(xarr),

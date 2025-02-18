@@ -20,34 +20,34 @@
 #include "progressbar.h"
 
 
-void set_fsm_num_threads(int num_threads){
+void set_fsm_num_threads(MYINT num_threads){
 #ifdef _OPENMP
     omp_set_num_threads(num_threads);
 #endif
 }
 
-int FastSweeping(
-    const double *rs, int nr, 
-    const double *ts, int nt, 
-    const double *ps, int np,
+MYINT FastSweeping(
+    const double *rs, MYINT nr, 
+    const double *ts, MYINT nt, 
+    const double *ps, MYINT np,
     double rr,  double tt, double pp,
-    int maxodr,  const MYREAL *Slw, 
+    MYINT maxodr,  const MYREAL *Slw, 
     MYREAL *TT, bool sphcoord, 
-    int rfgfac, int rfgn, bool printbar, 
-    double eps, int maxLoops, bool isparallel)
+    MYINT rfgfac, MYINT rfgn, bool printbar, 
+    double eps, MYINT maxLoops, bool isparallel)
 {
     // 程序运行开始时间
     struct timeval begin_t;
     gettimeofday(&begin_t, NULL);
 
-    int ntp=nt*np;
-    int nrtp=nr*ntp;
+    MYINT ntp=nt*np;
+    MYINT nrtp=nr*ntp;
     char *FMM_stat = (char *)malloc1d(nrtp, sizeof(char));
 
     // All non-zero value of TT will be treated as efficient value,
     // and set FMM_ALV
     bool allzeroTT = true; 
-    for(int i=0; i<nrtp; ++i){
+    for(MYINT i=0; i<nrtp; ++i){
         if(TT[i] == 0.0){
             TT[i] = 9.9e30f;// init FAR Traveltime 
             FMM_stat[i] = FMM_FAR;
@@ -78,7 +78,7 @@ int FastSweeping(
         }
     }
 
-    int nsweep;
+    MYINT nsweep;
     nsweep = FastSweeping_with_initial(
         rs, nr, 
         ts, nt, 
@@ -101,13 +101,13 @@ int FastSweeping(
 
 
 
-int FastSweeping_with_initial(
-    const double *rs, int nr, 
-    const double *ts, int nt, 
-    const double *ps, int np,
-    int maxodr,  const MYREAL *Slw, MYREAL *TT, 
+MYINT FastSweeping_with_initial(
+    const double *rs, MYINT nr, 
+    const double *ts, MYINT nt, 
+    const double *ps, MYINT np,
+    MYINT maxodr,  const MYREAL *Slw, MYREAL *TT, 
     char *FMM_stat, bool sphcoord, bool printbar, 
-    double eps, int maxLoops, bool isparallel)
+    double eps, MYINT maxLoops, bool isparallel)
 {
     if(! isparallel) set_fsm_num_threads(1);
 
@@ -118,14 +118,14 @@ int FastSweeping_with_initial(
     // convenient arrays
     double sin_ts[nt];
     if(sphcoord){
-        for(int it=0; it<nt; ++it){
+        for(MYINT it=0; it<nt; ++it){
             sin_ts[it] = fabs(sin(ts[it]));
             if(sin_ts[it] < 1e-12) sin_ts[it] += 1e-12;
         }
     }
 
-    int ntp=nt*np;
-    int nrtp=nr*ntp;
+    MYINT ntp=nt*np;
+    MYINT nrtp=nr*ntp;
 
 
     // DON'T CHANGE.
@@ -148,7 +148,7 @@ int FastSweeping_with_initial(
     }
     
 
-    int iloop=0, nloop=maxLoops, nsweep=0;
+    MYINT iloop=0, nloop=maxLoops, nsweep=0;
     // if(! isparallel) nloop = 1;
 
     // compute MAX UPDATE in sweeping
@@ -158,10 +158,10 @@ int FastSweeping_with_initial(
 
         if(isparallel){
             // init and copy data 
-            for(int i=0; i<nrtp; ++i){
+            for(MYINT i=0; i<nrtp; ++i){
                 char stat = FMM_FAR;
                 if(FMM_stat[i]!=FMM_FAR) stat = FMM_ALV;
-                for(int k=0; k<8; ++k){
+                for(MYINT k=0; k<8; ++k){
                     TT_thread_all[i+k*nrtp] = TT[i];
                     FMM_stat_thread_all[i+k*nrtp] = stat;
                 }
@@ -170,7 +170,7 @@ int FastSweeping_with_initial(
 
 
         #pragma omp parallel for default(shared)
-        for(int isweep=0; isweep<8; ++isweep){
+        for(MYINT isweep=0; isweep<8; ++isweep){
             // not use break, but continue, to make thread safe
             // break in advance for sequential mode
             if(!isparallel && iloop > 1 && eps > 0.0 && maxUpdate <= eps) continue;
@@ -188,9 +188,9 @@ int FastSweeping_with_initial(
             }
             
 
-            int begr, stepr, endr;
-            int begt, stept, endt;
-            int begp, stepp, endp;
+            MYINT begr, stepr, endr;
+            MYINT begt, stept, endt;
+            MYINT begp, stepp, endp;
             begr = begt = begp = 0;
             stepr = stept = stepp = 1;
             endr = nr;
@@ -198,7 +198,7 @@ int FastSweeping_with_initial(
             endp = np;
             bool direcr, direct, direcp;
             direcr = direct = direcp = false;
-            int idx;
+            MYINT idx;
 
 
             direcr = direcr_arr[isweep];
@@ -227,9 +227,9 @@ int FastSweeping_with_initial(
             MYREAL update0;
 
             // Start Sweeping
-            for(int ir=begr; ir!=endr; ir+=stepr){
-            for(int it=begt; it!=endt; it+=stept){
-            for(int ip=begp; ip!=endp; ip+=stepp){
+            for(MYINT ir=begr; ir!=endr; ir+=stepr){
+            for(MYINT it=begt; it!=endt; it+=stept){
+            for(MYINT ip=begp; ip!=endp; ip+=stepp){
                 ravel_index(&idx, ntp, np, ir, it, ip);
                 slw = Slw[idx];
 
@@ -237,8 +237,8 @@ int FastSweeping_with_initial(
                 MYREAL t_bak=-999.9, t_bak0=-999.9;
                 mintravt=-999.0;
                 mintravt_h=0.0;
-                for(int k=0; k<6; ++k){
-                    int jdx, iir, iit, iip;
+                for(MYINT k=0; k<6; ++k){
+                    MYINT jdx, iir, iit, iip;
                     iir = ir+xr[k];
                     iit = it+xt[k];
                     iip = ip+xp[k];
@@ -327,9 +327,9 @@ int FastSweeping_with_initial(
             // merge results
             maxUpdate = 0.0;
             MYREAL minTT, update;
-            for(int i=0; i<nrtp; ++i){
+            for(MYINT i=0; i<nrtp; ++i){
                 minTT = 9.9e30;
-                for(int k=0; k<8; ++k){
+                for(MYINT k=0; k<8; ++k){
                     update = TT_thread_all[i+k*nrtp];
                     if(minTT > update) minTT = update;
                 }
@@ -348,7 +348,7 @@ int FastSweeping_with_initial(
         // break in advance
         if(eps > 0.0 && maxUpdate <= eps) break;
 
-        for(int i=0; i<nrtp; ++i){
+        for(MYINT i=0; i<nrtp; ++i){
             FMM_stat[i] = FMM_ALV;
         }
 

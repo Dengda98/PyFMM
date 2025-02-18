@@ -18,11 +18,11 @@
 
 
 MYREAL trilinear_one_ravel(
-    const double *x, int nx, const double *y, int ny, const double *z, int nz, int nyz, const MYREAL *values, 
+    const double *x, MYINT nx, const double *y, MYINT ny, const double *z, MYINT nz, MYINT nyz, const MYREAL *values, 
     double xi, double yi, double zi, double *pdiffx, double *pdiffy, double *pdiffz, 
-    int IXYZ[6], double WGHT[2][2][2])
+    MYINT IXYZ[6], double WGHT[2][2][2])
 {
-    int IXYZ0[6];
+    MYINT IXYZ0[6];
     double WGHT0[2][2][2];
     trilinear_one_fac(x, nx, y, ny, z, nz, xi, yi, zi, IXYZ0, WGHT0);
 
@@ -30,14 +30,14 @@ MYREAL trilinear_one_ravel(
     vi = trilinear_one_Idx_ravel(IXYZ0, WGHT0, values, nx, ny, nz, nyz, pdiffx, pdiffy, pdiffz);
 
     if(IXYZ!=NULL){
-        for(int i=0; i<6; ++i){
+        for(MYINT i=0; i<6; ++i){
             IXYZ[i] = IXYZ0[i];
         }
     } 
     if(WGHT!=NULL){
-        for(int i=0; i<2; ++i){
-            for(int j=0; j<2; ++j){
-                for(int k=0; k<2; ++k){
+        for(MYINT i=0; i<2; ++i){
+            for(MYINT j=0; j<2; ++j){
+                for(MYINT k=0; k<2; ++k){
                     WGHT[i][j][k] = WGHT0[i][j][k];
                 }
             }
@@ -50,16 +50,16 @@ MYREAL trilinear_one_ravel(
 
 
 void trilinear_one_fac(
-    const double *x, int nx, const double *y, int ny, const double *z, int nz, 
-    double xi, double yi, double zi, int IXYZ[6], double WGHT[2][2][2])
+    const double *x, MYINT nx, const double *y, MYINT ny, const double *z, MYINT nz, 
+    double xi, double yi, double zi, MYINT IXYZ[6], double WGHT[2][2][2])
 {
-    int ix = dicho_find(x, nx, xi);
-    // int ix1 = (ix+1>nx-1) ? nx-1 : ix+1;
-    int iy = dicho_find(y, ny, yi);
-    // int iy1 = (iy+1>ny-1) ? ny-1 : iy+1;
-    int iz = dicho_find(z, nz, zi);
-    // int iz1 = (iz+1>nz-1) ? nz-1 : iz+1;
-    int ix1, iy1, iz1;
+    MYINT ix = dicho_find(x, nx, xi);
+    // MYINT ix1 = (ix+1>nx-1) ? nx-1 : ix+1;
+    MYINT iy = dicho_find(y, ny, yi);
+    // MYINT iy1 = (iy+1>ny-1) ? ny-1 : iy+1;
+    MYINT iz = dicho_find(z, nz, zi);
+    // MYINT iz1 = (iz+1>nz-1) ? nz-1 : iz+1;
+    MYINT ix1, iy1, iz1;
     if(IXYZ!=NULL && IXYZ[0]==-9){ // do extrapolation
         if(ix==nx-1) ix--; 
         ix1 = ix+1;
@@ -125,10 +125,10 @@ void trilinear_one_fac(
 
 
 MYREAL trilinear_one_Idx_ravel(
-    const int IXYZ[6], const double WGHT[2][2][2],  const MYREAL *values, int nx, int ny, int nz, int nyz, 
+    const MYINT IXYZ[6], const double WGHT[2][2][2],  const MYREAL *values, MYINT nx, MYINT ny, MYINT nz, MYINT nyz, 
     double *pdiffx, double *pdiffy, double *pdiffz)
 {
-    int ix, ix1, iy, iy1, iz, iz1;
+    MYINT ix, ix1, iy, iy1, iz, iz1;
     double f111, f121, f211, f221, f112, f122, f212, f222;
     double v111,v121,v211,v221, v112,v122,v212,v222;
 
@@ -140,9 +140,9 @@ MYREAL trilinear_one_Idx_ravel(
     iz1 = IXYZ[5]; 
 
 
-    int idx;
+    MYINT idx;
     ravel_index(&idx, nyz, nz, ix, iy, iz);
-    int dx, dy, dz, DX, DY, DZ;
+    MYINT dx, dy, dz, DX, DY, DZ;
     DX = nyz;
     DY = nz;
     DZ = 1;

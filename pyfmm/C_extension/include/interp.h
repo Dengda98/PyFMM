@@ -34,9 +34,9 @@
  * 
  */
 MYREAL trilinear_one_ravel(
-    const double *x, int nx, const double *y, int ny, const double *z, int nz, int nyz, const MYREAL *values, 
+    const double *x, MYINT nx, const double *y, MYINT ny, const double *z, MYINT nz, MYINT nyz, const MYREAL *values, 
     double xi, double yi, double zi, double *pdiffx, double *pdiffy, double *pdiffz, 
-    int IXYZ[6], double WGHT[2][2][2]);
+    MYINT IXYZ[6], double WGHT[2][2][2]);
 
 
 /**
@@ -55,8 +55,8 @@ MYREAL trilinear_one_ravel(
  * @param     WGHT    (out)非NULL时，8个插值权重
  */
 void trilinear_one_fac(
-    const double *x, int nx, const double *y, int ny, const double *z, int nz, 
-    double xi, double yi, double zi, int IXYZ[6], double WGHT[2][2][2]);
+    const double *x, MYINT nx, const double *y, MYINT ny, const double *z, MYINT nz, 
+    double xi, double yi, double zi, MYINT IXYZ[6], double WGHT[2][2][2]);
 
 
 
@@ -78,5 +78,5 @@ void trilinear_one_fac(
  * 
  */
 MYREAL trilinear_one_Idx_ravel(
-    const int IXYZ[6], const double WGHT[2][2][2],  const MYREAL *values, int nx, int ny, int nz, int nyz, 
+    const MYINT IXYZ[6], const double WGHT[2][2][2],  const MYREAL *values, MYINT nx, MYINT ny, MYINT nz, MYINT nyz, 
     double *pdiffx, double *pdiffy, double *pdiffz);

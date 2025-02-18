@@ -20,3 +20,5 @@ typedef float MYREAL;   ///< 单精度 or 双精度
 #else
 typedef double MYREAL;
 #endif
+
+typedef long int MYINT; ///< 长整型，以存储更大体积的网格量

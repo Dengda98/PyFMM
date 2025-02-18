@@ -41,7 +41,7 @@ void get_diff_odr3(const MYREAL *pt, double h, double *acoef, double *bcoef, dou
 }
 
 
-void get_diff_odr123(int odr, const MYREAL *pt, double h, double *acoef, double *bcoef, double *diff){
+void get_diff_odr123(MYINT odr, const MYREAL *pt, double h, double *acoef, double *bcoef, double *diff){
     if(odr==0){
         if(acoef!=NULL) *acoef = 0.0;
         if(bcoef!=NULL) *bcoef = 0.0;

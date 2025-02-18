@@ -13,11 +13,16 @@ from typing import Any
 
 PDOUBLE = POINTER(c_double)
 PFLOAT = POINTER(c_float)
-PINT = POINTER(c_int)
 
 USE_FLOAT:bool = False
 """libfmm库中走时和慢度数组是否使用单精度浮点数"""
 NPCT_REAL_TYPE:str = 'f8'
+
+USE_LONG:bool = True 
+"""使用长整型整数避免统计网格点数量时溢出"""
+INT = c_long if USE_LONG else c_int
+PINT = POINTER(INT)
+
 
 C_FastMarching:Any = None
 C_FMM_raytracing:Any = None
@@ -55,21 +60,21 @@ def load_c_lib(use_float:bool=False):
 
     C_FastMarching.restype = None 
     C_FastMarching.argtypes = [
-        PDOUBLE, c_int,
-        PDOUBLE, c_int,
-        PDOUBLE, c_int,
+        PDOUBLE, INT, 
+        PDOUBLE, INT,
+        PDOUBLE, INT,
         c_double, c_double, c_double, 
-        c_int, PREAL,
+        INT, PREAL,
         PREAL, c_bool,
-        c_int, c_int, c_bool
+        INT, INT, c_bool
     ]
 
 
     C_FMM_raytracing.restype = REAL 
     C_FMM_raytracing.argtypes = [
-        PDOUBLE, c_int,
-        PDOUBLE, c_int,
-        PDOUBLE, c_int,
+        PDOUBLE, INT,
+        PDOUBLE, INT,
+        PDOUBLE, INT,
         c_double, c_double, c_double, 
         c_double, c_double, c_double, c_double, c_double, 
         PREAL, PREAL, c_bool,
@@ -77,21 +82,21 @@ def load_c_lib(use_float:bool=False):
     ]
 
     C_FastSweeping = libfmm.FastSweeping
-    C_FastSweeping.restype = c_int 
+    C_FastSweeping.restype = INT 
     C_FastSweeping.argtypes = [
-        PDOUBLE, c_int,
-        PDOUBLE, c_int,
-        PDOUBLE, c_int,
+        PDOUBLE, INT,
+        PDOUBLE, INT,
+        PDOUBLE, INT,
         c_double, c_double, c_double, 
-        c_int, PREAL,
+        INT, PREAL,
         PREAL, c_bool,
-        c_int, c_int, c_bool, 
-        c_double, c_int, c_bool
+        INT, INT, c_bool, 
+        c_double, INT, c_bool
     ]
 
     C_set_fsm_num_threads = libfmm.set_fsm_num_threads
     C_set_fsm_num_threads.restype = None
-    C_set_fsm_num_threads.argtypes = [c_int]
+    C_set_fsm_num_threads.argtypes = [INT]
 
 
 def set_fsm_num_threads(n):

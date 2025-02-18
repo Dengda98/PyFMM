@@ -9,10 +9,10 @@
 
 #include "query.h"
 
-int dicho_find(const double *arr, int n, double target){
-    int left=0;
-    int right=n-1;
-    int mid=0;
+MYINT dicho_find(const double *arr, MYINT n, double target){
+    MYINT left=0;
+    MYINT right=n-1;
+    MYINT mid=0;
     if(target <= arr[0]){}
     else if(target >= arr[right]){
         left = right;

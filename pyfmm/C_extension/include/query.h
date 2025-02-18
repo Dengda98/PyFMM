@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "const.h"
 
 /**
  * 使用二分法查找元素，返回较小的一个
@@ -20,4 +21,4 @@
  * @return    索引值
  * 
  */
-int dicho_find(const double *arr, int n, double target);
+MYINT dicho_find(const double *arr, MYINT n, double target);
