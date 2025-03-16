@@ -10,7 +10,7 @@
   </a>
   <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/Dengda98/PyFMM">
   <img alt="GitHub License" src="https://img.shields.io/github/license/Dengda98/PyFMM">
-  <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/Dengda98/PyFMM/publish_pypi.yml?label=pypi%20publish">
+  <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/Dengda98/PyFMM/build.yml">
 
 </p>
 
@@ -26,7 +26,10 @@
 
 [**PyFMM**](https://github.com/Dengda98/PyFMM) is a C/Python package for solving eikonal equation using Fast Marching/Sweeping Method, with examples and annotations.  
 
-**PyFMM** 目前可在Linux、Mac系统上运行，在Windows系统上可借助[WSL](https://learn.microsoft.com/en-us/windows/wsl/)兼容。
+At present, **PyFMM** can run on
+  - [x] Linux
+  - [x] macOS
+  - [x] Windows
 
 ----
 
@@ -69,11 +72,10 @@
 
 # 安装 Installation 
 
-要求系统上有`gcc`，`make`，`openmp`等开发工具，支持`pip`命令一键安装：
+**新版本已添加预编译的C动态库**，无需本地再编译，支持`pip`命令一键安装：
 ```bash
-pip install -v pyfmm-kit
+pip install pyfmm-kit
 ```
-对于不同系统以及安装问题，详见文档[**安装说明**](https://pyfmm.readthedocs.io/zh-cn/latest/install.html)。
 
 
 <br>

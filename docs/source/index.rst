@@ -26,8 +26,14 @@
 并使用梯度下降获得满足费马原理的射线路径，故代码中的一些术语偏专业性。
 类似的原理也可用于其它方面，如计算点到曲线/面的距离，或光学、电磁学等。  
 
-**PyFMM** 目前可在Linux、Mac系统上运行，在Windows系统上可借助 `WSL <https://learn.microsoft.com/en-us/windows/wsl/>`_ 兼容运行。  
+At present, **PyFMM** can run on
 
+.. raw:: html
+
+   <input type="checkbox" checked disabled> Linux<br>
+   <input type="checkbox" checked disabled> macOS<br>
+   <input type="checkbox" checked disabled> Windows<br>
+  
 -----------------------------------------------------------
 
 
