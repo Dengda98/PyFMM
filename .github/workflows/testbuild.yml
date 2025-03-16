@@ -114,7 +114,7 @@ jobs:
         run: |
           PACK_NAME=pyfmm_kit-${{ github.ref_name }}-${{ env.SUFFIX_PLAT_NAME }}
           echo "PACK_NAME=$PACK_NAME" >> $GITHUB_ENV
-          FILE_CONTENT=$(ls)
+          FILE_CONTENT=$(ls -A)
           mkdir -p $PACK_NAME
           cp -r ${FILE_CONTENT} $PACK_NAME/
           tar -czvf $PACK_NAME.tar.gz $PACK_NAME
@@ -209,7 +209,7 @@ jobs:
           rm -rf pyfmm_kit.egg-info/
 
       - name: Test
-        working-directory: .github/tests
+        working-directory: ${{ env.PACK_NAME }}/.github/tests
         run: |
           python uniform.py
       
