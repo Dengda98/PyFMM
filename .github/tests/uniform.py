@@ -20,7 +20,7 @@ FMMTT = pyfmm.travel_time_source(
 # FSM解
 FSMTT = pyfmm.travel_time_source(
     srcloc,
-    xarr, yarr, zarr, slw, useFSM=True)
+    xarr, yarr, zarr, slw, useFSM=True, FSMparallel=True)
 
 # 真实解
 xx, yy, zz = srcloc
