@@ -11,6 +11,7 @@ import numpy as np
 import numpy.ctypeslib as npct
 from ctypes import byref
 from scipy import interpolate
+from typing import Union
 
 from . import c_interfaces
 from .logger import myLogger
@@ -181,7 +182,7 @@ def travel_time_iniTT(
 def raytracing(
     TT:np.ndarray, srcloc:list, rcvloc:list,
     xarr:np.ndarray, yarr:np.ndarray, zarr:np.ndarray,
-    seglen:float, slw:np.ndarray|None=None, segfac:int=3, sphcoord:bool=False, maxdots:int=10000):
+    seglen:float, slw:Union[np.ndarray, None] = None, segfac:int=3, sphcoord:bool=False, maxdots:int=10000):
     r'''
         根据给定源点坐标计算的走时场，使用梯度下降法做射线追踪
 
