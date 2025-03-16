@@ -70,7 +70,7 @@ DEPS_DOUBLE := $(OBJS_DOUBLE:.o=.d)
 TARGET_FLOAT = $(LIB_NAME)_float$(LIB_EXT)
 TARGET_DOUBLE = $(LIB_NAME)_double$(LIB_EXT)
 
-.PHONY: all clean
+.PHONY: all clean cleanbuild
 
 all: $(BUILD_DIR) $(LIB_DIR) $(TARGET_FLOAT) $(TARGET_DOUBLE) 
 
@@ -113,6 +113,8 @@ $(TARGET_DOUBLE): $(OBJS_DOUBLE)
 	$(CC) -shared -o $@ $^ $(LDFLAGS)
 
 
+cleanbuild:
+	rm -rf $(BUILD_DIR)
 
 clean:
 	rm -rf $(BUILD_DIR)
