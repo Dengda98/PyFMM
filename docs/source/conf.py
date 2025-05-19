@@ -29,7 +29,7 @@ def read_version():
     return locals()['__version__']
 
 project = 'PyFMM'
-copyright = '2023, Zhu Dengda'
+copyright = '2025, Zhu Dengda'
 author = 'Zhu Dengda'
 # 引入版本信息
 version = read_version()
