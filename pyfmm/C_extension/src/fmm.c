@@ -173,9 +173,9 @@ HEAP_DATA * FastMarching_with_initial(
 
         // break loop in advance when reach the boundary
         if( edgeStop!=NULL && (
-            edgeStop[0]&&ir0==0 || edgeStop[1]&&ir0==nr-1 || 
-            edgeStop[2]&&it0==0 || edgeStop[3]&&it0==nt-1 || 
-            edgeStop[4]&&ip0==0 || edgeStop[5]&&ip0==np-1))  break;
+            (edgeStop[0]&&ir0==0) || (edgeStop[1]&&ir0==nr-1) || 
+            (edgeStop[2]&&it0==0) || (edgeStop[3]&&it0==nt-1) || 
+            (edgeStop[4]&&ip0==0) || (edgeStop[5]&&ip0==np-1)))  break;
 
         
 
@@ -606,14 +606,14 @@ HEAP_DATA * init_source_TT_refinegrid(
 
     }}
 
-    free1d(rfg_TT);
-    free1d(rfg_Slw);
-    free1d(rfg_rs);
-    free1d(rfg_ts);
-    free1d(rfg_ps);
+    free(rfg_TT);
+    free(rfg_Slw);
+    free(rfg_rs);
+    free(rfg_ts);
+    free(rfg_ps);
 
-    free1d(rfg_FMM_data);
-    free1d(rfg_NroIdx);
+    free(rfg_FMM_data);
+    free(rfg_NroIdx);
 
 
     return FMM_data;
@@ -980,17 +980,30 @@ MYREAL FMM_raytracing(
     rays[3*idot] = r0;
     rays[3*idot+1] = t0;
     rays[3*idot+2] = p0;
+
+    if(Slw != NULL){
+        // compute distance of last two points
+        if(sphcoord){
+            rtp2xyz(r1, t1, p1, &x1, &y1, &z1);
+            dx = x1-x0;
+            dy = y1-y0;
+            dz = z1-z0;
+            dist = sqrt(dx*dx + dy*dy + dz*dz);
+        } else {
+            dist = sqrt(pow(r0-r1,2) + pow(t0-t1,2) + pow(p0-p1,2));
+        }
+        rmid = (r0 + r1)/2.0;
+        tmid = (t0 + t1)/2.0;
+        pmid = (p0 + p1)/2.0;
+        travt1 += trilinear_one_ravel(
+            rs, nr, ts, nt, ps, np, ntp, Slw, rmid, tmid, pmid, 
+            NULL, NULL, NULL, NULL, NULL) * dist;
+    }
    
     idot++;
     *N = idot;
 
     if(Slw != NULL){
-        rmid = (r0 + rays[3*idot-3])/2.0;
-        tmid = (t0 + rays[3*idot-2])/2.0;
-        pmid = (p0 + rays[3*idot-1])/2.0;
-        travt1 += trilinear_one_ravel(
-            rs, nr, ts, nt, ps, np, ntp, Slw, rmid, tmid, pmid, 
-            NULL, NULL, NULL, NULL, NULL) * seglen1;
         return travt1;
     } else {
         return travt;

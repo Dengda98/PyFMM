@@ -73,8 +73,3 @@ void free2d(void **arr, MYINT n1){
     }
     free(arr);
 }
-
-void free1d(void *arr){
-    free(arr);
-}
-

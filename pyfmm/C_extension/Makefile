@@ -54,7 +54,7 @@ endif
 ARCH = 
 
 #  -ffast-math -march=native -mtune=native # 如果加上这些选项，数学库-lm需要在编译动态库时再次显式指定。总是gcc的编译参数的前后顺序很讲究
-CFLAGS = $(LINK_STATIC) -lm  -O3 -g -fPIC \
+CFLAGS = $(LINK_STATIC) -lm -std=gnu99 -O3 -fPIC \
          -Wall $(STACK_MEM) -I$(shell realpath $(INC_DIR)) $(ARCH) $(FOMPFLAGS)   # -fsanitize=address -lasan
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
@@ -69,10 +69,12 @@ DEPS_DOUBLE := $(OBJS_DOUBLE:.o=.d)
 # 生成的库名称
 TARGET_FLOAT = $(LIB_NAME)_float$(LIB_EXT)
 TARGET_DOUBLE = $(LIB_NAME)_double$(LIB_EXT)
+STATIC_TARGET_FLOAT = $(LIB_NAME)_float.a
+STATIC_TARGET_DOUBLE = $(LIB_NAME)_double.a
 
 .PHONY: all clean cleanbuild
 
-all: $(BUILD_DIR) $(LIB_DIR) $(TARGET_FLOAT) $(TARGET_DOUBLE) 
+all: $(BUILD_DIR) $(LIB_DIR) $(TARGET_FLOAT) $(TARGET_DOUBLE) $(STATIC_TARGET_FLOAT) $(STATIC_TARGET_DOUBLE)
 
 $(BUILD_DIR):
 	@mkdir -p $@
@@ -112,6 +114,11 @@ $(TARGET_FLOAT): $(OBJS_FLOAT)
 $(TARGET_DOUBLE): $(OBJS_DOUBLE)
 	$(CC) -shared -o $@ $^ $(LDFLAGS)
 
+$(STATIC_TARGET_FLOAT): $(OBJS_FLOAT)
+	ar rcs $@ $^
+
+$(STATIC_TARGET_DOUBLE): $(OBJS_DOUBLE)
+	ar rcs $@ $^
 
 cleanbuild:
 	rm -rf $(BUILD_DIR)
