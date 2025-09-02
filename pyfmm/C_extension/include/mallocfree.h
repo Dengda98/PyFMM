@@ -73,13 +73,5 @@ void free3d(void ***arr, MYINT n1, MYINT n2);
 void free2d(void **arr, MYINT n1);
 
 
-/**
- * 释放一维指针内存空间
- * 
- * @param     arr     (in)一维指针
- * 
- */
-void free1d(void *arr);
-
 
 
