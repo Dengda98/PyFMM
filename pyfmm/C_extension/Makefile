@@ -54,7 +54,7 @@ endif
 ARCH = 
 
 #  -ffast-math -march=native -mtune=native # 如果加上这些选项，数学库-lm需要在编译动态库时再次显式指定。总是gcc的编译参数的前后顺序很讲究
-CFLAGS = $(LINK_STATIC) -lm  -O3 -g -fPIC \
+CFLAGS = $(LINK_STATIC) -lm -std=gnu99 -O3 -fPIC \
          -Wall $(STACK_MEM) -I$(shell realpath $(INC_DIR)) $(ARCH) $(FOMPFLAGS)   # -fsanitize=address -lasan
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
