@@ -28,8 +28,6 @@
 SRC_DIR := src
 INC_DIR := include
 BUILD_DIR := build
-BUILD_DIR_FLOAT = $(BUILD_DIR)/float
-BUILD_DIR_DOUBLE = $(BUILD_DIR)/double
 LIB_DIR = lib
 LIB_NAME = $(LIB_DIR)/libfmm
 LIB_EXT = .so
@@ -60,21 +58,16 @@ CFLAGS = $(LINK_STATIC) -lm -std=gnu99 -O3 -fPIC \
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 INCS = $(wildcard $(INC_DIR)/*.h)
 
-# 不同版本的目标文件目录
-OBJS_FLOAT = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR_FLOAT)/%.o, $(SRCS))
-OBJS_DOUBLE = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR_DOUBLE)/%.o, $(SRCS))
-DEPS_FLOAT := $(OBJS_FLOAT:.o=.d)
-DEPS_DOUBLE := $(OBJS_DOUBLE:.o=.d)
+OBJS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))
+DEPS := $(OBJS:.o=.d)
 
 # 生成的库名称
-TARGET_FLOAT = $(LIB_NAME)_float$(LIB_EXT)
-TARGET_DOUBLE = $(LIB_NAME)_double$(LIB_EXT)
-STATIC_TARGET_FLOAT = $(LIB_NAME)_float.a
-STATIC_TARGET_DOUBLE = $(LIB_NAME)_double.a
+TARGET = $(LIB_NAME)$(LIB_EXT)
+STATIC_TARGET = $(LIB_NAME).a
 
 .PHONY: all clean cleanbuild
 
-all: $(BUILD_DIR) $(LIB_DIR) $(TARGET_FLOAT) $(TARGET_DOUBLE) $(STATIC_TARGET_FLOAT) $(STATIC_TARGET_DOUBLE)
+all: $(TARGET) $(STATIC_TARGET)
 
 $(BUILD_DIR):
 	@mkdir -p $@
@@ -83,41 +76,15 @@ $(LIB_DIR):
 	@mkdir -p $@
 
 # ----------------------- Dependency generation -----------------------
--include $(DEPS_FLOAT)
--include $(DEPS_DOUBLE)
+-include $(DEPS)
 
-$(BUILD_DIR_FLOAT)/%.d: $(SRC_DIR)/%.c
-	@mkdir -p $(shell dirname $@)
-	@$(CC) $(CFLAGS) -MM $< > $@.$$$$; \
-	sed 's,\($*\)\.o[ :]*,$(BUILD_DIR_FLOAT)/\1.o $@ : ,g' < $@.$$$$ > $@; \
-	rm -f $@.$$$$
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
+	$(CC) -MMD -MP -o $@ -c $< $(CFLAGS)
 
-$(BUILD_DIR_DOUBLE)/%.d: $(SRC_DIR)/%.c
-	@mkdir -p $(shell dirname $@)
-	@$(CC) $(CFLAGS) -MM $< > $@.$$$$; \
-	sed 's,\($*\)\.o[ :]*,$(BUILD_DIR_DOUBLE)/\1.o $@ : ,g' < $@.$$$$ > $@; \
-	rm -f $@.$$$$
-
-# 编译 float 版本的目标文件
-$(BUILD_DIR_FLOAT)/%.o: $(SRC_DIR)/%.c 
-	$(CC) -o $@ -c $< $(CFLAGS) -DUSE_FLOAT
-
-# 编译 double 版本的目标文件
-$(BUILD_DIR_DOUBLE)/%.o: $(SRC_DIR)/%.c
-	$(CC) -o $@ -c $< $(CFLAGS)
-
-# 链接动态库，生成 float 版本
-$(TARGET_FLOAT): $(OBJS_FLOAT)
+$(TARGET): $(OBJS) | $(LIB_DIR)
 	$(CC) -shared -o $@ $^ $(LDFLAGS)
 
-# 链接动态库，生成 double 版本
-$(TARGET_DOUBLE): $(OBJS_DOUBLE)
-	$(CC) -shared -o $@ $^ $(LDFLAGS)
-
-$(STATIC_TARGET_FLOAT): $(OBJS_FLOAT)
-	ar rcs $@ $^
-
-$(STATIC_TARGET_DOUBLE): $(OBJS_DOUBLE)
+$(STATIC_TARGET): $(OBJS) | $(LIB_DIR)
 	ar rcs $@ $^
 
 cleanbuild:

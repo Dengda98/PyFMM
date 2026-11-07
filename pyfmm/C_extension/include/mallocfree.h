@@ -23,7 +23,7 @@
  * @return    三维指针
  * 
  */
-void *** malloc3d(MYINT n1, MYINT n2, MYINT n3, size_t size);
+void *** malloc3d(size_t n1, size_t n2, size_t n3, size_t size);
 
 
 /**
@@ -36,7 +36,7 @@ void *** malloc3d(MYINT n1, MYINT n2, MYINT n3, size_t size);
  * @return    二维指针
  * 
  */
-void ** malloc2d(MYINT n1, MYINT n2, size_t size);
+void ** malloc2d(size_t n1, size_t n2, size_t size);
 
 
 
@@ -49,7 +49,7 @@ void ** malloc2d(MYINT n1, MYINT n2, size_t size);
  * @return    一维指针
  * 
  */
-void * malloc1d(MYINT n, size_t size);
+void * malloc1d(size_t n, size_t size);
 
 
 /**
@@ -60,7 +60,7 @@ void * malloc1d(MYINT n, size_t size);
  * @param     n2      (in)第二维尺寸
  * 
  */
-void free3d(void ***arr, MYINT n1, MYINT n2);
+void free3d(void ***arr, size_t n1, size_t n2);
 
 
 /**
@@ -70,7 +70,7 @@ void free3d(void ***arr, MYINT n1, MYINT n2);
  * @param     n1      (in)第一维尺寸
  * 
  */
-void free2d(void **arr, MYINT n1);
+void free2d(void **arr, size_t n1);
 
 
 

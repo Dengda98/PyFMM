@@ -17,27 +17,27 @@
 
 
 
-MYREAL trilinear_one_ravel(
-    const double *x, MYINT nx, const double *y, MYINT ny, const double *z, MYINT nz, MYINT nyz, const MYREAL *values, 
-    double xi, double yi, double zi, double *pdiffx, double *pdiffy, double *pdiffz, 
-    MYINT IXYZ[6], double WGHT[2][2][2])
+real_t trilinear_one_ravel(
+    const real_t *x, size_t nx, const real_t *y, size_t ny, const real_t *z, size_t nz, size_t nyz, const real_t *values,
+    real_t xi, real_t yi, real_t zi, bool extrapolate, real_t *pdiffx, real_t *pdiffy, real_t *pdiffz,
+    size_t IXYZ[6], real_t WGHT[2][2][2])
 {
-    MYINT IXYZ0[6];
-    double WGHT0[2][2][2];
-    trilinear_one_fac(x, nx, y, ny, z, nz, xi, yi, zi, IXYZ0, WGHT0);
+    size_t IXYZ0[6];
+    real_t WGHT0[2][2][2];
+    trilinear_one_fac(x, nx, y, ny, z, nz, xi, yi, zi, extrapolate, IXYZ0, WGHT0);
 
-    double vi;
+    real_t vi;
     vi = trilinear_one_Idx_ravel(IXYZ0, WGHT0, values, nx, ny, nz, nyz, pdiffx, pdiffy, pdiffz);
 
     if(IXYZ!=NULL){
-        for(MYINT i=0; i<6; ++i){
+        for(size_t i=0; i<6; ++i){
             IXYZ[i] = IXYZ0[i];
         }
     } 
     if(WGHT!=NULL){
-        for(MYINT i=0; i<2; ++i){
-            for(MYINT j=0; j<2; ++j){
-                for(MYINT k=0; k<2; ++k){
+        for(size_t i=0; i<2; ++i){
+            for(size_t j=0; j<2; ++j){
+                for(size_t k=0; k<2; ++k){
                     WGHT[i][j][k] = WGHT0[i][j][k];
                 }
             }
@@ -50,45 +50,42 @@ MYREAL trilinear_one_ravel(
 
 
 void trilinear_one_fac(
-    const double *x, MYINT nx, const double *y, MYINT ny, const double *z, MYINT nz, 
-    double xi, double yi, double zi, MYINT IXYZ[6], double WGHT[2][2][2])
+    const real_t *x, size_t nx, const real_t *y, size_t ny, const real_t *z, size_t nz,
+    real_t xi, real_t yi, real_t zi, bool extrapolate, size_t IXYZ[6], real_t WGHT[2][2][2])
 {
-    MYINT ix = dicho_find(x, nx, xi);
-    // MYINT ix1 = (ix+1>nx-1) ? nx-1 : ix+1;
-    MYINT iy = dicho_find(y, ny, yi);
-    // MYINT iy1 = (iy+1>ny-1) ? ny-1 : iy+1;
-    MYINT iz = dicho_find(z, nz, zi);
-    // MYINT iz1 = (iz+1>nz-1) ? nz-1 : iz+1;
-    MYINT ix1, iy1, iz1;
-    if(IXYZ!=NULL && IXYZ[0]==-9){ // do extrapolation
-        if(ix==nx-1) ix--; 
-        ix1 = ix+1;
-        if(iy==ny-1) iy--; 
-        iy1 = iy+1;
-        if(iz==nz-1) iz--; 
-        iz1 = iz+1;
-    } else {
-        ix1 = (ix+1>nx-1) ? nx-1 : ix+1;
-        iy1 = (iy+1>ny-1) ? ny-1 : iy+1;
-        iz1 = (iz+1>nz-1) ? nz-1 : iz+1;
+    size_t ix = dicho_find(x, nx, xi);
+    size_t iy = dicho_find(y, ny, yi);
+    size_t iz = dicho_find(z, nz, zi);
+
+    // 外推使用边界处的网格单元，单节点维度不进行偏移
+    if(extrapolate){
+        if(nx>1 && ix==nx-1) ix--;
+        if(ny>1 && iy==ny-1) iy--;
+        if(nz>1 && iz==nz-1) iz--;
     }
+    size_t ix1 = ix<nx-1 ? ix+1 : ix;
+    size_t iy1 = iy<ny-1 ? iy+1 : iy;
+    size_t iz1 = iz<nz-1 ? iz+1 : iz;
 
     // printf("%d,%d,%d, %f,%f,%f\n", ix, iy, iz, xi, yi, zi);
-    double x1 = x[ix];
-    double x2 = x[ix1];
-    double y1 = y[iy];
-    double y2 = y[iy1];
-    double z1 = z[iz];
-    double z2 = z[iz1];
+    real_t x1 = x[ix];
+    real_t x2 = x[ix1];
+    real_t y1 = y[iy];
+    real_t y2 = y[iy1];
+    real_t z1 = z[iz];
+    real_t z2 = z[iz1];
 
     // 限制范围
-    if(IXYZ==NULL || IXYZ[0]!=-9){
+    if(!extrapolate){
+        if(xi < x1) xi = x1;
+        if(yi < y1) yi = y1;
+        if(zi < z1) zi = z1;
         if(xi > x2) xi = x2;
         if(yi > y2) yi = y2;
         if(zi > z2) zi = z2;
     }
 
-    double xfac=0.0, yfac=0.0, zfac=0.0, xfac1, yfac1, zfac1;
+    real_t xfac=0.0, yfac=0.0, zfac=0.0, xfac1, yfac1, zfac1;
     if(ix!=ix1) xfac = (xi-x1)/(x2-x1);
     if(iy!=iy1) yfac = (yi-y1)/(y2-y1);
     if(iz!=iz1) zfac = (zi-z1)/(z2-z1);
@@ -97,7 +94,7 @@ void trilinear_one_fac(
     yfac1 = 1.0 - yfac; 
     zfac1 = 1.0 - zfac; 
 
-    double f111, f121, f211, f221, f112, f122, f212, f222;
+    real_t f111, f121, f211, f221, f112, f122, f212, f222;
     f111 = xfac1 * yfac1 * zfac1;
     f121 = xfac1 * yfac  * zfac1;
     f211 = xfac  * yfac1 * zfac1;
@@ -108,12 +105,12 @@ void trilinear_one_fac(
     f222 = xfac  * yfac  * zfac ;
 
     if(IXYZ!=NULL){
-        IXYZ[0] = ix; 
-        IXYZ[1] = ix1; 
-        IXYZ[2] = iy; 
-        IXYZ[3] = iy1; 
-        IXYZ[4] = iz; 
-        IXYZ[5] = iz1; 
+        IXYZ[0] = ix;
+        IXYZ[1] = ix1;
+        IXYZ[2] = iy;
+        IXYZ[3] = iy1;
+        IXYZ[4] = iz;
+        IXYZ[5] = iz1;
     }
     if(WGHT!=NULL){
         WGHT[0][0][0] = f111; WGHT[0][1][0] = f121;
@@ -124,25 +121,25 @@ void trilinear_one_fac(
 }
 
 
-MYREAL trilinear_one_Idx_ravel(
-    const MYINT IXYZ[6], const double WGHT[2][2][2],  const MYREAL *values, MYINT nx, MYINT ny, MYINT nz, MYINT nyz, 
-    double *pdiffx, double *pdiffy, double *pdiffz)
+real_t trilinear_one_Idx_ravel(
+    const size_t IXYZ[6], const real_t WGHT[2][2][2],  const real_t *values, size_t nx, size_t ny, size_t nz, size_t nyz,
+    real_t *pdiffx, real_t *pdiffy, real_t *pdiffz)
 {
-    MYINT ix, ix1, iy, iy1, iz, iz1;
-    double f111, f121, f211, f221, f112, f122, f212, f222;
-    double v111,v121,v211,v221, v112,v122,v212,v222;
+    size_t ix, ix1, iy, iy1, iz, iz1;
+    real_t f111, f121, f211, f221, f112, f122, f212, f222;
+    real_t v111,v121,v211,v221, v112,v122,v212,v222;
 
-    ix  = IXYZ[0]; 
-    ix1 = IXYZ[1]; 
-    iy  = IXYZ[2]; 
-    iy1 = IXYZ[3]; 
-    iz  = IXYZ[4]; 
-    iz1 = IXYZ[5]; 
+    ix  = IXYZ[0];
+    ix1 = IXYZ[1];
+    iy  = IXYZ[2];
+    iy1 = IXYZ[3];
+    iz  = IXYZ[4];
+    iz1 = IXYZ[5];
 
 
-    MYINT idx;
+    size_t idx;
     ravel_index(&idx, nyz, nz, ix, iy, iz);
-    MYINT dx, dy, dz, DX, DY, DZ;
+    size_t dx, dy, dz, DX, DY, DZ;
     DX = nyz;
     DY = nz;
     DZ = 1;
@@ -160,7 +157,7 @@ MYREAL trilinear_one_Idx_ravel(
     f112 = WGHT[0][0][1]; f122 = WGHT[0][1][1];
     f212 = WGHT[1][0][1]; f222 = WGHT[1][1][1];
 
-    double dv111,dv121,dv211,dv221, dv112,dv122,dv212,dv222;
+    real_t dv111,dv121,dv211,dv221, dv112,dv122,dv212,dv222;
     dv111=dv121=dv211=dv221=dv112=dv122=dv212=dv222=0.0;
     if(pdiffx!=NULL){
         if(ix==0){
@@ -183,7 +180,7 @@ MYREAL trilinear_one_Idx_ravel(
 
         }
 
-        if(ix < nx-2){
+        if(nx > 2 && ix < nx-2){
             dv211 = (values[idx + 2*DX] - v111)/2.0;
             dv221 = (values[idx + 2*DX + dy] - v121)/2.0;
             dv212 = (values[idx + 2*DX + dz] - v112)/2.0;
@@ -220,7 +217,7 @@ MYREAL trilinear_one_Idx_ravel(
             dv212 = (values[idx + dx + DY + dz] - values[idx + dx - DY + dz])/2.0;
         }
 
-        if(iy < ny-2){
+        if(ny > 2 && iy < ny-2){
             dv121 = (values[idx + 2*DY] - v111)/2.0;
             dv221 = (values[idx + dx + 2*DY] - v211)/2.0;
             dv122 = (values[idx + 2*DY + dz] - v112)/2.0;
@@ -258,7 +255,7 @@ MYREAL trilinear_one_Idx_ravel(
 
         }
 
-        if(iz < nz-2){
+        if(nz > 2 && iz < nz-2){
             dv112 = (values[idx + 2*DZ] - v111)/2.0;
             dv212 = (values[idx + dx + 2*DZ] - v211)/2.0;
             dv122 = (values[idx + dy + 2*DZ] - v121)/2.0;

@@ -7,6 +7,27 @@
 
 #pragma once
 
+#include <stddef.h>
+#include <stdbool.h>
+
+// 网格尺寸及有效索引统一使用 size_t
+
+/**
+ * 根据相邻偏移取得有效索引，在执行减法前检查边界
+ *
+ * @param      index     (in)当前索引
+ * @param      n         (in)维度尺寸
+ * @param      offset    (in)相邻偏移，仅取 -1、0、1
+ * @param      shifted   (out)有效的相邻索引
+ *
+ * @return     相邻索引是否位于维度范围内
+ */
+inline bool neighbour_index(size_t index, size_t n, int offset, size_t *shifted){
+    if((offset<0 && index==0) || (offset>0 && index==n-1)) return false;
+    *shifted = offset<0 ? index-1 : index+(size_t)offset;
+    return true;
+}
+
 
 /**
  * 将一维索引恢复成三维索引(内联函数)
@@ -19,9 +40,9 @@
  * @param      ip       (out)第3维索引
  * 
  */
-inline void unravel_index(MYINT idx, MYINT ntp, MYINT np, MYINT *ir, MYINT *it, MYINT *ip){
+inline void unravel_index(size_t idx, size_t ntp, size_t np, size_t *ir, size_t *it, size_t *ip){
     *ir = idx / ntp;
-    *it = (idx - (*ir)*ntp) / np;
+    *it = (idx % ntp) / np;
     *ip = idx % np;
 }
 
@@ -37,6 +58,6 @@ inline void unravel_index(MYINT idx, MYINT ntp, MYINT np, MYINT *ir, MYINT *it, 
  * @param      ip       (in)第3维索引
  * 
  */
-inline void ravel_index(MYINT *idx, MYINT ntp, MYINT np, MYINT ir, MYINT it, MYINT ip){
+inline void ravel_index(size_t *idx, size_t ntp, size_t np, size_t ir, size_t it, size_t ip){
     *idx = ir*ntp + it*np + ip;
 }
