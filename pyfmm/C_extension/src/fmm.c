@@ -819,7 +819,6 @@ MYREAL FMM_raytracing(
     double dt = (nt>1)? ts[1] - ts[0] : 1e-6;
     double dp = (np>1)? ps[1] - ps[0] : 1e-6;
     double seglen0 = seglen;
-    double seglen1;
 
     double xx, yy, zz, x0, y0, z0;
     double dx, dy, dz;
@@ -834,6 +833,7 @@ MYREAL FMM_raytracing(
     MYINT idot = 0;
 
     double gtr, gtt, gtp, norm;
+    double gtr_next, gtt_next, gtp_next;
     double limitdist;  
     if(sphcoord){
         limitdist = sqrt(dr*dr + pow(dt*rs[0],2) + pow(dp*rs[0]*sin(ts[0]),2));
@@ -904,10 +904,9 @@ MYREAL FMM_raytracing(
         // if(dist <= limitdist) break;
         if(trem <= limt) break;
         
-        // update
+        // Try up to 5 step lengths along the current unit gradient direction; backtracking only halves the step length
         seglen = seglen0;
         for(MYINT i=0; i<5; ++i){
-            seglen1 = seglen;
             if(sphcoord){
                 p11 = p1 - gtp*seglen/(r1*sin(t1));
                 t11 = t1 - gtt*seglen/r1;
@@ -921,7 +920,7 @@ MYREAL FMM_raytracing(
             // get gradient
             trem1 = trilinear_one_ravel(
                 rs, nr, ts, nt, ps, np, ntp, TT, r11, t11, p11, 
-                &gtr, &gtt, &gtp, NULL, NULL);
+                &gtr_next, &gtt_next, &gtp_next, NULL, NULL);
 
             // printf("%f, %f, %f, %f, \n", trem1, gtr, gtt, gtp);
 
@@ -950,8 +949,11 @@ MYREAL FMM_raytracing(
         t1 = t11;
         p1 = p11;
         trem = trem1;
-        
-        // normalize gradient
+        gtr = gtr_next;
+        gtt = gtt_next;
+        gtp = gtp_next;
+
+        // Convert and normalize the gradient at the final trial point for the next tracing segment
         gtr /= dr; 
         gtt /= dt; 
         gtp /= dp; 
@@ -970,9 +972,24 @@ MYREAL FMM_raytracing(
             rmid = (r1 + rays[3*idot-3])/2.0;
             tmid = (t1 + rays[3*idot-2])/2.0;
             pmid = (p1 + rays[3*idot-1])/2.0;
+
+            // Integrate using the actual endpoint distance, matching the geometry of the output ray
+            // In spherical coordinates, use chord lengths for all segments, as for the final segment
+            if(sphcoord){
+                rtp2xyz(rays[3*idot-3], rays[3*idot-2], rays[3*idot-1], &xx, &yy, &zz);
+                rtp2xyz(r1, t1, p1, &x1, &y1, &z1);
+                dx = x1 - xx;
+                dy = y1 - yy;
+                dz = z1 - zz;
+            } else {
+                dx = r1 - rays[3*idot-3];
+                dy = t1 - rays[3*idot-2];
+                dz = p1 - rays[3*idot-1];
+            }
+            double segment_length = sqrt(dx*dx + dy*dy + dz*dz);
             travt1 += trilinear_one_ravel(
                 rs, nr, ts, nt, ps, np, ntp, Slw, rmid, tmid, pmid, 
-                NULL, NULL, NULL, NULL, NULL) * seglen1;
+                NULL, NULL, NULL, NULL, NULL) * segment_length;
         }
         
     } // END tracing

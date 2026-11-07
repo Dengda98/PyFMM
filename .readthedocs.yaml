@@ -14,7 +14,15 @@ build:
     # rust: "1.70"
     # golang: "1.20"
 
-  apt_packages: ["doxygen"]
+  apt_packages: ["build-essential", "doxygen", "pandoc"]
+
+  jobs:
+    pre_install:
+      # 安装 Python 包前编译当前版本的 C 库，使其随包一起安装
+      - cd pyfmm/C_extension && make clean && make -j
+    pre_build:
+      # 在构建文档前生成 C API 的 XML，失败时终止构建
+      - cd docs && doxygen doxyfile_h
 
 
 # Build documentation in the "docs/" directory with Sphinx
