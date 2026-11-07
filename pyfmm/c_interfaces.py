@@ -8,7 +8,7 @@
 """
 
 import os
-from ctypes import POINTER, c_bool, c_double, c_size_t, cdll
+from ctypes import POINTER, c_bool, c_double, c_int, c_size_t, cdll
 
 REAL = c_double
 PREAL = POINTER(REAL)
@@ -49,7 +49,7 @@ C_FMM_raytracing.argtypes = [
     REAL, REAL, REAL,
     REAL, REAL, REAL, REAL, REAL,
     PREAL, PREAL, c_bool,
-    PREAL, PSIZE_T
+    PREAL, PSIZE_T, POINTER(c_int)
 ]
 
 C_FastSweeping = libfmm.FastSweeping
