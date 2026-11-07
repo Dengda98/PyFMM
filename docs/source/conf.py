@@ -6,14 +6,9 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import sys, os, pathlib
-import subprocess 
+import os
 
 read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
-
-if read_the_docs_build:
-    subprocess.call('cd ..; doxygen doxyfile_h; cd -', shell=True)
-
 
 html_last_updated_fmt = '%b %d, %Y'
 
@@ -52,8 +47,11 @@ extensions = [
     "nbsphinx",
 ] 
 
-nbsphinx_allow_errors = True  # 在构建文档时允许 Notebook 中的错误
-nbsphinx_execute = 'never'   # 不执行 Notebook，只是展示内容
+nbsphinx_allow_errors = False  # Notebook 执行出错时终止文档构建
+nbsphinx_execute = 'always' if read_the_docs_build else 'never'  # RTD 每次重新执行，本地默认展示已保存的结果
+nbsphinx_kernel_name = 'python3'
+nbsphinx_execute_arguments = ['--matplotlib=inline']  # 在页面中保留本次执行生成的图像
+nbsphinx_timeout = 600  # 每个单元格最多执行 600 秒
 
 
 source_suffix = {
