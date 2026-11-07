@@ -7,7 +7,7 @@
 
 #include <stdlib.h>
 
-#include "query.h"
+#include "fmm/query.h"
 
 size_t dicho_find(const real_t *arr, size_t n, real_t target){
     size_t left=0;

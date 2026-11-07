@@ -10,10 +10,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "const.h"
-#include "interp.h"
-#include "index.h"
-#include "query.h"
+#include "fmm/const.h"
+#include "fmm/interp.h"
+#include "fmm/index.h"
+#include "fmm/query.h"
 
 
 

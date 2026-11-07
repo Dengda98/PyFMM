@@ -9,8 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "const.h"
-#include "diff.h"
+#include "fmm/const.h"
+#include "fmm/diff.h"
 
 
 

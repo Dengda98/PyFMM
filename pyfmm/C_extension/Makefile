@@ -56,7 +56,7 @@ CFLAGS = $(LINK_STATIC) -lm -std=gnu99 -O3 -fPIC \
          -Wall $(STACK_MEM) -I$(shell realpath $(INC_DIR)) $(ARCH) $(FOMPFLAGS)   # -fsanitize=address -lasan
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
-INCS = $(wildcard $(INC_DIR)/*.h)
+INCS = $(wildcard $(INC_DIR)/fmm/*.h)
 
 OBJS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))
 DEPS := $(OBJS:.o=.d)
