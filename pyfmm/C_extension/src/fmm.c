@@ -28,37 +28,37 @@
 
 
 void FastMarching(
-    const double *rs, MYINT nr, 
-    const double *ts, MYINT nt, 
-    const double *ps, MYINT np,
-    double rr,  double tt, double pp,
-    MYINT maxodr,  const MYREAL *Slw, 
-    MYREAL *TT, bool sphcoord, 
-    MYINT rfgfac, MYINT rfgn, bool printbar)
+    const real_t *rs, size_t nr,
+    const real_t *ts, size_t nt,
+    const real_t *ps, size_t np,
+    real_t rr,  real_t tt, real_t pp,
+    size_t maxodr,  const real_t *Slw,
+    real_t *TT, bool sphcoord,
+    size_t rfgfac, size_t rfgn, bool printbar)
 {
     // 程序运行开始时间
     struct timeval begin_t;
     gettimeofday(&begin_t, NULL);
 
-    MYINT ntp=nt*np;
-    MYINT nrtp=nr*ntp;
-    MYINT Ndots=nrtp;
+    size_t ntp=nt*np;
+    size_t nrtp=nr*ntp;
+    size_t Ndots=nrtp;
 
     char *FMM_stat = (char *)malloc1d(nrtp, sizeof(char)); // 1 alive, 0 close, -1 far
 
-    MYINT heapsize=0, heapcapcity=nr*nt + nt*np + nr*np;
-    MYINT *psize, *pcap;
+    size_t heapsize=0, heapcapcity=nr*nt + ntp + nr*np;
+    size_t *psize, *pcap;
     psize = &heapsize;
     pcap = &heapcapcity;
     HEAP_DATA *FMM_data = (HEAP_DATA *)malloc1d(heapcapcity, sizeof(HEAP_DATA));
-    MYINT *NroIdx = (MYINT *)malloc1d(nrtp, sizeof(MYINT));
+    size_t *NroIdx = (size_t *)malloc1d(nrtp, sizeof(size_t));
 
     // All non-zero value of TT will be treated as efficient value,
     // and set FMM_CLS
     bool allzeroTT = true; 
-    for(MYINT i=0; i<nrtp; ++i){
+    for(size_t i=0; i<nrtp; ++i){
         if(TT[i] == 0.0){
-            TT[i] = 9.9e30f;// init FAR Traveltime 
+            TT[i] = 9.9e30;// init FAR Traveltime
             FMM_stat[i] = FMM_FAR;
         } else {
             FMM_data = HeapPush(FMM_data, psize, pcap, i, NroIdx, TT);
@@ -117,50 +117,50 @@ void FastMarching(
 
 
 HEAP_DATA * FastMarching_with_initial(
-    const double *rs, MYINT nr, 
-    const double *ts, MYINT nt, 
-    const double *ps, MYINT np,
-    MYINT maxodr,  const MYREAL *Slw, MYREAL *TT, 
+    const real_t *rs, size_t nr,
+    const real_t *ts, size_t nt,
+    const real_t *ps, size_t np,
+    size_t maxodr,  const real_t *Slw, real_t *TT,
     char *FMM_stat, bool sphcoord, bool *edgeStop, bool printbar,
-    HEAP_DATA *FMM_data, MYINT *psize, MYINT *pcap, MYINT *NroIdx, MYINT *pNdots)
+    HEAP_DATA *FMM_data, size_t *psize, size_t *pcap, size_t *NroIdx, size_t *pNdots)
 {
-    double dr = (nr>1)? rs[1] - rs[0] : 0.0;
-    double dt = (nt>1)? ts[1] - ts[0] : 0.0;
-    double dp = (np>1)? ps[1] - ps[0] : 0.0;
+    real_t dr = (nr>1)? rs[1] - rs[0] : 0.0;
+    real_t dt = (nt>1)? ts[1] - ts[0] : 0.0;
+    real_t dp = (np>1)? ps[1] - ps[0] : 0.0;
 
     // DON'T CHANGE.
-    static const char xr[6] = {-1, 1,  0, 0,  0, 0};
-    static const char xt[6] = { 0, 0, -1, 1,  0, 0};
-    static const char xp[6] = { 0, 0,  0, 0, -1, 1};
+    static const int xr[6] = {-1, 1,  0, 0,  0, 0};
+    static const int xt[6] = { 0, 0, -1, 1,  0, 0};
+    static const int xp[6] = { 0, 0,  0, 0, -1, 1};
 
     // convenient arrays
-    double sin_ts[nt];
+    real_t sin_ts[nt];
     if(sphcoord){
-        for(MYINT it=0; it<nt; ++it){
+        for(size_t it=0; it<nt; ++it){
             sin_ts[it] = fabs(sin(ts[it]));
             if(sin_ts[it] < 1e-12) sin_ts[it] += 1e-12;
         }
     }
 
-    MYINT ntp=nt*np;
+    size_t ntp=nt*np;
 
     HEAP_DATA popdata, newdata;
-    MYINT ir0, it0, ip0, ir, it, ip;
-    MYINT idx, idx0;
-    MYREAL s;
-    MYREAL travt_bak, travt, travt0, travt1;
-    double h;
+    size_t ir0, it0, ip0, ir, it, ip;
+    size_t idx, idx0;
+    real_t s;
+    real_t travt_bak, travt, travt0, travt1;
+    real_t h;
 
-    MYREAL *pt;
+    real_t *pt;
     char *pstat;
 
     // 打印进度条时每隔print_interv打印一次
-    MYINT size_bak = nr*ntp;
-    MYINT last_barpercent = 0, barpercent;
+    size_t size_bak = nr*ntp;
+    size_t last_barpercent = 0, barpercent;
 
     // printf("loop start, size=%d\n", *psize );
     char travt_stat;
-    MYREAL maxtravt=-999;
+    real_t maxtravt=-999;
     while(*psize > 0){
 
         // get the minimum one 
@@ -182,22 +182,17 @@ HEAP_DATA * FastMarching_with_initial(
         if(travt0 > maxtravt) maxtravt = travt0;
         else if(travt0 < maxtravt){
             // 当在源点附近使用加密网格时，由于需要使用一般方法初始化源点附近的走时，
-            printf("pNdots=%d, WRONG! travt0(%f) < maxtravt(%f) \n", *pNdots, travt0, maxtravt);
+            printf("pNdots=%zu, WRONG! travt0(%f) < maxtravt(%f) \n", *pNdots, travt0, maxtravt);
             print_HEAP(FMM_data, *psize, nr, nt, np, NroIdx, TT, NULL, NULL, NULL);
             printf("Tiny bug here, please let author know.\n");
         } 
 
         // get neighbours (max 6)
-        for(char k=0; k<6; ++k){
+        for(size_t k=0; k<6; ++k){
             
-            ir = ir0 + xr[k];
-            it = it0 + xt[k];
-            ip = ip0 + xp[k];
-
-            
-            if(ir<0 || ir>nr-1) continue;
-            if(it<0 || it>nt-1) continue;
-            if(ip<0 || ip>np-1) continue;
+            if(!neighbour_index(ir0, nr, xr[k], &ir)) continue;
+            if(!neighbour_index(it0, nt, xt[k], &it)) continue;
+            if(!neighbour_index(ip0, np, xp[k], &ip)) continue;
             
             ravel_index(&idx, ntp, np, ir, it, ip);
             // idx6_bak[k] = idx;
@@ -274,10 +269,10 @@ HEAP_DATA * FastMarching_with_initial(
 
 
         // 打印进度条 
-        barpercent = 100.0 - (double)(*pNdots) / (double)(size_bak) * 100.0;
+        barpercent = 100.0 - (real_t)(*pNdots) / (real_t)(size_bak) * 100.0;
         if(printbar && barpercent != last_barpercent){
             printprogressBar("Fast Marching...  ", barpercent);
-            // printf("\npNdots=%d, barpercent=%d, size_bak=%d\n", *pNdots, barpercent, size_bak);
+            // printf("\npNdots=%zu, barpercent=%d, size_bak=%d\n", *pNdots, barpercent, size_bak);
             last_barpercent = barpercent;
         }
 
@@ -292,15 +287,15 @@ HEAP_DATA * FastMarching_with_initial(
 
 
 HEAP_DATA * init_source_TT(
-    const double *rs, MYINT nr, 
-    const double *ts, MYINT nt, 
-    const double *ps, MYINT np,
-    double rr, double tt, double pp,
-    const MYREAL *Slw, MYREAL *TT, 
+    const real_t *rs, size_t nr,
+    const real_t *ts, size_t nt,
+    const real_t *ps, size_t np,
+    real_t rr, real_t tt, real_t pp,
+    const real_t *Slw, real_t *TT,
     char *FMM_stat, bool sphcoord,
-    HEAP_DATA *FMM_data, MYINT *psize, MYINT *pcap, MYINT *NroIdx, MYINT *pNdots)
+    HEAP_DATA *FMM_data, size_t *psize, size_t *pcap, size_t *NroIdx, size_t *pNdots)
 {   
-    MYINT ir, it, ip;
+    size_t ir, it, ip;
     ir = dicho_find(rs, nr, rr);
     it = dicho_find(ts, nt, tt);
     ip = dicho_find(ps, np, pp);
@@ -309,36 +304,37 @@ HEAP_DATA * init_source_TT(
     if(ip==np-1 && ip>0)    ip--;
     
 
-    double xx, yy, zz;
+    real_t xx, yy, zz;
     if(sphcoord) rtp2xyz(rr, tt, pp, &xx, &yy, &zz);
     
 
     HEAP_DATA newdata;
-    MYREAL travt, s;
-    MYINT jr, jt, jp;
-    MYINT jdx;
-    double dist;
-    double r2, t2, p2, dr, dt, dp;
-    double x2, y2, z2;
-    double dx, dy, dz;
+    real_t travt, s;
+    size_t jr, jt, jp;
+    size_t jdx;
+    real_t dist;
+    real_t r2, t2, p2, dr, dt, dp;
+    real_t x2, y2, z2;
+    real_t dx, dy, dz;
     
-    MYREAL mtravt=9.9e30;
-    MYINT mir, mit, mip, midx=0;  // 最小走时节点的索引
+    real_t mtravt=9.9e30;
+    size_t mir, mit, mip;
+    size_t midx=0;  // 最小走时节点的索引
 
     // Tiny 2x2x2 cube
-    for(char kr=0; kr<2; ++kr){
+    for(size_t kr=0; kr<2; ++kr){
         jr = ir+kr;
         if(jr > nr-1) continue;
         
         r2 = rs[jr];
         dr = r2 - rr;
-        for(char kt=0; kt<2; ++kt){
+        for(size_t kt=0; kt<2; ++kt){
             jt = it+kt;
             if(jt > nt-1) continue;
 
             t2 = ts[jt];
             dt = t2 - tt;
-            for(char kp=0; kp<2; ++kp){
+            for(size_t kp=0; kp<2; ++kp){
                 jp = ip+kp;
                 if(jp > np-1) continue;
 
@@ -392,21 +388,18 @@ HEAP_DATA * init_source_TT(
 
     unravel_index(midx, nt*np, np, &mir, &mit, &mip);
     // Full 3x3x3 cube 
-    for(char kr=-1; kr<2; ++kr){
-        jr = mir+kr;
-        if(jr<0 || jr>nr-1) continue;
+    for(int kr=-1; kr<2; ++kr){
+        if(!neighbour_index(mir, nr, kr, &jr)) continue;
 
         r2 = rs[jr];
         dr = r2 - rr;
-        for(char kt=-1; kt<2; ++kt){
-            jt = mit+kt;
-            if(jt<0 || jt>nt-1) continue;
+        for(int kt=-1; kt<2; ++kt){
+            if(!neighbour_index(mit, nt, kt, &jt)) continue;
 
             t2 = ts[jt];
             dt = t2 - tt;
-            for(char kp=-1; kp<2; ++kp){
-                jp = mip+kp;
-                if(jp<0 || jp>np-1) continue;
+            for(int kp=-1; kp<2; ++kp){
+                if(!neighbour_index(mip, np, kp, &jp)) continue;
                 
                 p2 = ps[jp];
                 dp = p2 - pp;
@@ -453,24 +446,24 @@ HEAP_DATA * init_source_TT(
 
 
 HEAP_DATA * init_source_TT_refinegrid(
-    const double *rs, MYINT nr, 
-    const double *ts, MYINT nt, 
-    const double *ps, MYINT np,
-    double rr, double tt, double pp, 
-    MYINT maxodr,  const MYREAL *Slw, MYREAL *TT, 
+    const real_t *rs, size_t nr,
+    const real_t *ts, size_t nt,
+    const real_t *ps, size_t np,
+    real_t rr, real_t tt, real_t pp,
+    size_t maxodr,  const real_t *Slw, real_t *TT,
     char *FMM_stat, bool sphcoord,
-    MYINT rfgfac, MYINT rfgn, // refine grid factor and number of grids
+    size_t rfgfac, size_t rfgn, // refine grid factor and number of grids
     bool printbar,
-    HEAP_DATA *FMM_data, MYINT *psize, MYINT *pcap, MYINT *NroIdx, MYINT *pNdots)
+    HEAP_DATA *FMM_data, size_t *psize, size_t *pcap, size_t *NroIdx, size_t *pNdots)
 {   
-    double dr = (nr>1)? rs[1] - rs[0] : 0.0;
-    double dt = (nt>1)? ts[1] - ts[0] : 0.0;
-    double dp = (np>1)? ps[1] - ps[0] : 0.0;
+    real_t dr = (nr>1)? rs[1] - rs[0] : 0.0;
+    real_t dt = (nt>1)? ts[1] - ts[0] : 0.0;
+    real_t dp = (np>1)? ps[1] - ps[0] : 0.0;
 
-    MYINT ntp=nt*np;
+    size_t ntp=nt*np;
 
     // find the closest point
-    MYINT ir, it, ip;
+    size_t ir, it, ip;
     ir = dicho_find(rs, nr, rr);
     it = dicho_find(ts, nt, tt);
     ip = dicho_find(ps, np, pp);
@@ -478,20 +471,20 @@ HEAP_DATA * init_source_TT_refinegrid(
     if(it<nt-1 && fabs(ts[it+1]-tt) < fabs(ts[it]-tt)) it++;
     if(ip<np-1 && fabs(ps[ip+1]-pp) < fabs(ps[ip]-pp)) ip++;
 
-    double rfg_dr, rfg_dt, rfg_dp;
+    real_t rfg_dr, rfg_dt, rfg_dp;
     rfg_dr = dr/rfgfac;
     rfg_dt = dt/rfgfac;
     rfg_dp = dp/rfgfac;
     
-    MYINT rfg_ir1, rfg_ir2;
-    MYINT rfg_it1, rfg_it2;
-    MYINT rfg_ip1, rfg_ip2;
+    size_t rfg_ir1, rfg_ir2;
+    size_t rfg_it1, rfg_it2;
+    size_t rfg_ip1, rfg_ip2;
     rfg_ir1 = rfg_ir2 = ir;
     rfg_it1 = rfg_it2 = it;
     rfg_ip1 = rfg_ip2 = ip;
 
     // 确定加密范围
-    for(MYINT i=1; i<=rfgn; ++i){
+    for(size_t i=0; i<rfgn; ++i){
         if(rfg_ir1>0)    rfg_ir1--;
         if(rfg_ir2<nr-1) rfg_ir2++;
         if(rfg_it1>0)    rfg_it1--;
@@ -502,8 +495,10 @@ HEAP_DATA * init_source_TT_refinegrid(
     // printf("rfg_ir12: %d %d, rfg_it12: %d %d, rfg_ip12: %d %d\n ", 
     //         rfg_ir1, rfg_ir2, rfg_it1, rfg_it2, rfg_ip1, rfg_ip2);
 
-    MYINT rfg_nr, rfg_nt, rfg_np, rfg_nrtp, rfg_ntp;
-    MYINT rfg_Ndots;
+    size_t rfg_nr, rfg_nt, rfg_np;
+    size_t rfg_ntp;
+    size_t rfg_nrtp;
+    size_t rfg_Ndots;
     rfg_nr = (rfg_ir2 - rfg_ir1)*rfgfac + 1;
     rfg_nt = (rfg_it2 - rfg_it1)*rfgfac + 1;
     rfg_np = (rfg_ip2 - rfg_ip1)*rfgfac + 1;
@@ -511,45 +506,45 @@ HEAP_DATA * init_source_TT_refinegrid(
     rfg_nrtp = rfg_nr*rfg_ntp;
     rfg_Ndots = rfg_nrtp;
 
-    double *rfg_rs = (double *)malloc1d(rfg_nr, sizeof(double));
-    double *rfg_ts = (double *)malloc1d(rfg_nt, sizeof(double));
-    double *rfg_ps = (double *)malloc1d(rfg_np, sizeof(double));
+    real_t *rfg_rs = (real_t *)malloc1d(rfg_nr, sizeof(real_t));
+    real_t *rfg_ts = (real_t *)malloc1d(rfg_nt, sizeof(real_t));
+    real_t *rfg_ps = (real_t *)malloc1d(rfg_np, sizeof(real_t));
     
-    for(MYINT i=0; i<rfg_nr; ++i){
+    for(size_t i=0; i<rfg_nr; ++i){
         rfg_rs[i] = rs[rfg_ir1] + rfg_dr*i;
     }
-    for(MYINT i=0; i<rfg_nt; ++i){
+    for(size_t i=0; i<rfg_nt; ++i){
         rfg_ts[i] = ts[rfg_it1] + rfg_dt*i;
     }
-    for(MYINT i=0; i<rfg_np; ++i){
+    for(size_t i=0; i<rfg_np; ++i){
         rfg_ps[i] = ps[rfg_ip1] + rfg_dp*i;
     }
 
-    MYREAL *rfg_TT = (MYREAL *)malloc1d(rfg_nrtp, sizeof(MYREAL));
-    MYREAL *rfg_Slw = (MYREAL *)malloc1d(rfg_nrtp, sizeof(MYREAL));
+    real_t *rfg_TT = (real_t *)malloc1d(rfg_nrtp, sizeof(real_t));
+    real_t *rfg_Slw = (real_t *)malloc1d(rfg_nrtp, sizeof(real_t));
     char *rfg_FMM_stat = (char *)malloc1d(rfg_nrtp, sizeof(char)); // 1 alive, 0 close, -1 far
     
     // 插值加密的慢度场
-    for(MYINT i=0; i<rfg_nrtp; ++i){
-        rfg_TT[i] = 9.9e30f;// init FAR Traveltime 
+    for(size_t i=0; i<rfg_nrtp; ++i){
+        rfg_TT[i] = 9.9e30;// init FAR Traveltime
         rfg_FMM_stat[i] = FMM_FAR;
 
-        MYINT ir0, it0, ip0;
+        size_t ir0, it0, ip0;
         unravel_index(i, rfg_ntp, rfg_np, &ir0, &it0, &ip0);
         rfg_Slw[i] = trilinear_one_ravel(
             rs, nr, 
             ts, nt, 
             ps, np, ntp, Slw, 
-            rfg_rs[ir0], rfg_ts[it0], rfg_ps[ip0],
+            rfg_rs[ir0], rfg_ts[it0], rfg_ps[ip0], false,
             NULL, NULL, NULL, NULL, NULL);
     }
 
-    MYINT rfg_heapsize=0, rfg_heapcapcity=rfg_nr*rfg_nt + rfg_nt*rfg_np + rfg_nr*rfg_np;
-    MYINT *prfg_size, *prfg_cap;
+    size_t rfg_heapsize=0, rfg_heapcapcity=rfg_nr*rfg_nt + rfg_ntp + rfg_nr*rfg_np;
+    size_t *prfg_size, *prfg_cap;
     prfg_size = &rfg_heapsize;
     prfg_cap = &rfg_heapcapcity;
     HEAP_DATA *rfg_FMM_data = (HEAP_DATA *)malloc1d(rfg_heapcapcity, sizeof(HEAP_DATA));
-    MYINT *rfg_NroIdx = (MYINT *)malloc1d(rfg_nrtp, sizeof(MYINT));
+    size_t *rfg_NroIdx = (size_t *)malloc1d(rfg_nrtp, sizeof(size_t));
 
     rfg_FMM_data = init_source_TT(
         rfg_rs, rfg_nr, rfg_ts, rfg_nt, rfg_ps, rfg_np, 
@@ -575,31 +570,32 @@ HEAP_DATA * init_source_TT_refinegrid(
         rfg_FMM_data, prfg_size, prfg_cap, rfg_NroIdx, &rfg_Ndots);
 
     // record result to main TT 
-    for(MYINT jr=rfg_ir1, rfg_jr=0; jr<=rfg_ir2; ++jr, rfg_jr+=rfgfac){
-    for(MYINT jt=rfg_it1, rfg_jt=0; jt<=rfg_it2; ++jt, rfg_jt+=rfgfac){
-        MYINT jdx1, jdx2;
-        jdx1 = jdx2 = -1;
-        for(MYINT jp=rfg_ip1, rfg_jp=0; jp<=rfg_ip2; ++jp, rfg_jp+=rfgfac){
-            MYINT jdx, rfg_jdx;
+    for(size_t jr=rfg_ir1, rfg_jr=0; jr<=rfg_ir2; ++jr, rfg_jr+=rfgfac){
+    for(size_t jt=rfg_it1, rfg_jt=0; jt<=rfg_it2; ++jt, rfg_jt+=rfgfac){
+        size_t jdx1=0, jdx2=0;
+        bool has_point = false;
+        for(size_t jp=rfg_ip1, rfg_jp=0; jp<=rfg_ip2; ++jp, rfg_jp+=rfgfac){
+            size_t jdx, rfg_jdx;
             ravel_index(&jdx, ntp, np, jr, jt, jp);
             ravel_index(&rfg_jdx, rfg_ntp, rfg_np, rfg_jr, rfg_jt, rfg_jp);
 
             if(rfg_FMM_stat[rfg_jdx] == FMM_FAR) continue;
 
             // 将最外侧的节点加入堆
-            if(jdx1<0) jdx1 = jdx;
-            if(jdx1>=0) jdx2 = jdx;
+            if(!has_point) jdx1 = jdx;
+            jdx2 = jdx;
+            has_point = true;
 
             TT[jdx] = rfg_TT[rfg_jdx];
             // printf("rfg_TT = %f, jr, jt, jp %d, %d, %d\n", rfg_TT[rfg_jdx], jr, jt, jp);
             FMM_stat[jdx] = FMM_ALV;
             if(pNdots!=NULL) (*pNdots)--;
         }
-        if(jdx1>=0){
+        if(has_point){
             FMM_data = HeapPush(FMM_data, psize, pcap, jdx1, NroIdx, TT);
             FMM_stat[jdx1] = FMM_CLS;
         }
-        if(jdx2>=0 && jdx2!=jdx1){
+        if(has_point && jdx2!=jdx1){
             FMM_data = HeapPush(FMM_data, psize, pcap, jdx2, NroIdx, TT);
             FMM_stat[jdx2] = FMM_CLS;
         }
@@ -623,37 +619,37 @@ HEAP_DATA * init_source_TT_refinegrid(
 
 
 
-MYREAL get_neighbour_travt(
-    MYINT nr, MYINT nt, MYINT np, MYINT ntp,
-    MYINT ir, MYINT it, MYINT ip, MYINT idx,
-    MYINT maxodr, MYREAL *TT,
-    char *FMM_stat,  double s,
-    double dr, double dt, double dp, 
+real_t get_neighbour_travt(
+    size_t nr, size_t nt, size_t np, size_t ntp,
+    size_t ir, size_t it, size_t ip, size_t idx,
+    size_t maxodr, real_t *TT,
+    char *FMM_stat,  real_t s,
+    real_t dr, real_t dt, real_t dp,
     char *stat)
 {   
     if(stat!=NULL) *stat = 0;
 
-    double Acoef, Bcoef, Ccoef;
+    real_t Acoef, Bcoef, Ccoef;
     Acoef = Bcoef = 0.0;
     Ccoef = - s*s;
 
-    MYREAL tarr[5], tarrR[5], tarrT[5], tarrP[5]; // max(maxodr) = 3
+    real_t tarr[5], tarrR[5], tarrT[5], tarrP[5]; // max(maxodr) = 3
     tarr[0] = tarrR[0] = tarrT[0] = tarrP[0] = TT[idx];
-    MYINT odr, odrR, odrT, odrP;
+    size_t odr, odrR, odrT, odrP;
     odr = odrR = odrT = odrP = 0;
 
-    MYINT jdx;
-    MYINT i;
+    size_t jdx;
+    size_t i;
 
     char sgn_r, sgn_t, sgn_p;
     sgn_r = sgn_t = sgn_p = 0;
-    double dif, pos_dif, neg_dif;
-    double acoef, bcoef;
-    double pos_acoef, neg_acoef, pos_bcoef, neg_bcoef;
+    real_t dif, pos_dif, neg_dif;
+    real_t acoef, bcoef;
+    real_t pos_acoef, neg_acoef, pos_bcoef, neg_bcoef;
     //------------------------------------------- R ---------------------------------------
     // --------------------------------------- negative -----------------------------------
     for(odr=0; odr<maxodr; ++odr){
-        if(ir-odr<1) break;
+        if(odr>=ir) break;
         jdx = idx - (odr+1)*ntp;
         if(FMM_stat[jdx]!=FMM_ALV) break;
         tarr[odr+1] = TT[jdx];
@@ -662,7 +658,7 @@ MYREAL get_neighbour_travt(
     get_diff_odr123(odr, tarr, dr, &neg_acoef, &neg_bcoef, &neg_dif);
     // --------------------------------------- positive -----------------------------------
     for(odrR=0; odrR<maxodr; ++odrR){
-        if(ir+odrR+1>nr-1) break;
+        if(odrR>=nr-ir-1) break;
         jdx = idx + (odrR+1)*ntp;
         if(FMM_stat[jdx]!=FMM_ALV) break;
         tarrR[odrR+1] = TT[jdx];
@@ -692,7 +688,7 @@ MYREAL get_neighbour_travt(
     //------------------------------------------- T ---------------------------------------
     // --------------------------------------- negative -----------------------------------
     for(odr=0; odr<maxodr; ++odr){
-        if(it-odr<1) break;
+        if(odr>=it) break;
         jdx = idx - (odr+1)*np;
         if(FMM_stat[jdx]!=FMM_ALV) break;
         tarr[odr+1] = TT[jdx];
@@ -701,7 +697,7 @@ MYREAL get_neighbour_travt(
     get_diff_odr123(odr, tarr, dt, &neg_acoef, &neg_bcoef, &neg_dif);
     // --------------------------------------- positive -----------------------------------
     for(odrT=0; odrT<maxodr; ++odrT){
-        if(it+odrT+1>nt-1) break;
+        if(odrT>=nt-it-1) break;
         jdx = idx + (odrT+1)*np;
         if(FMM_stat[jdx]!=FMM_ALV) break;
         tarrT[odrT+1] = TT[jdx];
@@ -733,7 +729,7 @@ MYREAL get_neighbour_travt(
     //------------------------------------------- P ---------------------------------------
     // --------------------------------------- negative -----------------------------------
     for(odr=0; odr<maxodr; ++odr){
-        if(ip-odr<1) break;
+        if(odr>=ip) break;
         jdx = idx - (odr+1);
         if(FMM_stat[jdx]!=FMM_ALV) break;
         tarr[odr+1] = TT[jdx];
@@ -742,7 +738,7 @@ MYREAL get_neighbour_travt(
     get_diff_odr123(odr, tarr, dp, &neg_acoef, &neg_bcoef, &neg_dif);
     // --------------------------------------- positive -----------------------------------
     for(odrP=0; odrP<maxodr; ++odrP){
-        if(ip+odrP+1>np-1) break;
+        if(odrP>=np-ip-1) break;
         jdx = idx + (odrP+1);
         if(FMM_stat[jdx]!=FMM_ALV) break;
         tarrP[odrP+1] = TT[jdx];
@@ -776,7 +772,7 @@ MYREAL get_neighbour_travt(
     //--------------------------------------------------
     // solve second-order equation with one unknown
     // (A*T^2 - B*T + C = 0)
-    double jdg = Bcoef*Bcoef - 4*Acoef*Ccoef;
+    real_t jdg = Bcoef*Bcoef - 4*Acoef*Ccoef;
     if(jdg <= 0.0) jdg = 0.0;
     if(fabs(Acoef)<1e-10 || fabs(Bcoef)<1e-10){
         if(stat!=NULL) *stat = -1;
@@ -805,36 +801,36 @@ MYREAL get_neighbour_travt(
 
 
 
-MYREAL FMM_raytracing(
-    const double *rs, MYINT nr, 
-    const double *ts, MYINT nt, 
-    const double *ps, MYINT np,
-    double r0, double t0, double p0,
-    double rr, double tt, double pp, double seglen, double segfac,
-    const MYREAL *Slw, const MYREAL *TT, bool sphcoord,
-    // MYREAL *gTr, MYREAL *gTt, MYREAL *gTp, 
-    double *rays, MYINT *N)
+real_t FMM_raytracing(
+    const real_t *rs, size_t nr,
+    const real_t *ts, size_t nt,
+    const real_t *ps, size_t np,
+    real_t r0, real_t t0, real_t p0,
+    real_t rr, real_t tt, real_t pp, real_t seglen, real_t segfac,
+    const real_t *Slw, const real_t *TT, bool sphcoord,
+    // real_t *gTr, real_t *gTt, real_t *gTp,
+    real_t *rays, size_t *N)
 {
-    double dr = (nr>1)? rs[1] - rs[0] : 1e-6;
-    double dt = (nt>1)? ts[1] - ts[0] : 1e-6;
-    double dp = (np>1)? ps[1] - ps[0] : 1e-6;
-    double seglen0 = seglen;
+    real_t dr = (nr>1)? rs[1] - rs[0] : 1e-6;
+    real_t dt = (nt>1)? ts[1] - ts[0] : 1e-6;
+    real_t dp = (np>1)? ps[1] - ps[0] : 1e-6;
+    real_t seglen0 = seglen;
 
-    double xx, yy, zz, x0, y0, z0;
-    double dx, dy, dz;
+    real_t xx, yy, zz, x0, y0, z0;
+    real_t dx, dy, dz;
     if(sphcoord) {
         rtp2xyz(r0, t0, p0, &x0, &y0, &z0);
         rtp2xyz(rr, tt, pp, &xx, &yy, &zz);
     }
 
     
-    MYINT ntp = nt*np;
+    size_t ntp = nt*np;
     
-    MYINT idot = 0;
+    size_t idot = 0;
 
-    double gtr, gtt, gtp, norm;
-    double gtr_next, gtt_next, gtp_next;
-    double limitdist;  
+    real_t gtr, gtt, gtp, norm;
+    real_t gtr_next, gtt_next, gtp_next;
+    real_t limitdist;
     if(sphcoord){
         limitdist = sqrt(dr*dr + pow(dt*rs[0],2) + pow(dp*rs[0]*sin(ts[0]),2));
     } else {
@@ -842,10 +838,10 @@ MYREAL FMM_raytracing(
     }
     if(limitdist < segfac*seglen) limitdist = segfac*seglen;
 
-    double r1, t1, p1;
-    double x1, y1, z1;
-    double r11, t11, p11;
-    double rmid, tmid, pmid, vmid;
+    real_t r1, t1, p1;
+    real_t x1, y1, z1;
+    real_t r11, t11, p11;
+    real_t rmid, tmid, pmid, vmid;
     r1 = rr;
     t1 = tt;
     p1 = pp;
@@ -857,7 +853,7 @@ MYREAL FMM_raytracing(
 
     // strictly speaking, r0,t0,p0 should be used here, 
     // however here gradient equals zero,
-    trilinear_one_ravel(rs, nr, ts, nt, ps, np, ntp, TT, r0+dr, t0+dt, p0+dp, &gtr, &gtt, &gtp, NULL,NULL);
+    trilinear_one_ravel(rs, nr, ts, nt, ps, np, ntp, TT, r0+dr, t0+dt, p0+dp, false, &gtr, &gtt, &gtp, NULL,NULL);
     gtr /= dr; 
     gtt /= dt; 
     gtp /= dp; 
@@ -867,14 +863,14 @@ MYREAL FMM_raytracing(
     }
     norm = sqrt(gtr*gtr + gtt*gtt + gtp*gtp);
     if(norm <= 1e-2) norm = 1e-2;
-    MYREAL limt = limitdist * norm;
+    real_t limt = limitdist * norm;
     // printf("FMM, limitdist=%f, v=%f\n", limitdist ,norm);
 
-    MYREAL travt = trilinear_one_ravel(
-        rs, nr, ts, nt, ps, np, ntp, TT, r1, t1, p1, 
+    real_t travt = trilinear_one_ravel(
+        rs, nr, ts, nt, ps, np, ntp, TT, r1, t1, p1, false,
         &gtr, &gtt, &gtp, NULL, NULL);
-    MYREAL trem = travt, trem1;
-    MYREAL travt1 = 0.0;
+    real_t trem = travt, trem1;
+    real_t travt1 = 0.0;
 
     // normalize gradient
     gtr /= dr; 
@@ -892,9 +888,9 @@ MYREAL FMM_raytracing(
     // printf("%f, %f, %f, %f, \n", trem, gtr, gtt, gtp);
 
     //-------------------------------------------------------------------
-    MYINT N0 = *N;
-    double dist;
-    while(idot < N0-1){
+    size_t N0 = *N;
+    real_t dist;
+    while(idot+1 < N0){
         rays[3*idot] = r1;
         rays[3*idot+1] = t1;
         rays[3*idot+2] = p1;
@@ -906,7 +902,7 @@ MYREAL FMM_raytracing(
         
         // Try up to 5 step lengths along the current unit gradient direction; backtracking only halves the step length
         seglen = seglen0;
-        for(MYINT i=0; i<5; ++i){
+        for(size_t i=0; i<5; ++i){
             if(sphcoord){
                 p11 = p1 - gtp*seglen/(r1*sin(t1));
                 t11 = t1 - gtt*seglen/r1;
@@ -919,7 +915,7 @@ MYREAL FMM_raytracing(
 
             // get gradient
             trem1 = trilinear_one_ravel(
-                rs, nr, ts, nt, ps, np, ntp, TT, r11, t11, p11, 
+                rs, nr, ts, nt, ps, np, ntp, TT, r11, t11, p11, false,
                 &gtr_next, &gtt_next, &gtp_next, NULL, NULL);
 
             // printf("%f, %f, %f, %f, \n", trem1, gtr, gtt, gtp);
@@ -986,9 +982,9 @@ MYREAL FMM_raytracing(
                 dy = t1 - rays[3*idot-2];
                 dz = p1 - rays[3*idot-1];
             }
-            double segment_length = sqrt(dx*dx + dy*dy + dz*dz);
+            real_t segment_length = sqrt(dx*dx + dy*dy + dz*dz);
             travt1 += trilinear_one_ravel(
-                rs, nr, ts, nt, ps, np, ntp, Slw, rmid, tmid, pmid, 
+                rs, nr, ts, nt, ps, np, ntp, Slw, rmid, tmid, pmid, false,
                 NULL, NULL, NULL, NULL, NULL) * segment_length;
         }
         
@@ -1013,7 +1009,7 @@ MYREAL FMM_raytracing(
         tmid = (t0 + t1)/2.0;
         pmid = (p0 + p1)/2.0;
         travt1 += trilinear_one_ravel(
-            rs, nr, ts, nt, ps, np, ntp, Slw, rmid, tmid, pmid, 
+            rs, nr, ts, nt, ps, np, ntp, Slw, rmid, tmid, pmid, false,
             NULL, NULL, NULL, NULL, NULL) * dist;
     }
    
@@ -1049,9 +1045,9 @@ MYREAL FMM_raytracing(
         // if(idot==1) {
         //     printf("IXYZ, %d, %d, %d, %d, %d, %d\n", IXYZ[0], IXYZ[1], IXYZ[2], IXYZ[3], IXYZ[4], IXYZ[5]);
         //     printf("WGHT: \n");
-        //     for(MYINT i=0; i<2; ++i){
-        //         for(MYINT j=0; j<2; ++j){
-        //             for(MYINT k=0; k<2; ++k){
+        //     for(size_t i=0; i<2; ++i){
+        //         for(size_t j=0; j<2; ++j){
+        //             for(size_t k=0; k<2; ++k){
         //                 printf("%f ", WGHT[i][j][k]);
         //             }
         //             printf("\n");
@@ -1060,9 +1056,9 @@ MYREAL FMM_raytracing(
         //     }
 
         //     printf("TT: \n");
-        //     for(MYINT i=-1; i<2; ++i){
-        //         for(MYINT j=-1; j<2; ++j){
-        //             for(MYINT k=-1; k<2; ++k){
+        //     for(int i=-1; i<2; ++i){
+        //         for(int j=-1; j<2; ++j){
+        //             for(int k=-1; k<2; ++k){
         //                 printf("%f ", TT[(148+i)*ntp + (147+j)*np + 149+k]);
         //             }
         //             printf("\n");

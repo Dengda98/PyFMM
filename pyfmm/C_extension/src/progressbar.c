@@ -12,17 +12,17 @@
 #include "progressbar.h"
 
 
-void printprogressBar(const char *prefix, MYINT percentage) {
+void printprogressBar(const char *prefix, size_t percentage) {
     printf("\r\033[K"); // 移动到行首并清空行
     if(prefix!=NULL) printf("%s", prefix);
     printf("[");
-    MYINT pos = _PROGRESSBAR_WIDTH_ * percentage / 100;
-    for (MYINT i = 0; i < _PROGRESSBAR_WIDTH_; ++i) {
+    size_t pos = _PROGRESSBAR_WIDTH_ * percentage / 100;
+    for (size_t i = 0; i < _PROGRESSBAR_WIDTH_; ++i) {
         if (i < pos) printf("=");
         else if (i == pos) printf(">");
         else printf(" ");
     }
-    printf("] %d %%", percentage); 
+    printf("] %zu %%", percentage);
     if(percentage==100){
         printf("\n");
     }

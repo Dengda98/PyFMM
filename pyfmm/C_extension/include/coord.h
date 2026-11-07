@@ -10,6 +10,8 @@
 
 #include <math.h>
 
+#include "const.h"
+
 /**
  * 球坐标 \f$ (r,\theta,\phi) \f$  转直角坐标 \f$ (x,y,z) \f$
  * 
@@ -21,7 +23,7 @@
  * @param     z      (out)坐标 \f$ z \f$
  * 
  */
-void rtp2xyz(double r, double t, double p, double *x, double *y, double *z){
+void rtp2xyz(real_t r, real_t t, real_t p, real_t *x, real_t *y, real_t *z){
     *x = r*sin(t)*cos(p);
     *y = r*sin(t)*sin(p);
     *z = r*cos(t);

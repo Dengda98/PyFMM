@@ -9,7 +9,7 @@
 import os 
 import numpy as np
 import numpy.ctypeslib as npct
-from ctypes import byref
+from ctypes import byref, c_size_t
 from scipy import interpolate
 from typing import Union
 
@@ -69,7 +69,7 @@ def travel_time_source(
     rfgfac = int(rfgfac)
     rfgn = int(rfgn)
 
-    xx, yy, zz = np.array(srcloc).astype('f8')
+    xx, yy, zz = np.array(srcloc).astype(c_interfaces.REAL)
 
     if xx < xarr[0] or xx > xarr[-1]:
         raise ValueError("xx out of bound.")
@@ -84,13 +84,13 @@ def travel_time_source(
        zz == zarr[0] or zz == zarr[-1]:
         myLogger.warning(f"Source ({str(srcloc)}) is on the boundary.")
 
-    c_xarr = npct.as_ctypes(xarr.astype('f8'))
-    c_yarr = npct.as_ctypes(yarr.astype('f8'))
-    c_zarr = npct.as_ctypes(zarr.astype('f8'))
-    slw_ravel = slw.ravel().astype(c_interfaces.NPCT_REAL_TYPE)
+    c_xarr = npct.as_ctypes(xarr.astype(c_interfaces.REAL))
+    c_yarr = npct.as_ctypes(yarr.astype(c_interfaces.REAL))
+    c_zarr = npct.as_ctypes(zarr.astype(c_interfaces.REAL))
+    slw_ravel = slw.ravel().astype(c_interfaces.REAL)
     c_slw = npct.as_ctypes(slw_ravel)
 
-    TT = np.zeros_like(slw).astype(c_interfaces.NPCT_REAL_TYPE)
+    TT = np.zeros_like(slw).astype(c_interfaces.REAL)
     TT_ravel = TT.ravel()
     c_TT = npct.as_ctypes(TT_ravel)
 
@@ -150,13 +150,13 @@ def travel_time_iniTT(
 
     maxodr = int(maxodr)
 
-    c_xarr = npct.as_ctypes(xarr.astype('f8'))
-    c_yarr = npct.as_ctypes(yarr.astype('f8'))
-    c_zarr = npct.as_ctypes(zarr.astype('f8'))
-    slw_ravel = slw.ravel().astype(c_interfaces.NPCT_REAL_TYPE)
+    c_xarr = npct.as_ctypes(xarr.astype(c_interfaces.REAL))
+    c_yarr = npct.as_ctypes(yarr.astype(c_interfaces.REAL))
+    c_zarr = npct.as_ctypes(zarr.astype(c_interfaces.REAL))
+    slw_ravel = slw.ravel().astype(c_interfaces.REAL)
     c_slw = npct.as_ctypes(slw_ravel)
 
-    TT_ravel = iniTT.ravel().astype(c_interfaces.NPCT_REAL_TYPE)
+    TT_ravel = iniTT.ravel().astype(c_interfaces.REAL)
     c_TT = npct.as_ctypes(TT_ravel)
 
     FastFunc = c_interfaces.C_FastMarching if not useFSM else c_interfaces.C_FastSweeping
@@ -204,8 +204,8 @@ def raytracing(
     if isinstance(slw, np.ndarray):
         check_slowness(xarr, yarr, zarr, slw)
 
-    sx, sy, sz = np.array(srcloc).astype('f8')
-    rx, ry, rz = np.array(rcvloc).astype('f8')
+    sx, sy, sz = np.array(srcloc).astype(c_interfaces.REAL)
+    rx, ry, rz = np.array(rcvloc).astype(c_interfaces.REAL)
 
     # 检查点的范围
     if sx < xarr[0] or sx > xarr[-1] or \
@@ -228,20 +228,20 @@ def raytracing(
         myLogger.warning(f"Receiver ({str(rcvloc)}) is on the boundary.")
 
 
-    TT_ravel = TT.ravel().astype(c_interfaces.NPCT_REAL_TYPE)
+    TT_ravel = TT.ravel().astype(c_interfaces.REAL)
     c_TT = npct.as_ctypes(TT_ravel)
     c_slw = None 
     if slw is not None:
-        slw_ravel = slw.ravel().astype(c_interfaces.NPCT_REAL_TYPE)
+        slw_ravel = slw.ravel().astype(c_interfaces.REAL)
         c_slw = npct.as_ctypes(slw_ravel)
 
-    c_xarr = npct.as_ctypes(xarr.astype('f8'))
-    c_yarr = npct.as_ctypes(yarr.astype('f8'))
-    c_zarr = npct.as_ctypes(zarr.astype('f8'))
+    c_xarr = npct.as_ctypes(xarr.astype(c_interfaces.REAL))
+    c_yarr = npct.as_ctypes(yarr.astype(c_interfaces.REAL))
+    c_zarr = npct.as_ctypes(zarr.astype(c_interfaces.REAL))
 
-    rays = np.empty((maxdots*3,), dtype='f8')
+    rays = np.empty((maxdots*3,), dtype=c_interfaces.REAL)
     c_rays = npct.as_ctypes(rays)
-    c_ndots = c_interfaces.INT(maxdots)
+    c_ndots = c_size_t(maxdots)
 
     travt = c_interfaces.C_FMM_raytracing(
         c_xarr, len(xarr),

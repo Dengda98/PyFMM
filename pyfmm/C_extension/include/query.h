@@ -21,4 +21,4 @@
  * @return    索引值
  * 
  */
-MYINT dicho_find(const double *arr, MYINT n, double target);
+size_t dicho_find(const real_t *arr, size_t n, real_t target);

@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include <stddef.h>
+#include <stdbool.h>
+
 #define RADIUS 6371.0              ///< 地球半径 (km)
 #define PI 3.141592653589793       ///< \f$ \pi \f$
 #define PI2 6.283185307179586      ///< \f$ 2\pi \f$
@@ -15,10 +18,4 @@
 #define DEG1 0.017453292519943295  ///< \f$ \frac{\pi}{180} \f$
 #define KM1DEG 111.194926644       ///< \f$ R_{e} \times \frac{\pi}{180} \f$
 
-#ifdef USE_FLOAT
-typedef float MYREAL;   ///< 单精度 or 双精度
-#else
-typedef double MYREAL;
-#endif
-
-typedef long int MYINT; ///< 长整型，以存储更大体积的网格量
+typedef double real_t;  ///< 双精度

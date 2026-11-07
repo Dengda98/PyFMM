@@ -15,7 +15,7 @@
  * 
  * @param     num_threads     (in)线程数
  */
-void set_fsm_num_threads(MYINT num_threads);
+void set_fsm_num_threads(size_t num_threads);
 
 
 /**
@@ -44,15 +44,15 @@ void set_fsm_num_threads(MYINT num_threads);
  * @return    nsweep, sweep次数
  * 
  */
-MYINT FastSweeping(
-    const double *rs, MYINT nr, 
-    const double *ts, MYINT nt, 
-    const double *ps, MYINT np,
-    double rr,  double tt, double pp,
-    MYINT maxodr,  const MYREAL *Slw, 
-    MYREAL *TT, bool sphcoord, 
-    MYINT rfgfac, MYINT rfgn, bool printbar, 
-    double eps, MYINT maxLoops, bool isparallel);
+size_t FastSweeping(
+    const real_t *rs, size_t nr,
+    const real_t *ts, size_t nt,
+    const real_t *ps, size_t np,
+    real_t rr,  real_t tt, real_t pp,
+    size_t maxodr,  const real_t *Slw,
+    real_t *TT, bool sphcoord,
+    size_t rfgfac, size_t rfgn, bool printbar,
+    real_t eps, size_t maxLoops, bool isparallel);
 
 
 /**
@@ -76,11 +76,11 @@ MYINT FastSweeping(
  * 
  * @return    nsweep, sweep次数
  */
-MYINT FastSweeping_with_initial(
-    const double *rs, MYINT nr, 
-    const double *ts, MYINT nt, 
-    const double *ps, MYINT np,
-    MYINT maxodr,  const MYREAL *Slw, MYREAL *TT, 
+size_t FastSweeping_with_initial(
+    const real_t *rs, size_t nr,
+    const real_t *ts, size_t nt,
+    const real_t *ps, size_t np,
+    size_t maxodr,  const real_t *Slw, real_t *TT,
     char *FMM_stat, bool sphcoord, bool printbar, 
-    double eps, MYINT maxLoops, bool isparallel);
+    real_t eps, size_t maxLoops, bool isparallel);
 

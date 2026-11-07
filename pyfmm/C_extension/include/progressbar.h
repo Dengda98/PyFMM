@@ -22,4 +22,4 @@
  * @param    prefix     (in)进度条前缀字符串
  * @param    percentage (in)百分比(整数)
  */
-void printprogressBar(const char *prefix, MYINT percentage);
+void printprogressBar(const char *prefix, size_t percentage);

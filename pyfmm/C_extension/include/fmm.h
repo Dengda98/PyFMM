@@ -41,13 +41,13 @@
  * 
  */
 void FastMarching(
-    const double *rs, MYINT nr, 
-    const double *ts, MYINT nt, 
-    const double *ps, MYINT np,
-    double rr,  double tt, double pp,
-    MYINT maxodr,  const MYREAL *Slw, 
-    MYREAL *TT, bool sphcoord, 
-    MYINT rfgfac, MYINT rfgn, bool printbar);
+    const real_t *rs, size_t nr,
+    const real_t *ts, size_t nt,
+    const real_t *ps, size_t np,
+    real_t rr,  real_t tt, real_t pp,
+    size_t maxodr,  const real_t *Slw,
+    real_t *TT, bool sphcoord,
+    size_t rfgfac, size_t rfgn, bool printbar);
 
 
 /**
@@ -74,12 +74,12 @@ void FastMarching(
  * 
  */
 HEAP_DATA * FastMarching_with_initial(
-    const double *rs, MYINT nr, 
-    const double *ts, MYINT nt, 
-    const double *ps, MYINT np,
-    MYINT maxodr,  const MYREAL *Slw, MYREAL *TT, 
+    const real_t *rs, size_t nr,
+    const real_t *ts, size_t nt,
+    const real_t *ps, size_t np,
+    size_t maxodr,  const real_t *Slw, real_t *TT,
     char *FMM_stat, bool sphcoord, bool *edgeStop, bool printbar,
-    HEAP_DATA *FMM_data, MYINT *psize, MYINT *pcap, MYINT *NroIdx, MYINT *pNdots);
+    HEAP_DATA *FMM_data, size_t *psize, size_t *pcap, size_t *NroIdx, size_t *pNdots);
 
 
 
@@ -109,13 +109,13 @@ HEAP_DATA * FastMarching_with_initial(
  * @return    堆首指针
  */
 HEAP_DATA * init_source_TT(
-    const double *rs, MYINT nr, 
-    const double *ts, MYINT nt, 
-    const double *ps, MYINT np,
-    double rr, double tt, double pp,
-    const MYREAL *Slw, MYREAL *TT, 
+    const real_t *rs, size_t nr,
+    const real_t *ts, size_t nt,
+    const real_t *ps, size_t np,
+    real_t rr, real_t tt, real_t pp,
+    const real_t *Slw, real_t *TT,
     char *FMM_stat, bool sphcoord,
-    HEAP_DATA *FMM_data, MYINT *psize, MYINT *pcap, MYINT *NroIdx, MYINT *pNdots);
+    HEAP_DATA *FMM_data, size_t *psize, size_t *pcap, size_t *NroIdx, size_t *pNdots);
 
 
 
@@ -148,15 +148,15 @@ HEAP_DATA * init_source_TT(
  * @return    堆首指针
  */
 HEAP_DATA * init_source_TT_refinegrid(
-    const double *rs, MYINT nr, 
-    const double *ts, MYINT nt, 
-    const double *ps, MYINT np,
-    double rr, double tt, double pp, 
-    MYINT maxodr,  const MYREAL *Slw, MYREAL *TT, 
+    const real_t *rs, size_t nr,
+    const real_t *ts, size_t nt,
+    const real_t *ps, size_t np,
+    real_t rr, real_t tt, real_t pp,
+    size_t maxodr,  const real_t *Slw, real_t *TT,
     char *FMM_stat, bool sphcoord,
-    MYINT rfgfac, MYINT rfgn, // refine grid factor and number of grids
+    size_t rfgfac, size_t rfgn, // refine grid factor and number of grids
     bool printbar,
-    HEAP_DATA *FMM_data, MYINT *psize, MYINT *pcap, MYINT *NroIdx, MYINT *pNdots);
+    HEAP_DATA *FMM_data, size_t *psize, size_t *pcap, size_t *NroIdx, size_t *pNdots);
 
 
 
@@ -183,12 +183,12 @@ HEAP_DATA * init_source_TT_refinegrid(
  * @return     走时结果
  * 
  */
-MYREAL get_neighbour_travt(
-    MYINT nr, MYINT nt, MYINT np, MYINT ntp,
-    MYINT ir, MYINT it, MYINT ip, MYINT idx,
-    MYINT maxodr, MYREAL *TT,
-    char *FMM_stat,  double s,
-    double dr, double dt, double dp, 
+real_t get_neighbour_travt(
+    size_t nr, size_t nt, size_t np, size_t ntp,
+    size_t ir, size_t it, size_t ip, size_t idx,
+    size_t maxodr, real_t *TT,
+    char *FMM_stat,  real_t s,
+    real_t dr, real_t dt, real_t dp,
     char *stat);
 
 
@@ -214,16 +214,16 @@ MYREAL get_neighbour_travt(
  * @param     TT     (in)展平的三维走时场
  * @param     sphcoord  (in)是否使用球坐标
  * @param     rays      (out)输出展平的三维射线
- * @param     N         (out)输出射线点数
+ * @param     N         (inout)输入射线缓冲区容量，输出实际射线点数
  * 
  * @return    射线走时
  * 
  */
-MYREAL FMM_raytracing(
-    const double *rs, MYINT nr, 
-    const double *ts, MYINT nt, 
-    const double *ps, MYINT np,
-    double r0, double t0, double p0,
-    double rr, double tt, double pp, double seglen, double segfac,
-    const MYREAL *Slw, const MYREAL *TT, bool sphcoord,
-    double *rays, MYINT *N);
+real_t FMM_raytracing(
+    const real_t *rs, size_t nr,
+    const real_t *ts, size_t nt,
+    const real_t *ps, size_t np,
+    real_t r0, real_t t0, real_t p0,
+    real_t rr, real_t tt, real_t pp, real_t seglen, real_t segfac,
+    const real_t *Slw, const real_t *TT, bool sphcoord,
+    real_t *rays, size_t *N);

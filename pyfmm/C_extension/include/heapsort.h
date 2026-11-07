@@ -12,7 +12,7 @@
 
 #include "const.h"
 
-typedef MYINT HEAP_DATA;
+typedef size_t HEAP_DATA;
 
 /**
  * 最小堆向上调整
@@ -24,7 +24,7 @@ typedef MYINT HEAP_DATA;
  * 
  * 
  */
-void MinHeap_AdjustUp(HEAP_DATA * HEAP_data, MYINT child, MYINT *NroIdx, const MYREAL *TT);
+void MinHeap_AdjustUp(HEAP_DATA * HEAP_data, size_t child, size_t *NroIdx, const real_t *TT);
 
 
 
@@ -39,7 +39,7 @@ void MinHeap_AdjustUp(HEAP_DATA * HEAP_data, MYINT child, MYINT *NroIdx, const M
  * 
  * 
  */
-void MinHeap_AdjustDown(HEAP_DATA * HEAP_data, MYINT size, MYINT root, MYINT *NroIdx, const MYREAL *TT);
+void MinHeap_AdjustDown(HEAP_DATA * HEAP_data, size_t size, size_t root, size_t *NroIdx, const real_t *TT);
 
 
 /**
@@ -53,7 +53,7 @@ void MinHeap_AdjustDown(HEAP_DATA * HEAP_data, MYINT size, MYINT root, MYINT *Nr
  * @return     堆首元素
  * 
  */
-HEAP_DATA HeapPop(HEAP_DATA *HEAP_data, MYINT *psize, MYINT *NroIdx, const MYREAL *TT);
+HEAP_DATA HeapPop(HEAP_DATA *HEAP_data, size_t *psize, size_t *NroIdx, const real_t *TT);
 
 
 /**
@@ -69,7 +69,7 @@ HEAP_DATA HeapPop(HEAP_DATA *HEAP_data, MYINT *psize, MYINT *NroIdx, const MYREA
  * @return     堆首指针
  * 
  */
-HEAP_DATA * HeapPush(HEAP_DATA *HEAP_data, MYINT *psize, MYINT *pcap, HEAP_DATA newdata, MYINT *NroIdx, const MYREAL *TT);
+HEAP_DATA * HeapPush(HEAP_DATA *HEAP_data, size_t *psize, size_t *pcap, HEAP_DATA newdata, size_t *NroIdx, const real_t *TT);
 
 
 /**
@@ -83,7 +83,7 @@ HEAP_DATA * HeapPush(HEAP_DATA *HEAP_data, MYINT *psize, MYINT *pcap, HEAP_DATA 
  * 
  * 
  */
-void HeapBuild(HEAP_DATA * HEAP_data, MYINT size, MYINT idx, MYINT *NroIdx, const MYREAL *TT);
+void HeapBuild(HEAP_DATA * HEAP_data, size_t size, size_t idx, size_t *NroIdx, const real_t *TT);
 
 
 /**
@@ -103,7 +103,7 @@ inline void Swap(HEAP_DATA * data1, HEAP_DATA * data2){
  * 打印推数据【用于debug】
  */
 void print_HEAP(
-    HEAP_DATA * data, MYINT size, MYINT nr, MYINT nt, MYINT np, MYINT *NroIdx, 
-    MYREAL *TT, MYREAL *gTr, MYREAL *gTt, MYREAL *gTp);
+    HEAP_DATA * data, size_t size, size_t nr, size_t nt, size_t np, size_t *NroIdx,
+    real_t *TT, real_t *gTr, real_t *gTt, real_t *gTp);
 
 
