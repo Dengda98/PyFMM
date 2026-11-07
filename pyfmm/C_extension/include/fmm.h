@@ -208,9 +208,9 @@ MYREAL get_neighbour_travt(
  * @param     rr     (in)接收点维度1坐标
  * @param     tt     (in)接收点维度2坐标
  * @param     pp     (in)接收点维度3坐标
- * @param     seglen (in)射线段长度
+ * @param     seglen (in)名义追踪步长，走时积分使用实际端点距离
  * @param     segfac (in)t < segfac*seglen/v，当射线追踪到在源点附近时，射线直接连接源点
- * @param     Slw    (in)展平的三维慢度场，若非NULL则使用累加求和计算走时，否则直接从走时场中插值得到走时
+ * @param     Slw    (in)展平的三维慢度场，若非NULL则按实际线段长度作中点积分，球坐标使用三维弦长，否则从走时场插值
  * @param     TT     (in)展平的三维走时场
  * @param     sphcoord  (in)是否使用球坐标
  * @param     rays      (out)输出展平的三维射线

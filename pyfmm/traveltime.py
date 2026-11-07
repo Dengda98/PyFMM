@@ -192,8 +192,8 @@ def raytracing(
         :param       xarr:    :math:`x` 或 :math:`r` 节点坐标数组，要求等距升序排列 
         :param       yarr:    :math:`y` 或 :math:`\theta` 节点坐标数组，要求等距升序排列 
         :param       zarr:    :math:`z` 或 :math:`\phi` 节点坐标数组，要求等距升序排列 
-        :param     seglen:    射线段长度，与xyz的长度量纲保持一致
-        :param        slw:    形状为(nx, ny, nz)的三维慢度场，若非None则使用累加求和计算走时，否则直接从走时场中插值得到走时
+        :param     seglen:    名义追踪步长，与xyz的长度量纲保持一致，走时积分使用实际端点距离
+        :param        slw:    形状为(nx, ny, nz)的慢度场，若非None则按实际线段长度作中点积分，球坐标使用三维弦长，否则从走时场插值
         :param     segfac:    t < segfac*seglen/v，当射线追踪到在源点附近时，射线直接连接源点
         :param   sphcoord:    是否使用球坐标
         :param    maxdots:    射线最大点数
