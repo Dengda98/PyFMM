@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "const.h"
-#include "heapsort.h"
+#include "fmm/const.h"
+#include "fmm/heapsort.h"
 
 #define _PRINT_ODR_BUG_ 0
 

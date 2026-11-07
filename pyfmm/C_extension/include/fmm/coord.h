@@ -10,7 +10,7 @@
 
 #include <math.h>
 
-#include "const.h"
+#include "fmm/const.h"
 
 /**
  * 球坐标 \f$ (r,\theta,\phi) \f$  转直角坐标 \f$ (x,y,z) \f$

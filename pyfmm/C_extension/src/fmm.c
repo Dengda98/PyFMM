@@ -14,16 +14,16 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-#include "const.h"
-#include "interp.h"
-#include "query.h"
-#include "coord.h"
-#include "mallocfree.h"
-#include "diff.h"
-#include "heapsort.h"
-#include "index.h"
-#include "progressbar.h"
-#include "fmm.h"
+#include "fmm/const.h"
+#include "fmm/interp.h"
+#include "fmm/query.h"
+#include "fmm/coord.h"
+#include "fmm/mallocfree.h"
+#include "fmm/diff.h"
+#include "fmm/heapsort.h"
+#include "fmm/index.h"
+#include "fmm/progressbar.h"
+#include "fmm/fmm.h"
 
 
 

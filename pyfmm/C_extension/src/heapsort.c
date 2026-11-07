@@ -10,9 +10,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "const.h"
-#include "heapsort.h"
-#include "index.h"
+#include "fmm/const.h"
+#include "fmm/heapsort.h"
+#include "fmm/index.h"
 
 
 void MinHeap_AdjustUp(HEAP_DATA * HEAP_data, size_t child, size_t *NroIdx, const real_t *TT){

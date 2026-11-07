@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#include "const.h"
-#include "heapsort.h"
+#include "fmm/const.h"
+#include "fmm/heapsort.h"
 
 
 /**

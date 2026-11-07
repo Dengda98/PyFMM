@@ -12,12 +12,12 @@
 #include <omp.h>
 #include <sys/time.h>
 
-#include "fsm.h"
-#include "fmm.h"
-#include "const.h"
-#include "index.h"
-#include "mallocfree.h"
-#include "progressbar.h"
+#include "fmm/fsm.h"
+#include "fmm/fmm.h"
+#include "fmm/const.h"
+#include "fmm/index.h"
+#include "fmm/mallocfree.h"
+#include "fmm/progressbar.h"
 
 
 void set_fsm_num_threads(size_t num_threads){
