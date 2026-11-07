@@ -9,7 +9,7 @@
 import os 
 import numpy as np
 import numpy.ctypeslib as npct
-from ctypes import byref, c_size_t
+from ctypes import byref, c_int, c_size_t
 from scipy import interpolate
 from typing import Union
 
@@ -182,7 +182,7 @@ def travel_time_iniTT(
 def raytracing(
     TT:np.ndarray, srcloc:list, rcvloc:list,
     xarr:np.ndarray, yarr:np.ndarray, zarr:np.ndarray,
-    seglen:float, slw:Union[np.ndarray, None] = None, segfac:int=3, sphcoord:bool=False, maxdots:int=10000):
+    seglen:float, slw:Union[np.ndarray, None] = None, segfac:int=3, sphcoord:bool=False, maxdots:int=10000, return_status:bool=False):
     r'''
         根据给定源点坐标计算的走时场，使用梯度下降法做射线追踪
 
@@ -197,8 +197,12 @@ def raytracing(
         :param     segfac:    t < segfac*seglen/v，当射线追踪到在源点附近时，射线直接连接源点
         :param   sphcoord:    是否使用球坐标
         :param    maxdots:    射线最大点数
+        :param return_status:    是否在返回值末尾附加追踪状态，0为正常返回，-1为回退后走时仍无法下降或梯度无效
 
-        :return:  (接收点走时，形状为(ndots, 3)的射线坐标)
+        :return:  (接收点走时，形状为(ndots, 3)的射线坐标)，return_status=True时另返回状态码
+
+        .. warning::  追踪失败时打印警告并立即返回，走时为nan，射线仅包含失败前的有效路径，不追加源点
+                      很可能是强非均匀介质导致走时场非常崎岖
     '''
 
     if isinstance(slw, np.ndarray):
@@ -242,6 +246,7 @@ def raytracing(
     rays = np.empty((maxdots*3,), dtype=c_interfaces.REAL)
     c_rays = npct.as_ctypes(rays)
     c_ndots = c_size_t(maxdots)
+    c_stat = c_int(0)
 
     travt = c_interfaces.C_FMM_raytracing(
         c_xarr, len(xarr),
@@ -250,7 +255,7 @@ def raytracing(
         sx, sy, sz,
         rx, ry, rz, float(seglen), int(segfac),
         c_slw, c_TT, sphcoord, 
-        c_rays, byref(c_ndots)
+        c_rays, byref(c_ndots), byref(c_stat)
     )
 
     # 对射线结果做检查
@@ -258,7 +263,13 @@ def raytracing(
         myLogger.warning(f"The number of dots exceed {maxdots}, and has been truncated. "
                           "You may need to set larger seglen or set more maxdots.")
 
-    return travt, rays.reshape((-1,3))[:c_ndots.value, ]
+    traced_rays = rays.reshape((-1,3))[:c_ndots.value, ]
+    if c_stat.value != 0:
+        # 释放未使用的大缓冲区，仅保留失败前的有效路径
+        traced_rays = traced_rays.copy()
+    if return_status:
+        return travt, traced_rays, c_stat.value
+    return travt, traced_rays
 
 
 

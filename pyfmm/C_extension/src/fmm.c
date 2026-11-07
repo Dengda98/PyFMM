@@ -808,281 +808,151 @@ real_t FMM_raytracing(
     real_t r0, real_t t0, real_t p0,
     real_t rr, real_t tt, real_t pp, real_t seglen, real_t segfac,
     const real_t *Slw, const real_t *TT, bool sphcoord,
-    // real_t *gTr, real_t *gTt, real_t *gTp,
-    real_t *rays, size_t *N)
+    real_t *rays, size_t *N, int *stat)
 {
-    real_t dr = (nr>1)? rs[1] - rs[0] : 1e-6;
-    real_t dt = (nt>1)? ts[1] - ts[0] : 1e-6;
-    real_t dp = (np>1)? ps[1] - ps[0] : 1e-6;
-    real_t seglen0 = seglen;
-
-    real_t xx, yy, zz, x0, y0, z0;
-    real_t dx, dy, dz;
-    if(sphcoord) {
-        rtp2xyz(r0, t0, p0, &x0, &y0, &z0);
-        rtp2xyz(rr, tt, pp, &xx, &yy, &zz);
+    if(stat != NULL){
+        *stat = 0;
     }
 
-    
     size_t ntp = nt*np;
-    
-    size_t idot = 0;
+    size_t capacity = *N;
+    size_t ndots = 0;
+    real_t dr = nr>1 ? rs[1] - rs[0] : 1e-6;
+    real_t dt = nt>1 ? ts[1] - ts[0] : 1e-6;
+    real_t dp = np>1 ? ps[1] - ps[0] : 1e-6;
 
-    real_t gtr, gtt, gtp, norm;
-    real_t gtr_next, gtt_next, gtp_next;
-    real_t limitdist;
-    if(sphcoord){
-        limitdist = sqrt(dr*dr + pow(dt*rs[0],2) + pow(dp*rs[0]*sin(ts[0]),2));
-    } else {
-        limitdist = sqrt(dr*dr + dt*dt + dp*dp);
-    }
-    if(limitdist < segfac*seglen) limitdist = segfac*seglen;
+    // 用网格对角线和名义步长确定源点附近的连接范围
+    real_t ht = sphcoord ? dt*rs[0] : dt;
+    real_t hp = sphcoord ? dp*rs[0]*sin(ts[0]) : dp;
+    real_t limitdist = fmax(sqrt(dr*dr + ht*ht + hp*hp), segfac*seglen);
+    real_t gtr, gtt, gtp;
 
-    real_t r1, t1, p1;
-    real_t x1, y1, z1;
-    real_t r11, t11, p11;
-    real_t rmid, tmid, pmid, vmid;
-    r1 = rr;
-    t1 = tt;
-    p1 = pp;
-    if(sphcoord) {
-        x1 = xx;
-        y1 = yy;
-        z1 = zz;
-    }
-
-    // strictly speaking, r0,t0,p0 should be used here, 
-    // however here gradient equals zero,
-    trilinear_one_ravel(rs, nr, ts, nt, ps, np, ntp, TT, r0+dr, t0+dt, p0+dp, false, &gtr, &gtt, &gtp, NULL,NULL);
-    gtr /= dr; 
-    gtt /= dt; 
-    gtp /= dp; 
+    // 源点梯度可能为零，使用相邻位置估计走时阈值
+    trilinear_one_ravel(rs, nr, ts, nt, ps, np, ntp, TT, r0+dr, t0+dt, p0+dp, false, &gtr, &gtt, &gtp, NULL, NULL);
+    gtr /= dr;
+    gtt /= dt;
+    gtp /= dp;
     if(sphcoord){
         gtt /= r0;
-        gtp /= (r0*sin(t0));
+        gtp /= r0*sin(t0);
     }
-    norm = sqrt(gtr*gtr + gtt*gtt + gtp*gtp);
-    if(norm <= 1e-2) norm = 1e-2;
-    real_t limt = limitdist * norm;
-    // printf("FMM, limitdist=%f, v=%f\n", limitdist ,norm);
+    real_t norm = sqrt(gtr*gtr + gtt*gtt + gtp*gtp);
+    real_t limit_time = limitdist*fmax(norm, 1e-2);
 
-    real_t travt = trilinear_one_ravel(
-        rs, nr, ts, nt, ps, np, ntp, TT, r1, t1, p1, false,
-        &gtr, &gtt, &gtp, NULL, NULL);
-    real_t trem = travt, trem1;
-    real_t travt1 = 0.0;
+    real_t r1 = rr, t1 = tt, p1 = pp;
+    real_t receiver_time = trilinear_one_ravel(
+        rs, nr, ts, nt, ps, np, ntp, TT, r1, t1, p1, false, &gtr, &gtt, &gtp, NULL, NULL);
+    real_t remaining_time = receiver_time;
 
-    // normalize gradient
-    gtr /= dr; 
-    gtt /= dt; 
-    gtp /= dp; 
-    if(sphcoord){
-        gtt /= r1;
-        gtp /= (r1*sin(t1));
-    }
-    norm = sqrt(gtr*gtr + gtt*gtt + gtp*gtp);
-    gtr /= norm;
-    gtt /= norm;
-    gtp /= norm;
+    // 从接收点沿走时下降方向追踪，缓冲区最后一个位置留给源点
+    while(ndots+1 < capacity){
+        rays[3*ndots]   = r1;
+        rays[3*ndots+1] = t1;
+        rays[3*ndots+2] = p1;
+        ++ndots;
+        if(remaining_time <= limit_time){
+            break;
+        }
 
-    // printf("%f, %f, %f, %f, \n", trem, gtr, gtt, gtp);
+        // 将插值得到的梯度换算为物理分量，再归一化
+        gtr /= dr;
+        gtt /= dt;
+        gtp /= dp;
+        if(sphcoord){
+            gtt /= r1;
+            gtp /= r1*sin(t1);
+        }
+        norm = sqrt(gtr*gtr + gtt*gtt + gtp*gtp);
+        if(norm > 0.0){
+            gtr /= norm;
+            gtt /= norm;
+            gtp /= norm;
+        }
 
-    //-------------------------------------------------------------------
-    size_t N0 = *N;
-    real_t dist;
-    while(idot+1 < N0){
-        rays[3*idot] = r1;
-        rays[3*idot+1] = t1;
-        rays[3*idot+2] = p1;
-
-        idot++;
-
-        // if(dist <= limitdist) break;
-        if(trem <= limt) break;
-        
-        // Try up to 5 step lengths along the current unit gradient direction; backtracking only halves the step length
-        seglen = seglen0;
-        for(size_t i=0; i<5; ++i){
-            if(sphcoord){
-                p11 = p1 - gtp*seglen/(r1*sin(t1));
-                t11 = t1 - gtt*seglen/r1;
-                r11 = r1 - gtr*seglen;
-            } else {
-                r11 = r1 - gtr*seglen;
-                t11 = t1 - gtt*seglen;
-                p11 = p1 - gtp*seglen;
-            }
-
-            // get gradient
-            trem1 = trilinear_one_ravel(
-                rs, nr, ts, nt, ps, np, ntp, TT, r11, t11, p11, false,
-                &gtr_next, &gtt_next, &gtp_next, NULL, NULL);
-
-            // printf("%f, %f, %f, %f, \n", trem1, gtr, gtt, gtp);
-
-            if(trem > trem1) break;
-
-            // compare travt first, 
-            // if traveltime field too complex, consider distance.
-            if(sphcoord){
-                rtp2xyz(r1, t1, p1, &x1, &y1, &z1);
-                dx = x1-x0;
-                dy = y1-y0;
-                dz = z1-z0;
-                dist = sqrt(dx*dx + dy*dy + dz*dz);
-            } else {
-                dist = sqrt(pow(r0-r1,2) + pow(t0-t1,2) + pow(p0-p1,2));
-            }
-
-            if(dist <= limitdist) {
-                trem1 = 0.0;
+        // 固定当前方向，最多试探5次，每次回退将步长减半
+        real_t step = seglen;
+        real_t rnext, tnext, pnext, next_time;
+        real_t gtr_next, gtt_next, gtp_next;
+        bool accepted = false;
+        for(size_t trial=0; trial<5 && norm>0.0; ++trial){
+            rnext = r1 - gtr*step;
+            tnext = t1 - gtt*step/(sphcoord ? r1 : 1.0);
+            pnext = p1 - gtp*step/(sphcoord ? r1*sin(t1) : 1.0);
+            next_time = trilinear_one_ravel(
+                rs, nr, ts, nt, ps, np, ntp, TT, rnext, tnext, pnext, false, &gtr_next, &gtt_next, &gtp_next, NULL, NULL);
+            if(next_time < remaining_time){
+                accepted = true;
                 break;
             }
-
-            seglen /= 2.0;
+            step *= 0.5;
         }
-        r1 = r11;
-        t1 = t11;
-        p1 = p11;
-        trem = trem1;
+
+        if(!accepted){
+            // 源点附近仍允许直接连接，否则报告失败并保留已追踪的路径
+            real_t x0 = r0, y0 = t0, z0 = p0;
+            real_t x1 = r1, y1 = t1, z1 = p1;
+            if(sphcoord){
+                rtp2xyz(r0, t0, p0, &x0, &y0, &z0);
+                rtp2xyz(r1, t1, p1, &x1, &y1, &z1);
+            }
+            real_t dx = x1-x0;
+            real_t dy = y1-y0;
+            real_t dz = z1-z0;
+            if(sqrt(dx*dx + dy*dy + dz*dz) <= limitdist){
+                break;
+            }
+            if(stat != NULL){
+                *stat = -1;
+            }
+            *N = ndots;
+            fprintf(stderr, "[WARNING] Ray tracing failed: no decreasing traveltime step was found after backtracking "
+                            "or the gradient is invalid. Strongly heterogeneous media may have produced a very rugged traveltime field.\n");
+            return NAN;
+        }
+
+        r1 = rnext;
+        t1 = tnext;
+        p1 = pnext;
+        remaining_time = next_time;
         gtr = gtr_next;
         gtt = gtt_next;
         gtp = gtp_next;
-
-        // Convert and normalize the gradient at the final trial point for the next tracing segment
-        gtr /= dr; 
-        gtt /= dt; 
-        gtp /= dp; 
-        if(sphcoord){
-            gtt /= r1;
-            gtp /= (r1*sin(t1));
-        }
-        norm = sqrt(gtr*gtr + gtt*gtt + gtp*gtp);
-        gtr /= norm;
-        gtt /= norm;
-        gtp /= norm;
-
-        // 求中点速度，算走时
-        // 这里做了近似，认为射线段比较小，不论坐标系为何，直接去平均值作为中点
-        if(Slw != NULL){
-            rmid = (r1 + rays[3*idot-3])/2.0;
-            tmid = (t1 + rays[3*idot-2])/2.0;
-            pmid = (p1 + rays[3*idot-1])/2.0;
-
-            // Integrate using the actual endpoint distance, matching the geometry of the output ray
-            // In spherical coordinates, use chord lengths for all segments, as for the final segment
-            if(sphcoord){
-                rtp2xyz(rays[3*idot-3], rays[3*idot-2], rays[3*idot-1], &xx, &yy, &zz);
-                rtp2xyz(r1, t1, p1, &x1, &y1, &z1);
-                dx = x1 - xx;
-                dy = y1 - yy;
-                dz = z1 - zz;
-            } else {
-                dx = r1 - rays[3*idot-3];
-                dy = t1 - rays[3*idot-2];
-                dz = p1 - rays[3*idot-1];
-            }
-            real_t segment_length = sqrt(dx*dx + dy*dy + dz*dz);
-            travt1 += trilinear_one_ravel(
-                rs, nr, ts, nt, ps, np, ntp, Slw, rmid, tmid, pmid, false,
-                NULL, NULL, NULL, NULL, NULL) * segment_length;
-        }
-        
-    } // END tracing
-
-    rays[3*idot] = r0;
-    rays[3*idot+1] = t0;
-    rays[3*idot+2] = p0;
-
-    if(Slw != NULL){
-        // compute distance of last two points
-        if(sphcoord){
-            rtp2xyz(r1, t1, p1, &x1, &y1, &z1);
-            dx = x1-x0;
-            dy = y1-y0;
-            dz = z1-z0;
-            dist = sqrt(dx*dx + dy*dy + dz*dz);
-        } else {
-            dist = sqrt(pow(r0-r1,2) + pow(t0-t1,2) + pow(p0-p1,2));
-        }
-        rmid = (r0 + r1)/2.0;
-        tmid = (t0 + t1)/2.0;
-        pmid = (p0 + p1)/2.0;
-        travt1 += trilinear_one_ravel(
-            rs, nr, ts, nt, ps, np, ntp, Slw, rmid, tmid, pmid, false,
-            NULL, NULL, NULL, NULL, NULL) * dist;
     }
-   
-    idot++;
-    *N = idot;
 
-    if(Slw != NULL){
-        return travt1;
-    } else {
-        return travt;
+    rays[3*ndots]   = r0;
+    rays[3*ndots+1] = t0;
+    rays[3*ndots+2] = p0;
+    *N = ndots+1;
+    if(Slw == NULL){
+        return receiver_time;
     }
-    
+
+    // 对输出路径统一作中点积分，球坐标下使用弦长，最后一段也使用相同算法
+    real_t integrated_time = 0.0;
+    real_t x0 = rays[0], y0 = rays[1], z0 = rays[2];
+    if(sphcoord){
+        rtp2xyz(rays[0], rays[1], rays[2], &x0, &y0, &z0);
+    }
+    for(size_t i=1; i<*N; ++i){
+        const real_t *start = rays + 3*(i-1);
+        const real_t *end = rays + 3*i;
+        real_t rmid = (start[0] + end[0])/2.0;
+        real_t tmid = (start[1] + end[1])/2.0;
+        real_t pmid = (start[2] + end[2])/2.0;
+        real_t x1 = end[0], y1 = end[1], z1 = end[2];
+        if(sphcoord){
+            rtp2xyz(end[0], end[1], end[2], &x1, &y1, &z1);
+        }
+        real_t dx = x1-x0;
+        real_t dy = y1-y0;
+        real_t dz = z1-z0;
+        real_t segment_length = sqrt(dx*dx + dy*dy + dz*dz);
+        real_t midpoint_slowness = trilinear_one_ravel(
+            rs, nr, ts, nt, ps, np, ntp, Slw, rmid, tmid, pmid, false, NULL, NULL, NULL, NULL, NULL);
+        integrated_time += midpoint_slowness*segment_length;
+        x0 = x1;
+        y0 = y1;
+        z0 = z1;
+    }
+    return integrated_time;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-        // if(idot==1) {
-        //     printf("IXYZ, %d, %d, %d, %d, %d, %d\n", IXYZ[0], IXYZ[1], IXYZ[2], IXYZ[3], IXYZ[4], IXYZ[5]);
-        //     printf("WGHT: \n");
-        //     for(size_t i=0; i<2; ++i){
-        //         for(size_t j=0; j<2; ++j){
-        //             for(size_t k=0; k<2; ++k){
-        //                 printf("%f ", WGHT[i][j][k]);
-        //             }
-        //             printf("\n");
-        //         }
-        //         printf("\n");
-        //     }
-
-        //     printf("TT: \n");
-        //     for(int i=-1; i<2; ++i){
-        //         for(int j=-1; j<2; ++j){
-        //             for(int k=-1; k<2; ++k){
-        //                 printf("%f ", TT[(148+i)*ntp + (147+j)*np + 149+k]);
-        //             }
-        //             printf("\n");
-        //         }
-        //         printf("\n");
-        //     }
-        //     printf("gtr, gtt, gtp, %f, %f, %f\n", gtr, gtt, gtp);
-        // }
-
-
-
-        // gtr = trilinear_one_Idx_ravel(IXYZ, WGHT, gTr, nr, nt, np, ntp, NULL, NULL, NULL);
-        // gtt = trilinear_one_Idx_ravel(IXYZ, WGHT, gTt, nr, nt, np, ntp, NULL, NULL, NULL);
-        // gtp = trilinear_one_Idx_ravel(IXYZ, WGHT, gTp, nr, nt, np, ntp, NULL, NULL, NULL);
-
-
-        // if(sphcoord){
-        //     rtp2xyz(r1, t1, p1, &x1, &y1, &z1);
-        //     dx = x1-x0;
-        //     dy = y1-y0;
-        //     dz = z1-z0;
-        //     dist = sqrt(dx*dx + dy*dy + dz*dz);
-        // } else {
-        //     dist = sqrt(pow(r0-r1,2) + pow(t0-t1,2) + pow(p0-p1,2));
-        // }
-        // printf("idot=%d, dist=%f\n", idot, dist);
-*/

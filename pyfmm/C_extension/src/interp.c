@@ -185,11 +185,12 @@ real_t trilinear_one_Idx_ravel(
             dv221 = (values[idx + 2*DX + dy] - v121)/2.0;
             dv212 = (values[idx + 2*DX + dz] - v112)/2.0;
             dv222 = (values[idx + 2*DX + dy + dz] - v122)/2.0;
-        } else if(nx > 1){ // 设置nx > 1的判断，以防越界
-            dv211 = (v111 - values[idx - 2*DX])/2.0;
-            dv221 = (v121 - values[idx - 2*DX + dy])/2.0;
-            dv212 = (v112 - values[idx - 2*DX + dz])/2.0;
-            dv222 = (v122 - values[idx - 2*DX + dy + dz])/2.0;
+        } else if(nx > 1){
+            // 右端点位于边界时使用单边差分，避免访问网格之外的节点
+            dv211 = v211 - v111;
+            dv221 = v221 - v121;
+            dv212 = v212 - v112;
+            dv222 = v222 - v122;
         }
 
         *pdiffx = f111*dv111 + f121*dv121 + f211*dv211 + f221*dv221 +
@@ -223,10 +224,11 @@ real_t trilinear_one_Idx_ravel(
             dv122 = (values[idx + 2*DY + dz] - v112)/2.0;
             dv222 = (values[idx + dx + 2*DY + dz] - v212)/2.0;
         } else if(ny > 1){
-            dv121 = (v111 - values[idx - 2*DY])/2.0;
-            dv221 = (v211 - values[idx + dx - 2*DY])/2.0;
-            dv122 = (v112 - values[idx - 2*DY + dz])/2.0;
-            dv222 = (v212 - values[idx + dx - 2*DY + dz])/2.0;
+            // 右端点位于边界时使用单边差分
+            dv121 = v121 - v111;
+            dv221 = v221 - v211;
+            dv122 = v122 - v112;
+            dv222 = v222 - v212;
         }
         
 
@@ -261,10 +263,11 @@ real_t trilinear_one_Idx_ravel(
             dv122 = (values[idx + dy + 2*DZ] - v121)/2.0;
             dv222 = (values[idx + dx + dy + 2*DZ] - v221)/2.0;
         } else if(nz > 1) {
-            dv112 = (v111 - values[idx - 2*DZ])/2.0;
-            dv212 = (v211 - values[idx + dx - 2*DZ])/2.0;
-            dv122 = (v121 - values[idx + dy - 2*DZ])/2.0;
-            dv222 = (v221 - values[idx + dx + dy - 2*DZ])/2.0;
+            // 右端点位于边界时使用单边差分
+            dv112 = v112 - v111;
+            dv212 = v212 - v211;
+            dv122 = v122 - v121;
+            dv222 = v222 - v221;
         }
 
         *pdiffz = f111*dv111 + f121*dv121 + f211*dv211 + f221*dv221 +

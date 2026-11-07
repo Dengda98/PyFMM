@@ -195,7 +195,7 @@ real_t get_neighbour_travt(
 
 /**
  * 根据梯度下降，从走时场中提取初至射线
- * 
+ *
  * @param     rs     (in)维度1坐标数组
  * @param     nr     (in)rs长度
  * @param     ts     (in)维度2坐标数组
@@ -215,9 +215,10 @@ real_t get_neighbour_travt(
  * @param     sphcoord  (in)是否使用球坐标
  * @param     rays      (out)输出展平的三维射线
  * @param     N         (inout)输入射线缓冲区容量，输出实际射线点数
- * 
- * @return    射线走时
- * 
+ * @param     stat      (out)追踪状态，0为正常返回，-1为回退后走时仍无法下降或梯度无效，可传NULL
+ *
+ * @return    射线走时，失败时打印警告并返回NAN，rays和N仅包含失败前的有效路径，不追加源点
+ *
  */
 real_t FMM_raytracing(
     const real_t *rs, size_t nr,
@@ -226,4 +227,4 @@ real_t FMM_raytracing(
     real_t r0, real_t t0, real_t p0,
     real_t rr, real_t tt, real_t pp, real_t seglen, real_t segfac,
     const real_t *Slw, const real_t *TT, bool sphcoord,
-    real_t *rays, size_t *N);
+    real_t *rays, size_t *N, int *stat);
